@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V20簡易說明)</title><style>
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V21神級版)</title><style>
 :root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
 body.dark{--bg:#000;--txt:#0f0;--card:#111;--border:#0f0;--hl:#0f0;--btn-txt:#000}
 body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:80px;transition:0.3s}
@@ -21,12 +21,12 @@ body.dark .c-pre{color:#0f0;background:#000} body.dark .c-exc{color:#ff0;backgro
 .name-list{font-weight:normal;font-size:.9rem;margin-top:4px;padding-top:4px;border-top:1px dashed var(--border);display:block;color:var(--txt)}
 .setup-area{background:var(--card);padding:15px;border-radius:12px;margin-bottom:20px;display:none;border:2px solid var(--hl);text-align:left}
 .setup-area.show{display:block}
-/* 共用輸入框樣式 */
+/* 輸入框樣式 */
 textarea, input[type="text"]{width:100%;padding:10px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;background:var(--card);color:var(--txt);font-size:1rem}
 textarea{height:60px;margin-bottom:5px}
-input[type="text"]{margin-bottom:15px}
+input[type="text"]{margin-bottom:10px}
 
-.control-bar{display:flex;gap:10px;margin-bottom:15px;justify-content:center}
+.control-bar{display:flex;gap:10px;margin-bottom:15px;justify-content:center;flex-wrap:wrap}
 .btn-mode{padding:8px 12px;border-radius:20px;border:2px solid #7f8c8d;background:0 0;font-weight:bold;color:#555;cursor:pointer}
 body.dark .btn-mode{color:#0f0;border-color:#0f0}
 .btn-mode.active{background:#e67e22;color:#fff;border-color:#e67e22}
@@ -65,6 +65,9 @@ body.dark .st-exc{background:#330!important;color:#ff0;border:1px solid #ff0}
 .his-period{font-size:0.85rem;opacity:0.7;margin-left:5px}
 .copy-btn{width:100%;padding:10px;background:#27ae60;color:white;border:none;border-radius:6px;font-weight:bold;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
 body.dark .copy-btn{background:#000;border:1px solid #0f0;color:#0f0}
+/* V21 Search & Missing */
+.search-box{margin-bottom:10px;position:relative}
+.search-input{width:100%;padding:12px;border-radius:30px;border:2px solid #3498db;text-align:center;font-size:1rem;background:var(--card);color:var(--txt)}
 </style></head><body>
 
 <div class="top-bar">
@@ -75,25 +78,28 @@ body.dark .copy-btn{background:#000;border:1px solid #0f0;color:#0f0}
 </div>
 
 <div id="help-area" class="help-panel">
-    <h3 style="margin-top:0;color:#2980b9">📖 簡易操作說明</h3>
+    <h3 style="margin-top:0;color:#2980b9">📖 V21 操作說明</h3>
     <ul class="help-list">
-        <li><b>1. 建立資料：</b>點選上方「📝 設定」，輸入單位與名單後按儲存。</li>
-        <li><b>2. 開始點名：</b>直接點姓名代表「實到」；開啟「⚠️ 事故輸入」可標註休假/衛哨。</li>
-        <li><b>3. 回報戰情：</b>點名完成後，按下方「📋 一鍵複製」即可貼到 LINE 回報。</li>
-        <li><b>4. 歷史存檔：</b>點選「📅 歷史」，選好時段按「📥 存檔」保留紀錄。</li>
+        <li><b>🔍 搜尋人員：</b>在上方搜尋框輸入名字，快速過濾人員。</li>
+        <li><b>🛠️ 自訂按鈕：</b>在「設定」中可自訂事故按鈕名稱 (如: 駕駛、伙房)。</li>
+        <li><b>📢 查未到：</b>按下方「📢 查未到」按鈕，快速列出未點名人員。</li>
+        <li><b>📋 複製回報：</b>一鍵生成含單位署名的回報文。</li>
     </ul>
-    <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">我知道了</button></div>
+    <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">OK</button></div>
 </div>
 
 <div id="setup-area" class="setup-area">
     <h3 style="margin-top:0;color:var(--hl)">🏢 單位設定</h3>
-    <input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：機步一連)">
+    <input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)">
+
+    <h3 style="color:var(--hl)">🛠️ 自訂事故按鈕 (用逗號隔開)</h3>
+    <textarea id="in-reasons" style="height:50px" placeholder="預設：休假,外宿,補休,衛哨,安官..."></textarea>
 
     <h3>輸入名單</h3>
-    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="範例：上尉連長 中尉副連長"></textarea>
-    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="範例：士官長副排長 上士班長"></textarea>
-    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="範例：上兵王小明 上兵李大華"></textarea>
-    <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="範例：二兵張三 二兵李四"></textarea>
+    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="範例：連長 副連長"></textarea>
+    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="範例：副排長 班長"></textarea>
+    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="範例：王小明 李大華"></textarea>
+    <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="範例：張三"></textarea>
     <button class="btn-big" style="background:#27ae60;margin-bottom:10px" onclick="saveData()">✅ 儲存並生成</button>
     <div style="border-top:1px solid #ccc;padding-top:10px;display:flex;gap:10px">
         <button class="btn-big" style="background:#7f8c8d" onclick="exportData()">📤 匯出備份</button>
@@ -117,16 +123,27 @@ body.dark .copy-btn{background:#000;border:1px solid #0f0;color:#0f0}
 <div class="stats-box"><table class="stats-table"><thead><tr><th>階級</th><th>應</th><th>實</th><th>故</th><th>未</th></tr></thead><tbody id="stats-body"></tbody></table></div>
 <div id="detail-board" class="detail-board"><b>📋 事故明細:</b> <div id="detail-tags" style="margin-top:5px"></div></div>
 
-<div class="control-bar"><button id="mode-btn" class="btn-mode" onclick="toggleMode()">⚠️ 事故: 關</button><button class="btn-mode" style="background:#95a5a6;color:#fff;border:none" onclick="resetAll()">🔄 重置</button></div>
+<div class="search-box">
+    <input type="text" id="search-input" class="search-input" placeholder="🔍 輸入名字快速找人..." oninput="filterRoster()">
+</div>
+
+<div class="control-bar">
+    <button id="mode-btn" class="btn-mode" onclick="toggleMode()">⚠️ 事故: 關</button>
+    <button class="btn-mode" style="border-color:#c0392b;color:#c0392b" onclick="showMissing()">📢 查未到</button>
+    <button class="btn-mode" style="background:#95a5a6;color:#fff;border:none" onclick="resetAll()">🔄 重置</button>
+</div>
 <div id="roster" class="roster-grid"></div>
 
-<div id="modal" class="modal"><div class="m-content"><h3 id="m-name"></h3><div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:8px" placeholder="輸入原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px">OK</button></div><div class="opts"><button class="o-btn bg-v" onclick="setS('休假')">休假</button><button class="o-btn bg-v" onclick="setS('外宿')">外宿</button><button class="o-btn bg-v" onclick="setS('補休')">補休</button><button class="o-btn bg-g" onclick="setS('衛哨')">衛哨</button><button class="o-btn bg-g" onclick="setS('安官')">安官</button><button class="o-btn bg-g" onclick="setS('戰情')">戰情</button><button class="o-btn bg-d" onclick="setS('公差')">公差</button><button class="o-btn bg-d" onclick="setS('受訓')">受訓</button><button class="o-btn bg-d" onclick="setS('支援')">支援</button><button class="o-btn bg-s" onclick="setS('轉診')">轉診</button><button class="o-btn bg-s" onclick="setS('住院')">住院</button><button class="o-btn bg-s" onclick="setS('隔離')">隔離</button><button class="o-btn" style="background:#1abc9c;grid-column:span 3" onclick="setS(null)">無事故</button><button class="o-btn" style="background:#95a5a6;grid-column:span 3" onclick="closeM()">取消</button></div></div></div>
+<div id="modal" class="modal"><div class="m-content"><h3 id="m-name"></h3><div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:8px" placeholder="輸入原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px">OK</button></div><div class="opts" id="opts-container"></div><button class="o-btn" style="background:#95a5a6;width:100%;margin-top:10px" onclick="closeM()">取消</button></div></div>
 
 <div id="his-list-modal" class="his-list-modal"><div class="his-content"><h3 style="margin-top:0;color:var(--txt)">📜 已存紀錄</h3><div id="his-items-container" class="his-items"></div><button class="btn-big" style="background:#95a5a6;margin-top:5px" onclick="closeHisList()">關閉</button></div></div>
 
 <script>
-const K_CUR='army_v20_cur',K_HIS='army_v20_his',K_THEME='army_v20_theme';
-let D={o:[],n:[],s:[],t:[],st:{},u:''},isM=false,cur='',reportStr='';
+const K_CUR='army_v21_cur',K_HIS='army_v21_his',K_THEME='army_v21_theme';
+let D={o:[],n:[],s:[],t:[],st:{},u:'',rs:''},isM=false,cur='',reportStr='';
+// 預設事故按鈕
+const DEFAULT_REASONS = "休假,外宿,補休,衛哨,安官,戰情,公差,受訓,支援,轉診,住院,隔離";
+
 document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('history-date').valueAsDate=new Date();
     if(localStorage.getItem(K_THEME)==='dark') document.body.classList.add('dark');
@@ -149,11 +166,90 @@ function loadFromDate(){const d=document.getElementById('history-date').value;co
 function clearHistory(){if(confirm("確定要清空所有歷史紀錄？"))localStorage.removeItem(K_HIS),updateHisCount(),alert("已清空")}
 function parse(t){return t?t.split(/[\s,、\n]+/).filter(x=>x.trim()):[]}
 function toggleMode(){isM=!isM;const b=document.getElementById('mode-btn');b.innerText=isM?"⚠️ 事故輸入: 開":"⚠️ 事故輸入: 關";b.classList.toggle('active')}
-function saveData(){D.u=document.getElementById('in-unit').value.trim();D.o=parse(document.getElementById('in-off').value);D.n=parse(document.getElementById('in-nco').value);D.s=parse(document.getElementById('in-sol').value);D.t=parse(document.getElementById('in-tra').value);if(!D.o.length&&!D.n.length&&!D.s.length&&!D.t.length)return alert("請輸入名字");const a=[...D.o,...D.n,...D.s,...D.t];for(let k in D.st){if(!a.includes(k))delete D.st[k]}persist();render();toggleSetup()}
+function saveData(){
+    D.u=document.getElementById('in-unit').value.trim();
+    D.rs=document.getElementById('in-reasons').value.trim(); // Save custom reasons
+    D.o=parse(document.getElementById('in-off').value);D.n=parse(document.getElementById('in-nco').value);D.s=parse(document.getElementById('in-sol').value);D.t=parse(document.getElementById('in-tra').value);
+    if(!D.o.length&&!D.n.length&&!D.s.length&&!D.t.length)return alert("請輸入名字");
+    const a=[...D.o,...D.n,...D.s,...D.t];for(let k in D.st){if(!a.includes(k))delete D.st[k]}
+    persist();render();toggleSetup();
+}
 function persist(){localStorage.setItem(K_CUR,JSON.stringify(D))}
 function load(){const r=localStorage.getItem(K_CUR);if(r){D=JSON.parse(r);fillSetup();render()}else{toggleSetup()}}
-function fillSetup(){document.getElementById('in-unit').value=D.u||'';document.getElementById('in-off').value=D.o.join(' ');document.getElementById('in-nco').value=D.n.join(' ');document.getElementById('in-sol').value=D.s.join(' ');document.getElementById('in-tra').value=D.t.join(' ')}
-function render(){const c=document.getElementById('roster');c.innerHTML='';const add=(nm,cls)=>{const b=document.createElement('button');b.className=`p-btn ${cls}`;const s=D.st[nm];let h=`<span>${nm}</span>`;if(s&&s!=='p')h+=`<span class="st-tag">${s}</span>`;b.innerHTML=h;if(s==='p')b.classList.add('st-pre');else if(s)b.classList.add('st-exc');b.onclick=()=>{if(isM){cur=nm;document.getElementById('m-name').innerText=nm;document.getElementById('custom-r').value='';document.getElementById('modal').classList.add('show')}else{D.st[nm]=(D.st[nm]==='p'?null:'p');persist();render()}};c.appendChild(b)};D.o.forEach(x=>add(x,'bg-off'));D.n.forEach(x=>add(x,'bg-nco'));D.s.forEach(x=>add(x,'bg-sol'));D.t.forEach(x=>add(x,'bg-tra'));updT()}
+function fillSetup(){
+    document.getElementById('in-unit').value=D.u||'';
+    document.getElementById('in-reasons').value=D.rs||DEFAULT_REASONS;
+    document.getElementById('in-off').value=D.o.join(' ');document.getElementById('in-nco').value=D.n.join(' ');document.getElementById('in-sol').value=D.s.join(' ');document.getElementById('in-tra').value=D.t.join(' ');
+}
+// V21 Filter
+function filterRoster(){
+    const term = document.getElementById('search-input').value.toLowerCase();
+    const btns = document.querySelectorAll('.p-btn');
+    btns.forEach(b=>{
+        const txt = b.innerText.toLowerCase();
+        b.style.display = txt.includes(term) ? 'flex' : 'none';
+    });
+}
+// V21 Missing List
+function showMissing(){
+    const all=[...D.o,...D.n,...D.s,...D.t];
+    let missing = [];
+    all.forEach(n=>{if(!D.st[n]) missing.push(n)});
+    if(missing.length===0) return alert("👍 全員已到/已回報！");
+    alert(`📢 未到人員 (${missing.length}員)：\n\n${missing.join('、')}`);
+}
+
+function render(){
+    const c=document.getElementById('roster');c.innerHTML='';
+    const add=(nm,cls)=>{
+        const b=document.createElement('button');b.className=`p-btn ${cls}`;
+        const s=D.st[nm];let h=`<span>${nm}</span>`;
+        if(s&&s!=='p')h+=`<span class="st-tag">${s}</span>`;
+        b.innerHTML=h;
+        if(s==='p')b.classList.add('st-pre');else if(s)b.classList.add('st-exc');
+        b.onclick=()=>{
+            if(isM){
+                cur=nm;
+                document.getElementById('m-name').innerText=nm;
+                document.getElementById('custom-r').value='';
+                renderModalOpts(); // Gen opts
+                document.getElementById('modal').classList.add('show');
+            }else{
+                D.st[nm]=(D.st[nm]==='p'?null:'p');persist();render();
+            }
+        };c.appendChild(b)
+    };
+    D.o.forEach(x=>add(x,'bg-off'));D.n.forEach(x=>add(x,'bg-nco'));D.s.forEach(x=>add(x,'bg-sol'));D.t.forEach(x=>add(x,'bg-tra'));
+    updT();filterRoster(); // Re-apply filter if any
+}
+
+// V21 Dynamic Modal
+function renderModalOpts(){
+    const c = document.getElementById('opts-container');
+    c.innerHTML = '';
+    const reasonStr = D.rs || DEFAULT_REASONS;
+    const list = reasonStr.split(/[,，]/).map(x=>x.trim()).filter(x=>x);
+    
+    list.forEach(r=>{
+        const b = document.createElement('button');
+        b.className = 'o-btn bg-v'; // Default color
+        if(['衛哨','安官','戰情'].includes(r)) b.className='o-btn bg-g';
+        if(['轉診','住院','隔離'].includes(r)) b.className='o-btn bg-s';
+        if(['公差','受訓','支援'].includes(r)) b.className='o-btn bg-d';
+        b.innerText = r;
+        b.onclick = ()=>setS(r);
+        c.appendChild(b);
+    });
+    // Add reset button
+    const resetBtn = document.createElement('button');
+    resetBtn.className = 'o-btn';
+    resetBtn.style.background='#1abc9c';
+    resetBtn.style.gridColumn='span 3';
+    resetBtn.innerText = '無事故 (返回未到)';
+    resetBtn.onclick = ()=>setS(null);
+    c.appendChild(resetBtn);
+}
+
 function subCus(){const v=document.getElementById('custom-r').value.trim();if(v)setS(v)}
 function setS(v){D.st[cur]=v;closeM();persist();render()}
 function closeM(){document.getElementById('modal').classList.remove('show')}
