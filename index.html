@@ -1,4 +1,16 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V15範例版)</title><style>body{font-family:sans-serif;background:#f0f2f5;margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:80px}.top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}.btn-big{background:#2c3e50;color:#fff;border:none;padding:10px;border-radius:8px;font-weight:bold;flex:1;cursor:pointer;font-size:0.95rem;min-width:80px}.stats-box{background:#fff;border-radius:12px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:10px;position:sticky;top:0;z-index:99;overflow-x:auto}.stats-table{width:100%;border-collapse:collapse;font-size:.9rem}.stats-table th,.stats-table td{padding:8px 2px;border-bottom:1px solid #eee;text-align:center}.stats-table th{background:#f1f2f6;color:#555}.r-off{color:#e74c3c;font-weight:bold}.r-nco{color:#3498db;font-weight:bold}.r-sol{color:#27ae60;font-weight:bold}.r-tra{color:#9b59b6;font-weight:bold}.r-tot{color:#333;font-weight:bold;background:#f8f9fa}.c-pre{color:#27ae60;background:rgba(39,174,96,.05)}.c-exc{color:#f39c12;background:rgba(243,156,18,.05)}.c-abs{color:#c0392b;opacity:.6}.detail-board{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px;margin-bottom:15px;display:none;text-align:left;font-size:.9rem}.detail-row{background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #f39c12;color:#d35400;font-size:.95rem;margin-bottom:6px;line-height:1.4}.breakdown{font-size:0.85rem;color:#7f8c8d;margin-left:5px;font-weight:normal}.name-list{color:#333;font-weight:normal;font-size:.9rem;margin-top:4px;padding-top:4px;border-top:1px dashed #eee;display:block}.setup-area{background:#fff;padding:15px;border-radius:12px;margin-bottom:20px;display:none;border:2px solid #2c3e50;text-align:left}.setup-area.show{display:block}textarea{width:100%;height:60px;margin-bottom:5px;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box}.control-bar{display:flex;gap:10px;margin-bottom:15px;justify-content:center}.btn-mode{padding:8px 12px;border-radius:20px;border:2px solid #7f8c8d;background:0 0;font-weight:bold;color:#555;cursor:pointer}.btn-mode.active{background:#e67e22;color:#fff;border-color:#e67e22}.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}.p-btn{min-height:70px;border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:bold;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px}.bg-off{background:#e74c3c}.bg-nco{background:#3498db}.bg-sol{background:#27ae60}.bg-tra{background:#9b59b6}.st-pre{background:#555!important;opacity:.5;text-decoration:line-through}.st-pre::after{content:'✔';position:absolute;top:4px;right:4px}.st-exc{background:#f39c12!important;border:2px solid #d35400}.st-tag{font-size:.7rem;background:rgba(0,0,0,.2);padding:2px 5px;border-radius:4px;margin-top:3px}.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:200}.modal.show{display:flex}.m-content{background:#fff;padding:20px;border-radius:12px;width:85%;max-width:320px}.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.o-btn{padding:10px 2px;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:.9rem}.bg-v{background:#e67e22}.bg-g{background:#2c3e50}.bg-s{background:#c0392b}.bg-d{background:#8e44ad}.history-panel{background:#ecf0f1;padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid #95a5a6;display:none}.history-panel.show{display:block}.date-group{display:flex;gap:5px;margin-bottom:10px}.date-input{padding:10px;font-size:1.1rem;border-radius:6px;border:1px solid #ccc;box-sizing:border-box}.h-btn-group{display:flex;gap:10px}.help-panel{background:#e8f4f8;padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid #3498db;display:none;text-align:left;box-shadow:0 4px 10px rgba(0,0,0,0.1)}.help-panel.show{display:block}.help-list{padding-left:20px;margin:0;font-size:0.95rem;line-height:1.6;color:#2c3e50}.help-list li{margin-bottom:5px}</style></head><body>
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V16清單版)</title><style>body{font-family:sans-serif;background:#f0f2f5;margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:80px}.top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}.btn-big{background:#2c3e50;color:#fff;border:none;padding:10px;border-radius:8px;font-weight:bold;flex:1;cursor:pointer;font-size:0.95rem;min-width:80px}.stats-box{background:#fff;border-radius:12px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:10px;position:sticky;top:0;z-index:99;overflow-x:auto}.stats-table{width:100%;border-collapse:collapse;font-size:.9rem}.stats-table th,.stats-table td{padding:8px 2px;border-bottom:1px solid #eee;text-align:center}.stats-table th{background:#f1f2f6;color:#555}.r-off{color:#e74c3c;font-weight:bold}.r-nco{color:#3498db;font-weight:bold}.r-sol{color:#27ae60;font-weight:bold}.r-tra{color:#9b59b6;font-weight:bold}.r-tot{color:#333;font-weight:bold;background:#f8f9fa}.c-pre{color:#27ae60;background:rgba(39,174,96,.05)}.c-exc{color:#f39c12;background:rgba(243,156,18,.05)}.c-abs{color:#c0392b;opacity:.6}.detail-board{background:#fff8e1;border:1px solid #ffe082;border-radius:8px;padding:10px;margin-bottom:15px;display:none;text-align:left;font-size:.9rem}.detail-row{background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #f39c12;color:#d35400;font-size:.95rem;margin-bottom:6px;line-height:1.4}.breakdown{font-size:0.85rem;color:#7f8c8d;margin-left:5px;font-weight:normal}.name-list{color:#333;font-weight:normal;font-size:.9rem;margin-top:4px;padding-top:4px;border-top:1px dashed #eee;display:block}.setup-area{background:#fff;padding:15px;border-radius:12px;margin-bottom:20px;display:none;border:2px solid #2c3e50;text-align:left}.setup-area.show{display:block}textarea{width:100%;height:60px;margin-bottom:5px;padding:8px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box}.control-bar{display:flex;gap:10px;margin-bottom:15px;justify-content:center}.btn-mode{padding:8px 12px;border-radius:20px;border:2px solid #7f8c8d;background:0 0;font-weight:bold;color:#555;cursor:pointer}.btn-mode.active{background:#e67e22;color:#fff;border-color:#e67e22}.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}.p-btn{min-height:70px;border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:bold;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px}.bg-off{background:#e74c3c}.bg-nco{background:#3498db}.bg-sol{background:#27ae60}.bg-tra{background:#9b59b6}.st-pre{background:#555!important;opacity:.5;text-decoration:line-through}.st-pre::after{content:'✔';position:absolute;top:4px;right:4px}.st-exc{background:#f39c12!important;border:2px solid #d35400}.st-tag{font-size:.7rem;background:rgba(0,0,0,.2);padding:2px 5px;border-radius:4px;margin-top:3px}.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:200}.modal.show{display:flex}.m-content{background:#fff;padding:20px;border-radius:12px;width:85%;max-width:320px}.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.o-btn{padding:10px 2px;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:.9rem}.bg-v{background:#e67e22}.bg-g{background:#2c3e50}.bg-s{background:#c0392b}.bg-d{background:#8e44ad}.history-panel{background:#ecf0f1;padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid #95a5a6;display:none}.history-panel.show{display:block}.date-group{display:flex;gap:5px;margin-bottom:10px}.date-input{padding:10px;font-size:1.1rem;border-radius:6px;border:1px solid #ccc;box-sizing:border-box}.h-btn-group{display:flex;gap:10px}.help-panel{background:#e8f4f8;padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid #3498db;display:none;text-align:left;box-shadow:0 4px 10px rgba(0,0,0,0.1)}.help-panel.show{display:block}.help-list{padding-left:20px;margin:0;font-size:0.95rem;line-height:1.6;color:#2c3e50}.help-list li{margin-bottom:5px}
+/* V16 新增列表樣式 */
+.his-list-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);display:none;justify-content:center;align-items:center;z-index:250}
+.his-list-modal.show{display:flex}
+.his-content{background:#fff;width:90%;max-width:350px;border-radius:12px;padding:15px;max-height:80vh;display:flex;flex-direction:column}
+.his-items{overflow-y:auto;flex:1;margin-bottom:10px;border:1px solid #eee;border-radius:6px}
+.his-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid #eee;background:#fff}
+.his-item:active{background:#f9f9f9}
+.his-info{text-align:left;flex:1}
+.his-time{font-weight:bold;color:#2c3e50;font-size:1rem}
+.his-period{font-size:0.85rem;color:#7f8c8d;margin-left:5px}
+.his-del-btn{background:#c0392b;color:white;border:none;padding:6px 10px;border-radius:4px;font-size:0.8rem;margin-left:10px}
+</style></head><body>
 
 <div class="top-bar">
     <button class="btn-big" onclick="toggleSetup()">📝 設定名單</button>
@@ -12,30 +24,31 @@
         <li><b>1. 建立名單：</b>點選上方「📝 設定名單」，將人員姓名貼入對應階級並儲存。</li>
         <li><b>2. 實到點名：</b>直接點擊姓名，變為<span style="color:#7f8c8d;text-decoration:line-through">灰色刪除線</span>即為實到。</li>
         <li><b>3. 事故標註：</b>點擊下方「⚠️ 事故輸入」切換為<span style="color:#e67e22">橘色(開)</span>，再點擊姓名選擇原因。</li>
-        <li><b>4. 歷史存檔：</b>點選「📅 歷史紀錄」，選擇日期與時段(早/午/晚)，按「📥 存檔」。</li>
-        <li><b>5. 資料安全：</b>本系統為單機版，資料僅存在您的手機中，他人無法查看。</li>
+        <li><b>4. 歷史存檔：</b>點選「📅 歷史紀錄」，選擇日期與時段，按「📥 存檔」。</li>
+        <li><b>5. 歷史讀取：</b>點選「👁️ 查看清單」可看到所有紀錄，點擊即可還原。</li>
     </ul>
     <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">我知道了</button></div>
 </div>
 
 <div id="setup-area" class="setup-area">
     <h3>輸入名單 (空格隔開)</h3>
-    <div style="color:#e74c3c">🛑 軍官</div>
-    <textarea id="in-off" placeholder="例如：連長 副連長 輔導長 (可直接貼上)"></textarea>
-    
-    <div style="color:#3498db">🔷 士官</div>
-    <textarea id="in-nco" placeholder="例如：士官長 排長 班長 (名字間空格或換行)"></textarea>
-    
-    <div style="color:#27ae60">🟩 士兵</div>
-    <textarea id="in-sol" placeholder="例如：王小明 李大華 陳小二 (支援 Excel 複製)"></textarea>
-    
-    <div style="color:#9b59b6">🟣 訓員</div>
-    <textarea id="in-tra" placeholder="例如：張三 李四 (無階級人員)"></textarea>
-    
+    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="例如：連長 副連長 (可直接貼上)"></textarea>
+    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="例如：排長 班長"></textarea>
+    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="例如：王小明 李大華 (支援 Excel)"></textarea>
+    <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="例如：張三 李四"></textarea>
     <button class="btn-big" style="background:#27ae60" onclick="saveData()">儲存並生成</button>
 </div>
 
-<div id="history-area" class="history-panel"><h3>📅 時段紀錄庫</h3><div style="margin-bottom:10px;color:#7f8c8d;font-size:0.9rem">已存紀錄: <b id="history-count" style="color:#e67e22">0</b> 筆</div><div class="date-group"><input type="date" id="history-date" class="date-input" style="flex:2"><select id="history-period" class="date-input" style="flex:1.5"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間查鋪</option></select></div><div class="h-btn-group"><button class="btn-big" style="background:#27ae60" onclick="saveToDate()">📥 存檔</button><button class="btn-big" style="background:#e67e22" onclick="loadFromDate()">📤 讀取</button></div><div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部歷史</button></div></div>
+<div id="history-area" class="history-panel">
+    <h3>📅 時段紀錄庫</h3>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;background:#fff;padding:8px;border-radius:6px">
+        <span style="color:#7f8c8d;font-size:0.9rem">已存: <b id="history-count" style="color:#e67e22">0</b> 筆</span>
+        <button onclick="showHistoryList()" style="background:#3498db;color:white;border:none;padding:5px 10px;border-radius:4px;font-weight:bold;cursor:pointer">👁️ 查看清單</button>
+    </div>
+    <div class="date-group"><input type="date" id="history-date" class="date-input" style="flex:2"><select id="history-period" class="date-input" style="flex:1.5"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間查鋪</option></select></div>
+    <div class="h-btn-group"><button class="btn-big" style="background:#27ae60" onclick="saveToDate()">📥 存檔</button><button class="btn-big" style="background:#e67e22" onclick="loadFromDate()">📤 讀取</button></div>
+    <div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部歷史</button></div>
+</div>
 
 <div class="stats-box"><table class="stats-table"><thead><tr><th>類別</th><th>應</th><th>實</th><th>故</th><th>未</th></tr></thead><tbody id="stats-body"></tbody></table></div>
 <div id="detail-board" class="detail-board"><b>📋 事故明細:</b> <div id="detail-tags" style="margin-top:5px"></div></div>
@@ -45,8 +58,16 @@
 
 <div id="modal" class="modal"><div class="m-content"><h3 id="m-name"></h3><div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:8px" placeholder="輸入原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px">OK</button></div><div class="opts"><button class="o-btn bg-v" onclick="setS('休假')">休假</button><button class="o-btn bg-v" onclick="setS('外宿')">外宿</button><button class="o-btn bg-v" onclick="setS('補休')">補休</button><button class="o-btn bg-g" onclick="setS('衛哨')">衛哨</button><button class="o-btn bg-g" onclick="setS('安官')">安官</button><button class="o-btn bg-g" onclick="setS('戰情')">戰情</button><button class="o-btn bg-d" onclick="setS('公差')">公差</button><button class="o-btn bg-d" onclick="setS('受訓')">受訓</button><button class="o-btn bg-d" onclick="setS('支援')">支援</button><button class="o-btn bg-s" onclick="setS('轉診')">轉診</button><button class="o-btn bg-s" onclick="setS('住院')">住院</button><button class="o-btn bg-s" onclick="setS('隔離')">隔離</button><button class="o-btn" style="background:#1abc9c;grid-column:span 3" onclick="setS(null)">無事故 (返回未到)</button><button class="o-btn" style="background:#95a5a6;grid-column:span 3" onclick="closeM()">取消</button></div></div></div>
 
+<div id="his-list-modal" class="his-list-modal">
+    <div class="his-content">
+        <h3 style="margin-top:0;color:#2c3e50">📜 已存紀錄清單</h3>
+        <div id="his-items-container" class="his-items"></div>
+        <button class="btn-big" style="background:#95a5a6;margin-top:5px" onclick="closeHisList()">關閉</button>
+    </div>
+</div>
+
 <script>
-const K_CUR='army_v15_cur',K_HIS='army_v15_his';
+const K_CUR='army_v16_cur',K_HIS='army_v16_his';
 let D={o:[],n:[],s:[],t:[],st:{}},isM=false,cur='';
 document.addEventListener('DOMContentLoaded',()=>{document.getElementById('history-date').valueAsDate=new Date();load();updateHisCount()});
 
@@ -58,7 +79,7 @@ function getHis(){const r=localStorage.getItem(K_HIS);return r?JSON.parse(r):{}}
 function updateHisCount(){const h=getHis();document.getElementById('history-count').innerText=Object.keys(h).length}
 function getAbsCount(){const all=[...D.o,...D.n,...D.s,...D.t];let abs=0;all.forEach(n=>{if(!D.st[n])abs++});return abs}
 function saveToDate(){const d=document.getElementById('history-date').value;const p=document.getElementById('history-period').value;const pt=document.getElementById('history-period').options[document.getElementById('history-period').selectedIndex].text;if(!d)return alert("選日期");const abs=getAbsCount();if(abs>0){if(!confirm(`⚠️ 警告：尚有 ${abs} 員未到！\n請重新確認是否存檔？\n\n(按「確定」強制存檔)`))return}const key=d+'_'+p;const h=getHis();h[key]=JSON.parse(JSON.stringify(D));localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();alert(`已存入 [${d} ${pt}]`)}
-function loadFromDate(){const d=document.getElementById('history-date').value;const p=document.getElementById('history-period').value;const pt=document.getElementById('history-period').options[document.getElementById('history-period').selectedIndex].text;const key=d+'_'+p;const h=getHis();if(!h[key])return alert(`找不到 [${d} ${pt}] 的資料`);if(confirm(`讀取 [${d} ${pt}] 將覆蓋目前畫面，確定?`)){D=h[key];persist();render();fillSetup();alert(`已讀取 [${d} ${pt}]`);toggleHistory()}}
+function loadFromDate(){const d=document.getElementById('history-date').value;const p=document.getElementById('history-period').value;const pt=document.getElementById('history-period').options[document.getElementById('history-period').selectedIndex].text;loadHistoryKey(d+'_'+p, `${d} ${pt}`)}
 function clearHistory(){if(confirm("確定要清空所有歷史紀錄？(今天的資料會保留)"))localStorage.removeItem(K_HIS),updateHisCount(),alert("已清空")}
 function parse(t){return t?t.split(/[\s,、\n]+/).filter(x=>x.trim()):[]}
 function toggleMode(){isM=!isM;const b=document.getElementById('mode-btn');b.innerText=isM?"⚠️ 事故輸入: 開":"⚠️ 事故輸入: 關";b.classList.toggle('active')}
@@ -79,13 +100,60 @@ function updT(){
     const tot={t:R.o.t+R.n.t+R.s.t+R.t.t,p:R.o.p+R.n.p+R.s.p+R.t.p,e:R.o.e+R.n.e+R.s.e+R.t.e};
     document.getElementById('stats-body').innerHTML=row('軍官','r-off',R.o)+row('士官','r-nco',R.n)+row('士兵','r-sol',R.s)+row('訓員','r-tra',R.t)+`<tr style="background:#eee"><td class="r-tot">合</td><td class="r-tot">${tot.t}</td><td class="r-tot c-pre">${tot.p}</td><td class="r-tot c-exc">${tot.e}</td><td class="r-tot c-abs">${tot.t-tot.p-tot.e}</td></tr>`;
     const db=document.getElementById('detail-board'),dt=document.getElementById('detail-tags');dt.innerHTML='';
-    if(tot.e>0){
-        db.style.display='block';
-        for(let[k,arr]of Object.entries(R.dt)){
-            let co=0,cn=0,cs=0,ct=0;
-            arr.forEach(nm=>{if(D.o.includes(nm))co++;else if(D.n.includes(nm))cn++;else if(D.s.includes(nm))cs++;else if(D.t.includes(nm))ct++});
-            dt.innerHTML+=`<div class="detail-row"><b>${k}: ${arr.length}員</b> <span class="breakdown">(官${co} 士${cn} 兵${cs} 訓${ct})</span><span class="name-list">(${arr.join(' ')})</span></div>`
-        }
-    }else{db.style.display='none'}
+    if(tot.e>0){db.style.display='block';for(let[k,arr]of Object.entries(R.dt)){let co=0,cn=0,cs=0,ct=0;arr.forEach(nm=>{if(D.o.includes(nm))co++;else if(D.n.includes(nm))cn++;else if(D.s.includes(nm))cs++;else if(D.t.includes(nm))ct++});dt.innerHTML+=`<div class="detail-row"><b>${k}: ${arr.length}員</b> <span class="breakdown">(官${co} 士${cn} 兵${cs} 訓${ct})</span><span class="name-list">(${arr.join(' ')})</span></div>`}}else{db.style.display='none'}
+}
+
+// V16 清單邏輯
+function showHistoryList(){
+    const h = getHis();
+    const c = document.getElementById('his-items-container');
+    c.innerHTML = '';
+    const keys = Object.keys(h).sort().reverse(); // 最新在上面
+    if(keys.length === 0){
+        c.innerHTML = '<div style="padding:20px;color:#aaa">目前沒有任何紀錄</div>';
+    } else {
+        const pMap = {'am':'☀ 上午', 'pm':'⛅ 下午', 'night':'🌙 夜間查鋪'};
+        keys.forEach(k => {
+            const parts = k.split('_');
+            const date = parts[0];
+            const pCode = parts[1] || '';
+            const pText = pMap[pCode] || pCode;
+            
+            const div = document.createElement('div');
+            div.className = 'his-item';
+            div.innerHTML = `
+                <div class="his-info" onclick="loadHistoryKey('${k}', '${date} ${pText}')">
+                    <div class="his-time">${date}</div>
+                    <div class="his-period">${pText}</div>
+                </div>
+                <button class="his-del-btn" onclick="deleteHistoryKey('${k}')">🗑️</button>
+            `;
+            c.appendChild(div);
+        });
+    }
+    document.getElementById('his-list-modal').classList.add('show');
+}
+function closeHisList(){document.getElementById('his-list-modal').classList.remove('show')}
+function loadHistoryKey(key, displayStr){
+    const h = getHis();
+    if(!h[key]) return alert("資料遺失");
+    if(confirm(`確定要還原 [${displayStr}] 的資料嗎？\n目前的畫面會被覆蓋。`)){
+        D = h[key];
+        persist();
+        render();
+        fillSetup();
+        alert("讀取完成！");
+        closeHisList();
+        toggleHistory();
+    }
+}
+function deleteHistoryKey(key){
+    if(confirm("確定要刪除這一筆紀錄嗎？")){
+        const h = getHis();
+        delete h[key];
+        localStorage.setItem(K_HIS, JSON.stringify(h));
+        updateHisCount();
+        showHistoryList(); // 重新渲染列表
+    }
 }
 </script></body></html>
