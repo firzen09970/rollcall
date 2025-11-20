@@ -97,7 +97,7 @@ input[type="text"]{margin-bottom:10px}
     <h3>輸入名單 (支援排組分隔線 --- )</h3>
     <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="連長 副連長"></textarea>
     <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="---排級幹部--- 排長 副排長"></textarea>
-    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="---一排--- 王小明 李大華 ---二排--- 陳二"></textarea>
+    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="---步一排--- 王小明 李大華 ---步二排--- 陳二"></textarea>
     <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="張三"></textarea>
     
     <h3 style="color:var(--hl)">🔢 計數器設定 (用逗號隔開)</h3>
@@ -209,7 +209,7 @@ function markAllPresent(){if(confirm("一鍵將未點名設為實到？(保留�
 function toggleSort(){
     isSorted = !isSorted;
     const b = document.getElementById('sort-btn');
-    b.innerText = isSorted ? "🔃 排序: 未到優先" : "🔃 排序: 原序";
+    b.innerText = isSorted ? "🔃 排序: 未到" : "🔃 排序: 原序";
     b.classList.toggle('active');
     render();
 }
@@ -361,3 +361,4 @@ function closeHisList(){document.getElementById('his-list-modal').classList.remo
 function loadHistoryKey(k,s){const h=getHis();if(!h[k])return alert("遺失");if(confirm(`還原 [${s}] ?`)){D=h[k];persist();render();fillSetup();alert("已讀取");closeHisList();toggleHistory()}}
 function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
 </script></body></html>
+
