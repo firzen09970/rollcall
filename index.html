@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V27.8)</title><style>
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V27.9 營士督專用版)</title><style>
 :root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
 body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:40px;transition:0.3s}
 .top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
@@ -76,7 +76,7 @@ input[type="text"]{margin-bottom:10px}
     width: 100%;
     background: #f1c40f; 
     color: #333;
-    padding: 5px 0; /* Reduced padding */
+    padding: 5px 0;
     font-size: 0.85rem;
     font-weight: bold;
     text-align: center;
@@ -97,7 +97,7 @@ input[type="text"]{margin-bottom:10px}
         <li><b>1. 建立資料：</b>點選「📝 設定」，輸入單位與名單，支援 <code>---排組---</code> 格式。</li>
         <li><b>2. 開始點名：</b>點擊姓名設為「實到」；切換「⚠️ 事故」可標記休假或衛哨。</li>
         <li><b>3. 產生回報：</b>點名完成後，點選「📋 一鍵複製」，即可貼到 LINE 回報戰情。</li>
-        <li><b>4. 紀錄保存：：</b>點選「📅 歷史」可將今日點名狀況存檔或讀取。</li>
+        <li><b>4. 紀錄保存：</b>點選「📅 歷史」可將今日點名狀況存檔或讀取。</li>
         <li>**營士督回報**：事故人員請在備註欄填寫「21收」、「24收」或「07收」。</li>
     </ul>
     <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">我知道了</button></div>
@@ -437,8 +437,8 @@ function copyCSMReport(){
         }
     });
 
-    // 1. Header & Summary
-    let report = `【營士督收假回報】\n單位：${u}\n時間：${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')} (${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')})\n\n`;
+    // 1. Header & Summary (Modified V27.9)
+    let report = `營士督好\n\n`;
     
     // Summary line with 4 ranks separate (應到/實到)
     report += `${u}回報（${(now.getMonth()+1)}/${now.getDate()}）收假\n`;
@@ -492,7 +492,7 @@ function copyCSMReport(){
                 const namesWithNotes = filteredArr.map(nm => {
                     let cleanName = getName(nm);
                     // Hide 21收/24收/07收 in the detail notes as they were listed above
-                    const detailNote = (D.nt && D.nt[nm]) ? D.nt[nm].replace(/2[14]收|07收/g, '').trim() : '';
+                    const detailNote = (D.nt && D.nt[nm]) ? D.nt[nm].replace(/2[14]收|07收/g, '').replace(/收/g, '').trim() : '';
                     return detailNote ? `${cleanName}[${detailNote}]` : cleanName;
                 });
                 
