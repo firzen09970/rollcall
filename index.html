@@ -1,6 +1,6 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V27.7)</title><style>
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V27.8)</title><style>
 :root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
-body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:120px;transition:0.3s}
+body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:40px;transition:0.3s}
 .top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
 .btn-big{background:var(--hl);color:var(--btn-txt);border:1px solid var(--hl);padding:10px;border-radius:8px;font-weight:bold;flex:1;cursor:pointer;font-size:0.95rem;min-width:80px}
 .stats-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:10px;position:sticky;top:0;z-index:99;overflow-x:auto}
@@ -69,14 +69,14 @@ input[type="text"]{margin-bottom:10px}
 .pb-e{background:#f39c12;height:100%}
 .pb-a{background:#c0392b;height:100%}
 .switch-label{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:15px;background:#f0f0f0;padding:10px;border-radius:8px;cursor:pointer;color:#333}
-.warning-footer{ /* New style added */
+.warning-footer{
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background: #f1c40f; /* Yellowish background for warning */
+    background: #f1c40f; 
     color: #333;
-    padding: 10px 0;
+    padding: 5px 0; /* Reduced padding */
     font-size: 0.85rem;
     font-weight: bold;
     text-align: center;
@@ -97,7 +97,7 @@ input[type="text"]{margin-bottom:10px}
         <li><b>1. 建立資料：</b>點選「📝 設定」，輸入單位與名單，支援 <code>---排組---</code> 格式。</li>
         <li><b>2. 開始點名：</b>點擊姓名設為「實到」；切換「⚠️ 事故」可標記休假或衛哨。</li>
         <li><b>3. 產生回報：</b>點名完成後，點選「📋 一鍵複製」，即可貼到 LINE 回報戰情。</li>
-        <li><b>4. 紀錄保存：</b>點選「📅 歷史」可將今日點名狀況存檔或讀取。</li>
+        <li><b>4. 紀錄保存：：</b>點選「📅 歷史」可將今日點名狀況存檔或讀取。</li>
         <li>**營士督回報**：事故人員請在備註欄填寫「21收」、「24收」或「07收」。</li>
     </ul>
     <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">我知道了</button></div>
@@ -492,7 +492,7 @@ function copyCSMReport(){
                 const namesWithNotes = filteredArr.map(nm => {
                     let cleanName = getName(nm);
                     // Hide 21收/24收/07收 in the detail notes as they were listed above
-                    const detailNote = (D.nt && D.nt[nm]) ? D.nt[nm].replace(/2[14]|07/g, '').replace(/收/g, '').trim() : '';
+                    const detailNote = (D.nt && D.nt[nm]) ? D.nt[nm].replace(/2[14]收|07收/g, '').trim() : '';
                     return detailNote ? `${cleanName}[${detailNote}]` : cleanName;
                 });
                 
