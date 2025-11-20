@@ -101,7 +101,7 @@ input[type="text"]{margin-bottom:10px}
     <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="二兵張狗蛋"></textarea>
     <h3 style="color:var(--hl)">🔢 計數器設定 (用逗號隔開)</h3>
     <input type="text" id="in-counters" placeholder="例如：便當,T65K2,無線電">
-    <button class="btn-big" style="background:#27ae60;margin-bottom:10px" onclick="saveData()">✅ 儲存並生成</button>
+    <button class="btn-big" style="background:#27ae60;margin-bottom:10px" onclick="saveData()">✅ 儲存並生成點名板</button>
     <div style="border-top:1px solid #ccc;padding-top:10px;display:flex;gap:10px">
         <button class="btn-big" style="background:#7f8c8d" onclick="exportData()">📤 匯出</button>
         <button class="btn-big" style="background:#7f8c8d" onclick="importData()">📥 匯入</button>
@@ -345,3 +345,4 @@ function closeHisList(){document.getElementById('his-list-modal').classList.remo
 function loadHistoryKey(k,s){const h=getHis();if(!h[k])return alert("遺失");if(confirm(`還原 [${s}] ?`)){D=h[k];persist();render();fillSetup();alert("已讀取");closeHisList();toggleHistory()}}
 function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
 </script></body></html>
+
