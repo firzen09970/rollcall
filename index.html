@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V26修正版)</title><style>
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V27.7)</title><style>
 :root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
 body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:120px;transition:0.3s}
 .top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
@@ -55,7 +55,6 @@ input[type="text"]{margin-bottom:10px}
 .help-list{padding-left:20px;margin:0;font-size:0.95rem;line-height:1.8;color:var(--txt)}
 .help-list li{margin-bottom:8px}
 .his-list-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:250}
-.his-list-modal.show{display:flex}
 .his-content{background:var(--card);width:90%;max-width:350px;border-radius:12px;padding:15px;max-height:80vh;display:flex;flex-direction:column;border:1px solid var(--hl)}
 .his-items{overflow-y:auto;flex:1;margin-bottom:10px;border:1px solid var(--border);border-radius:6px}
 .his-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border);background:var(--card);color:var(--txt)}
@@ -70,6 +69,20 @@ input[type="text"]{margin-bottom:10px}
 .pb-e{background:#f39c12;height:100%}
 .pb-a{background:#c0392b;height:100%}
 .switch-label{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:15px;background:#f0f0f0;padding:10px;border-radius:8px;cursor:pointer;color:#333}
+.warning-footer{ /* New style added */
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #f1c40f; /* Yellowish background for warning */
+    color: #333;
+    padding: 10px 0;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-align: center;
+    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
+    z-index: 300;
+}
 </style></head><body>
 
 <div class="top-bar">
@@ -85,6 +98,7 @@ input[type="text"]{margin-bottom:10px}
         <li><b>2. 開始點名：</b>點擊姓名設為「實到」；切換「⚠️ 事故」可標記休假或衛哨。</li>
         <li><b>3. 產生回報：</b>點名完成後，點選「📋 一鍵複製」，即可貼到 LINE 回報戰情。</li>
         <li><b>4. 紀錄保存：</b>點選「📅 歷史」可將今日點名狀況存檔或讀取。</li>
+        <li>**營士督回報**：事故人員請在備註欄填寫「21收」、「24收」或「07收」。</li>
     </ul>
     <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">我知道了</button></div>
 </div>
@@ -119,7 +133,8 @@ input[type="text"]{margin-bottom:10px}
     <div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部</button></div>
 </div>
 
-<button class="copy-btn" onclick="copyReport()">📋 一鍵複製回報內容</button>
+<button class="copy-btn" style="background:#8e44ad; margin-bottom: 5px;" onclick="copyCSMReport()">📋 營士督長回報內容</button>
+<button class="copy-btn" onclick="copyReport()">📋 一鍵複製值星群組回報內容</button>
 
 <div class="stats-box">
     <table class="stats-table"><thead><tr><th>階級</th><th>應</th><th>實</th><th>故</th><th>未</th></tr></thead><tbody id="stats-body"></tbody></table>
@@ -142,7 +157,7 @@ input[type="text"]{margin-bottom:10px}
 <div id="counters-area" class="counter-box"></div>
 
 <div id="modal" class="modal"><div class="m-content"><h3 id="m-name"></h3>
-<div style="margin-bottom:10px"><input id="note-input" type="text" placeholder="備註 (如: 2100返, 發燒...)"></div>
+<div style="margin-bottom:10px"><input id="note-input" type="text" placeholder="備註 (如: 21收, 受訓, 發燒...)"></div>
 <div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:8px" placeholder="自訂原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px">OK</button></div>
 <div class="opts" id="opts-container"></div>
 <label class="switch-label"><input type="checkbox" id="lock-status"> 🔒 鎖定此狀態</label>
@@ -151,7 +166,7 @@ input[type="text"]{margin-bottom:10px}
 <div id="his-list-modal" class="his-list-modal"><div class="his-content"><h3 style="margin-top:0;color:var(--txt)">📜 已存紀錄</h3><div id="his-items-container" class="his-items"></div><button class="btn-big" style="background:#95a5a6;margin-top:5px" onclick="closeHisList()">關閉</button></div></div>
 
 <script>
-const K_CUR='army_v26_cur',K_HIS='army_v26_his';
+const K_CUR='army_v27_csm',K_HIS='army_v26_his';
 let D={o:[],n:[],s:[],t:[],st:{},nt:{},lck:{},tm:{},cnt:{},u:'',rs:'',cns:''},isM=false,isSorted=false,cur='',reportStr='';
 const DEFAULT_REASONS = "休假,外宿,補休,衛哨,安官,戰情,公差,受訓,支援,轉診,住院,隔離";
 const DEFAULT_COUNTERS = "便當,槍枝";
@@ -312,37 +327,190 @@ function setS(v){
 }
 function closeM(){document.getElementById('modal').classList.remove('show')}
 function resetAll(){if(confirm("重置？(鎖定者不變)")){[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if((!D.lck||!D.lck[n])&&!n.startsWith('-')){delete D.st[n];delete D.nt[n];delete D.tm[n]}});persist();render()}}
-function updT(){
-    const calc=(l,k,res)=>{l.forEach(n=>{if(n.startsWith('-'))return;const s=D.st[n];if(s==='p')res[k].p++;else if(s){res[k].e++;if(!res.dt[s])res.dt[s]=[];res.dt[s].push(n)}})};
-    const R={o:{t:D.o.filter(x=>!x.startsWith('-')).length,p:0,e:0},n:{t:D.n.filter(x=>!x.startsWith('-')).length,p:0,e:0},s:{t:D.s.filter(x=>!x.startsWith('-')).length,p:0,e:0},t:{t:D.t.filter(x=>!x.startsWith('-')).length,p:0,e:0},dt:{}};
+
+// 統計計算核心功能
+function calculateStats(){
+    const calc=(l,k,res)=>{l.forEach(n=>{if(n.startsWith('-')||n.startsWith('#'))return;const s=D.st[n];if(s==='p')res[k].p++;else if(s){res[k].e++;if(!res.dt[s])res.dt[s]=[];res.dt[s].push(n)}})};
+    const getListLen = (l) => l.filter(x=>!x.startsWith('-')&&!x.startsWith('#')).length;
+    // 使用四個獨立階級進行統計
+    const R={o:{t:getListLen(D.o),p:0,e:0},n:{t:getListLen(D.n),p:0,e:0},s:{t:getListLen(D.s),p:0,e:0},t:{t:getListLen(D.t),p:0,e:0},dt:{}};
     calc(D.o,'o',R);calc(D.n,'n',R);calc(D.s,'s',R);calc(D.t,'t',R);
-    const tot={t:R.o.t+R.n.t+R.s.t+R.t.t,p:R.o.p+R.n.p+R.s.p+R.t.p,e:R.o.e+R.n.e+R.s.e+R.t.e};
+    R.tot={t:R.o.t+R.n.t+R.s.t+R.t.t,p:R.o.p+R.n.p+R.s.p+R.t.p,e:R.o.e+R.n.e+R.s.e+R.t.e}; 
+    return R;
+}
+
+// 報表更新 (一般點名回報用)
+function updT(){
+    const R = calculateStats();
+    const tot = R.tot;
     const r=document.getElementById('stats-body');
     const row=(l,c,d)=>`<tr><td class="${c}">${l}</td><td>${d.t}</td><td class="c-pre">${d.p}</td><td class="c-exc">${d.e}</td><td class="c-abs">${d.t-d.p-d.e}</td></tr>`;
     r.innerHTML=row('軍官','r-off',R.o)+row('士官','r-nco',R.n)+row('士兵','r-sol',R.s)+row('訓員','r-tra',R.t)+`<tr style="background:#eee;color:#000"><td class="r-tot">合</td><td class="r-tot">${tot.t}</td><td class="r-tot c-pre">${tot.p}</td><td class="r-tot c-exc">${tot.e}</td><td class="r-tot c-abs">${tot.t-tot.p-tot.e}</td></tr>`;
     const pb=document.getElementById('p-bar');
     if(tot.t>0){const pp=(tot.p/tot.t)*100,ep=(tot.e/tot.t)*100,ap=((tot.t-tot.p-tot.e)/tot.t)*100;pb.innerHTML=`<div class="pb-p" style="width:${pp}%"></div><div class="pb-e" style="width:${ep}%"></div><div class="pb-a" style="width:${ap}%"></div>`;}
+    
     const db=document.getElementById('detail-board'),dt=document.getElementById('detail-tags');dt.innerHTML='';
     let now=new Date(),u=D.u?D.u:"";
-    reportStr=`【部隊點名回報】\n單位：${u}\n時間：${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} (${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')})\n`;
-    reportStr+=`應到：${tot.t}員 (官${D.o.filter(x=>!x.startsWith('-')).length} 士${D.n.filter(x=>!x.startsWith('-')).length} 兵${D.s.filter(x=>!x.startsWith('-')).length} 訓${D.t.filter(x=>!x.startsWith('-')).length})\n`;
-    reportStr+=`實到：${tot.p}員 (官${R.o.p} 士${R.n.p} 兵${R.s.p} 訓${R.t.p})\n事故：${tot.e}員 (官${R.o.e} 士${R.n.e} 兵${R.s.e} 訓${R.t.e})\n未到：${tot.t-tot.p-tot.e}員\n----------------\n`;
+
+    // --- 輔助函數：清除備註中的收假資訊 ---
     const getName = (raw) => raw.split(/[（\(]/)[0];
+    const cleanNoteForDisplay = (note) => {
+        if (!note) return '';
+        // 移除 21收, 24收, 07收 (收假相關的備註)
+        return note.replace(/2[14]收|07收/g, '').trim();
+    };
+    // ------------------------------------
+
+    reportStr=`【部隊點名回報】\n單位：${u}\n時間：${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} (${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')})\n`;
+    reportStr+=`應到：${tot.t}員 (官${R.o.t} 士${R.n.t} 兵${R.s.t} 訓${R.t.t})\n`; // Use 4 ranks
+    reportStr+=`實到：${tot.p}員 (官${R.o.p} 士${R.n.p} 兵${R.s.p} 訓${R.t.p})\n事故：${tot.e}員 (官${R.o.e} 士${R.n.e} 兵${R.s.e} 訓${R.t.e})\n未到：${tot.t-tot.p-tot.e}員\n----------------\n`;
+
     if(tot.e>0){
         db.style.display='block';
         for(let[k,arr]of Object.entries(R.dt)){
             let co=0,cn=0,cs=0,ct=0;
             arr.forEach(nm=>{if(D.o.includes(nm))co++;else if(D.n.includes(nm))cn++;else if(D.s.includes(nm))cs++;else if(D.t.includes(nm))ct++});
-            let namesWithNotes = arr.map(nm => {let cleanName = getName(nm);return D.nt && D.nt[nm] ? `${cleanName}[${D.nt[nm]}]` : cleanName;});
-            let nameSummary = namesWithNotes.length > 1 ? `${namesWithNotes[0]}等${namesWithNotes.length}員` : namesWithNotes[0];
+            
+            // 產生用於 UI 和回報摘要的清單 (已清除收假備註)
+            let namesForDisplay = arr.map(nm => {
+                let cleanName = getName(nm);
+                let note = D.nt && D.nt[nm] ? D.nt[nm] : '';
+                let displayNote = cleanNoteForDisplay(note);
+                // 只有在 displayNote 存在時才加上 [備註]
+                return displayNote ? `${cleanName}[${displayNote}]` : cleanName;
+            });
+
+            // 報表摘要行
+            let nameSummary = namesForDisplay.length > 1 ? `${namesForDisplay[0]}等${namesForDisplay.length}員` : namesForDisplay[0];
             reportStr+=`${k}：${arr.length}員 (${nameSummary})\n`;
-            dt.innerHTML+=`<div class="detail-row"><b>${k}: ${arr.length}員</b> <span class="breakdown">(官${co} 士${cn} 兵${cs} 訓${ct})</span><span class="name-list">(${namesWithNotes.join(' ')})</span></div>`
+            
+            // UI 事故明細列表
+            dt.innerHTML+=`<div class="detail-row"><b>${k}: ${arr.length}員</b> <span class="breakdown">(官${co} 士${cn} 兵${cs} 訓${ct})</span><span class="name-list">(${namesForDisplay.join(' ')})</span></div>`
         }
     }else{db.style.display='none';reportStr+="無事故人員\n"}
 }
-function showHistoryList(){const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';const k=Object.keys(h).sort().reverse();if(k.length===0){c.innerHTML='<div style="padding:20px;color:#aaa">無紀錄</div>'}else{const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 夜間'};k.forEach(key=>{const [d,p]=key.split('_'),pt=m[p]||p;const dv=document.createElement('div');dv.className='his-item';dv.innerHTML=`<div class="his-info" onclick="loadHistoryKey('${key}','${d} ${pt}')"><div class="his-time">${d}</div><div class="his-period">${pt}</div></div><button style="background:#c0392b;color:white;border:none;padding:5px;border-radius:4px;margin-left:10px" onclick="deleteHistoryKey('${key}')">🗑️</button>`;c.appendChild(dv)})};document.getElementById('his-list-modal').classList.add('show')}
+
+// 輔助函式：取得清單中各階級數量
+const getRankCount = (list) => {
+    let o=0, n=0, s=0, t=0;
+    list.forEach(name => {
+        if(D.o.includes(name)) o++;
+        else if(D.n.includes(name)) n++;
+        else if(D.s.includes(name)) s++;
+        else if(D.t.includes(name)) t++;
+    });
+    return {o, n, s, t}; 
+};
+
+// 輔助函式：將階級數量轉換為簡潔文字 (只顯示非零項)
+const formatRankSummary = (cnt) => {
+    let rankParts = [];
+    if (cnt.o > 0) rankParts.push(`${cnt.o}官`);
+    if (cnt.n > 0) rankParts.push(`${cnt.n}士`);
+    if (cnt.s > 0) rankParts.push(`${cnt.s}兵`);
+    if (cnt.t > 0) rankParts.push(`${cnt.t}訓`);
+    return rankParts.length > 0 ? rankParts.join('') : '0員';
+};
+
+
+// 營士督回報生成功能 (從備註抓取收假名單)
+function copyCSMReport(){
+    const abs = getAbsCount();
+    if(abs > 0) return alert(`⚠️ 還有 ${abs} 員未點名！\n請按「📢 查未到」按鈕修正。`);
+    
+    const R = calculateStats();
+    const tot = R.tot;
+    const now = new Date();
+    const u = D.u ? D.u : '未設定單位';
+    const getName = (raw) => raw.split(/[（\(]/)[0];
+    const allPersonnel = [...D.o,...D.n,...D.s,...D.t];
+
+    // 2. Identify returning members from notes (D.nt)
+    const returnLists = {r21: [], r24: [], r07: []};
+    const returningNames = [];
+    allPersonnel.forEach(name => {
+        if(D.st[name] && D.st[name] !== 'p' && D.nt[name]){ // Must be an absence/accident and have a note
+            const note = D.nt[name].toLowerCase().replace(/\s/g, ''); // Remove spaces for better matching
+            if (note.includes('21收') && !returningNames.includes(name)) { returnLists.r21.push(name); returningNames.push(name); }
+            else if (note.includes('24收') && !returningNames.includes(name)) { returnLists.r24.push(name); returningNames.push(name); }
+            else if (note.includes('07收') && !returningNames.includes(name)) { returnLists.r07.push(name); returningNames.push(name); }
+        }
+    });
+
+    // 1. Header & Summary
+    let report = `【營士督收假回報】\n單位：${u}\n時間：${(now.getMonth()+1).toString().padStart(2,'0')}/${now.getDate().toString().padStart(2,'0')} (${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')})\n\n`;
+    
+    // Summary line with 4 ranks separate (應到/實到)
+    report += `${u}回報（${(now.getMonth()+1)}/${now.getDate()}）收假\n`;
+    report += `應到：${R.o.t}官${R.n.t}士${R.s.t}兵${R.t.t}訓\n`; 
+    report += `實到：${R.o.p}官${R.n.p}士${R.s.p}兵${R.t.p}訓\n`; 
+    
+    // List of all present members
+    const allPresent = allPersonnel.filter(n => D.st[n] === 'p' && !n.startsWith('-') && !n.startsWith('#'));
+    const presentNames = allPresent.map(getName);
+    report += `（${presentNames.length > 0 ? presentNames[0] : '無'}等${allPresent.length}員）\n\n`;
+    
+    // 3. Return Time Breakdown (21/24/07)
+    const lists = [
+        {time: '21收假', data: returnLists.r21},
+        {time: '24收假', data: returnLists.r24},
+        {time: '07收假', data: returnLists.r07}
+    ];
+
+    lists.forEach(item => {
+        const list = item.data;
+        const count = list.length;
+        if(count === 0){
+            report += `${item.time}：無\n`;
+        } else {
+            const cnt = getRankCount(list);
+            const rankSummary = formatRankSummary(cnt); // Use the new function for concise rank summary
+            const summary = `${getName(list[0])}等${count}員（${rankSummary}）`;
+            
+            report += `${item.time}：${summary}\n`;
+            report += `${list.map(getName).join('\n')}\n\n`;
+        }
+    });
+    
+    report += '事故：\n';
+    
+    // 4. Absence Breakdown (excluding the returning members we just listed)
+    const totalAccidentCount = tot.e - returningNames.length;
+
+    if (totalAccidentCount === 0) {
+        report += '無事故人員\n';
+    } else {
+        for(let [reason, arr] of Object.entries(R.dt)){
+            const filteredArr = arr.filter(name => !returningNames.includes(name));
+            
+            if(filteredArr.length > 0){
+                let cnt = getRankCount(filteredArr);
+                const rankSummary = formatRankSummary(cnt); // Use the new function for concise rank summary
+                
+                report += `${reason}：${rankSummary}\n`;
+                // List names with notes if available
+                const namesWithNotes = filteredArr.map(nm => {
+                    let cleanName = getName(nm);
+                    // Hide 21收/24收/07收 in the detail notes as they were listed above
+                    const detailNote = (D.nt && D.nt[nm]) ? D.nt[nm].replace(/2[14]|07/g, '').replace(/收/g, '').trim() : '';
+                    return detailNote ? `${cleanName}[${detailNote}]` : cleanName;
+                });
+                
+                report += `${namesWithNotes.join('\n')}\n\n`;
+            }
+        }
+    }
+    
+    navigator.clipboard.writeText(report).then(()=>{alert("✅ 已複製營士督回報！");}).catch(e=>alert("複製失敗"));
+}
+
+
+function showHistoryList(){const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';const k=Object.keys(h).sort().reverse();if(k.length===0){c.innerHTML='<div style="padding:20px;color:#aaa">無紀錄</div>'}else{const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 夜間'};k.forEach(key=>{const [d,p]=key.split('_'),pt=m[p]||p;const dv=document.createElement('div');dv.className='his-item';dv.innerHTML=`<div class="his-info" onclick="loadHistoryKey('${key}','${d} ${pt}')"><div class=\"his-time\">${d}</div><div class=\"his-period\">${pt}</div></div><button style=\"background:#c0392b;color:white;border:none;padding:5px;border-radius:4px;margin-left:10px\" onclick=\"deleteHistoryKey('${key}')\">🗑️</button>`;c.appendChild(dv)})};document.getElementById('his-list-modal').classList.add('show')}
 function closeHisList(){document.getElementById('his-list-modal').classList.remove('show')}
 function loadHistoryKey(k,s){const h=getHis();if(!h[k])return alert("遺失");if(confirm(`還原 [${s}] ?`)){D=h[k];persist();render();fillSetup();alert("已讀取");closeHisList();toggleHistory()}}
 function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
-</script></body></html>
-
+</script>
+<div class="warning-footer">
+    ⚠️本程式僅供人數統計參考之用，如有差錯，請各單位值星自行負責。
+</div>
+</body></html>
