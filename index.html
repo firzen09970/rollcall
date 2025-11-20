@@ -90,10 +90,10 @@ body.dark .copy-btn{background:#000;border:1px solid #0f0;color:#0f0}
     <input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)">
 
     <h3>輸入名單</h3>
-    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="範例：連長 副連長"></textarea>
-    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="範例：排長 班長"></textarea>
-    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="範例：王小明 李大華"></textarea>
-    <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="範例：張三"></textarea>
+    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="範例：上尉連長 中尉副連長"></textarea>
+    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="範例：士官長副排長 班長"></textarea>
+    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="範例：上兵王小明 一兵李大華"></textarea>
+    <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="範例：二兵張三"></textarea>
     <button class="btn-big" style="background:#27ae60;margin-bottom:10px" onclick="saveData()">✅ 儲存並生成</button>
     <div style="border-top:1px solid #ccc;padding-top:10px;display:flex;gap:10px">
         <button class="btn-big" style="background:#7f8c8d" onclick="exportData()">📤 匯出備份</button>
@@ -200,4 +200,5 @@ function closeHisList(){document.getElementById('his-list-modal').classList.remo
 function loadHistoryKey(key,displayStr){const h=getHis();if(!h[key])return alert("資料遺失");if(confirm(`還原 [${displayStr}] ?`)){D=h[key];persist();render();fillSetup();alert("已讀取");closeHisList();toggleHistory()}}
 function deleteHistoryKey(key){if(confirm("刪除此筆?")){const h=getHis();delete h[key];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
 </script></body></html>
+
 
