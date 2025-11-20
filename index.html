@@ -81,7 +81,7 @@ input[type="text"]{margin-bottom:10px}
 <div id="help-area" class="help-panel">
     <h3 style="margin-top:0;color:#2980b9">📖 簡易使用說明</h3>
     <ul class="help-list">
-        <li><b>1. 建立資料：</b>點選「📝 設定」，輸入單位與名單，支援 <code>---分組---</code> 格式。</li>
+        <li><b>1. 建立資料：</b>點選「📝 設定」，輸入單位與名單，支援 <code>---排組---</code> 格式。</li>
         <li><b>2. 開始點名：</b>點擊姓名設為「實到」；切換「⚠️ 事故」可標記休假或衛哨。</li>
         <li><b>3. 產生回報：</b>點名完成後，點選「📋 一鍵複製」，即可貼到 LINE 回報戰情。</li>
         <li><b>4. 紀錄保存：</b>點選「📅 歷史」可將今日點名狀況存檔或讀取。</li>
@@ -94,7 +94,7 @@ input[type="text"]{margin-bottom:10px}
     <input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)">
     <h3 style="color:var(--hl)">🛠️ 自訂事故按鈕</h3>
     <textarea id="in-reasons" style="height:50px" placeholder="預設：休假,外宿,補休,衛哨,安官..."></textarea>
-    <h3>輸入名單 (支援分隔線 --- )</h3>
+    <h3>輸入名單 (支援排組分隔線 --- )</h3>
     <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="連長 副連長"></textarea>
     <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="---排級幹部--- 排長 副排長"></textarea>
     <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="---一排--- 王小明 李大華 ---二排--- 陳二"></textarea>
@@ -352,3 +352,4 @@ function closeHisList(){document.getElementById('his-list-modal').classList.remo
 function loadHistoryKey(k,s){const h=getHis();if(!h[k])return alert("遺失");if(confirm(`還原 [${s}] ?`)){D=h[k];persist();render();fillSetup();alert("已讀取");closeHisList();toggleHistory()}}
 function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
 </script></body></html>
+
