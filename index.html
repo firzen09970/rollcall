@@ -1,20 +1,15 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V22備註版)</title><style>
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(V26極簡版)</title><style>
 :root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
-body.dark{--bg:#000;--txt:#0f0;--card:#111;--border:#0f0;--hl:#0f0;--btn-txt:#000}
-body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:80px;transition:0.3s}
+body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:120px;transition:0.3s}
 .top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
 .btn-big{background:var(--hl);color:var(--btn-txt);border:1px solid var(--hl);padding:10px;border-radius:8px;font-weight:bold;flex:1;cursor:pointer;font-size:0.95rem;min-width:80px}
-body.dark .btn-big{border:1px solid #0f0;background:#000;color:#0f0}
-body.dark .btn-big:active{background:#0f0;color:#000}
 .stats-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:10px;position:sticky;top:0;z-index:99;overflow-x:auto}
 .stats-table{width:100%;border-collapse:collapse;font-size:.9rem;color:var(--txt)}
 .stats-table th,.stats-table td{padding:8px 2px;border-bottom:1px solid var(--border);text-align:center}
 .stats-table th{background:var(--bg);color:var(--txt)}
 .r-off{color:#e74c3c;font-weight:bold} .r-nco{color:#3498db;font-weight:bold} .r-sol{color:#27ae60;font-weight:bold} .r-tra{color:#9b59b6;font-weight:bold}
 .r-tot{font-weight:bold;background:var(--bg)}
-body.dark .r-off, body.dark .r-nco, body.dark .r-sol, body.dark .r-tra{color:#0f0}
 .c-pre{color:#27ae60;background:rgba(39,174,96,.1)} .c-exc{color:#f39c12;background:rgba(243,156,18,.1)} .c-abs{color:#c0392b;opacity:.8}
-body.dark .c-pre{color:#0f0;background:#000} body.dark .c-exc{color:#ff0;background:#000} body.dark .c-abs{color:#f00}
 .detail-board{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:15px;display:none;text-align:left;font-size:.9rem}
 .detail-row{background:var(--bg);padding:8px 10px;border-radius:6px;border:1px solid var(--border);color:var(--txt);font-size:.95rem;margin-bottom:6px;line-height:1.4}
 .breakdown{font-size:0.85rem;opacity:0.8;margin-left:5px;font-weight:normal}
@@ -26,20 +21,24 @@ textarea{height:60px;margin-bottom:5px}
 input[type="text"]{margin-bottom:10px}
 .control-bar{display:flex;gap:10px;margin-bottom:15px;justify-content:center;flex-wrap:wrap}
 .btn-mode{padding:8px 12px;border-radius:20px;border:2px solid #7f8c8d;background:0 0;font-weight:bold;color:#555;cursor:pointer}
-body.dark .btn-mode{color:#0f0;border-color:#0f0}
 .btn-mode.active{background:#e67e22;color:#fff;border-color:#e67e22}
 .roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
-.p-btn{min-height:70px;border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:bold;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px}
+.p-btn{min-height:75px;border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:bold;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px}
 .bg-off{background:#e74c3c} .bg-nco{background:#3498db} .bg-sol{background:#27ae60} .bg-tra{background:#9b59b6}
-body.dark .p-btn{border:1px solid #0f0;background:#000;color:#0f0}
 .st-pre{background:#555!important;opacity:.5;text-decoration:line-through}
-body.dark .st-pre{background:#111!important;border:1px solid #555;color:#555}
 .st-pre::after{content:'✔';position:absolute;top:4px;right:4px}
 .st-exc{background:#f39c12!important;border:2px solid #d35400}
-body.dark .st-exc{background:#330!important;color:#ff0;border:1px solid #ff0}
 .st-tag{font-size:.7rem;background:rgba(0,0,0,.2);padding:2px 5px;border-radius:4px;margin-top:3px}
 .st-note{font-size:.7rem;color:#fff;background:rgba(0,0,0,0.5);padding:1px 4px;border-radius:3px;margin-top:2px;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-body.dark .st-note{color:#000;background:#0f0}
+.st-sub{font-size:0.75rem;opacity:0.8;font-weight:normal;margin-top:1px}
+.st-lock::before{content:'🔒';position:absolute;top:4px;left:4px;font-size:0.8rem}
+.st-time{font-size:0.65rem;position:absolute;bottom:2px;right:4px;opacity:0.8;font-weight:normal}
+.sep-row{grid-column:1/-1;background:var(--border);color:var(--txt);padding:5px;font-size:0.85rem;font-weight:bold;border-radius:4px;margin-top:5px;margin-bottom:5px;text-align:center}
+.counter-box{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px;padding:10px;background:var(--card);border-top:2px solid var(--border)}
+.cnt-item{display:flex;flex-direction:column;align-items:center;background:var(--bg);padding:5px 10px;border-radius:8px;border:1px solid var(--border);min-width:80px}
+.cnt-val{font-size:1.5rem;font-weight:bold;margin:5px 0}
+.cnt-ctrl{display:flex;gap:5px}
+.cnt-btn{width:30px;height:30px;border:none;border-radius:50%;font-weight:bold;cursor:pointer;background:var(--hl);color:#fff}
 .modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:200}
 .modal.show{display:flex}
 .m-content{background:var(--card);padding:20px;border-radius:12px;width:85%;max-width:320px;border:1px solid var(--hl)}
@@ -53,7 +52,7 @@ body.dark .st-note{color:#000;background:#0f0}
 .h-btn-group{display:flex;gap:10px}
 .help-panel{background:var(--card);padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid var(--hl);display:none;text-align:left;box-shadow:0 4px 10px rgba(0,0,0,0.1)}
 .help-panel.show{display:block}
-.help-list{padding-left:20px;margin:0;font-size:0.95rem;line-height:1.6;color:var(--txt)}
+.help-list{padding-left:20px;margin:0;font-size:0.95rem;line-height:1.8;color:var(--txt)}
 .help-list li{margin-bottom:8px}
 .his-list-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:250}
 .his-list-modal.show{display:flex}
@@ -64,32 +63,30 @@ body.dark .st-note{color:#000;background:#0f0}
 .his-time{font-weight:bold;font-size:1rem}
 .his-period{font-size:0.85rem;opacity:0.7;margin-left:5px}
 .copy-btn{width:100%;padding:10px;background:#27ae60;color:white;border:none;border-radius:6px;font-weight:bold;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
-body.dark .copy-btn{background:#000;border:1px solid #0f0;color:#0f0}
 .search-box{margin-bottom:10px;position:relative}
 .search-input{width:100%;padding:12px;border-radius:30px;border:2px solid #3498db;text-align:center;font-size:1rem;background:var(--card);color:var(--txt)}
-/* V22 Progress Bar */
 .progress-bar{height:8px;width:100%;background:#eee;border-radius:4px;margin-top:5px;display:flex;overflow:hidden}
 .pb-p{background:#27ae60;height:100%}
 .pb-e{background:#f39c12;height:100%}
 .pb-a{background:#c0392b;height:100%}
+.switch-label{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:15px;background:#f0f0f0;padding:10px;border-radius:8px;cursor:pointer;color:#333}
 </style></head><body>
 
 <div class="top-bar">
     <button class="btn-big" onclick="toggleSetup()">📝 設定</button>
     <button class="btn-big" style="background:#8e44ad" onclick="toggleHistory()">📅 歷史</button>
     <button class="btn-big" style="background:#3498db" onclick="toggleHelp()">📖 說明</button>
-    <button class="btn-big" style="background:#333;max-width:50px" onclick="toggleTheme()">🌙</button>
 </div>
 
 <div id="help-area" class="help-panel">
-    <h3 style="margin-top:0;color:#2980b9">📖 V22 操作說明</h3>
+    <h3 style="margin-top:0;color:#2980b9">📖 簡易使用說明</h3>
     <ul class="help-list">
-        <li><b>📝 備註功能：</b>點選事故時，可在上方輸入備註(如:2100返)，回報會自動帶入。</li>
-        <li><b>⚡ 餘員全到：</b>按「⚡ 餘員全到」可一鍵將未點名人員設為實到。</li>
-        <li><b>🔍 搜尋人員：</b>在上方搜尋框輸入名字，快速過濾。</li>
-        <li><b>📋 複製回報：</b>一鍵生成含單位、備註的回報文。</li>
+        <li><b>1. 建立資料：</b>點選「📝 設定」，輸入單位與名單，支援 <code>---分組---</code> 格式。</li>
+        <li><b>2. 開始點名：</b>點擊姓名設為「實到」；切換「⚠️ 事故」可標記休假或衛哨。</li>
+        <li><b>3. 產生回報：</b>點名完成後，點選「📋 一鍵複製」，即可貼到 LINE 回報戰情。</li>
+        <li><b>4. 紀錄保存：</b>點選「📅 歷史」可將今日點名狀況存檔或讀取。</li>
     </ul>
-    <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">OK</button></div>
+    <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">我知道了</button></div>
 </div>
 
 <div id="setup-area" class="setup-area">
@@ -97,11 +94,15 @@ body.dark .copy-btn{background:#000;border:1px solid #0f0;color:#0f0}
     <input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)">
     <h3 style="color:var(--hl)">🛠️ 自訂事故按鈕</h3>
     <textarea id="in-reasons" style="height:50px" placeholder="預設：休假,外宿,補休,衛哨,安官..."></textarea>
-    <h3>輸入名單</h3>
-    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="範例：連長 副連長"></textarea>
-    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="範例：副排長 班長"></textarea>
-    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="範例：王小明 李大華"></textarea>
-    <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="範例：張三"></textarea>
+    <h3>輸入名單 (支援分隔線 --- )</h3>
+    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="連長 副連長"></textarea>
+    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="---排級幹部--- 排長 副排長"></textarea>
+    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="---一排--- 王小明 李大華 ---二排--- 陳二"></textarea>
+    <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="張三"></textarea>
+    
+    <h3 style="color:var(--hl)">🔢 計數器設定 (用逗號隔開)</h3>
+    <input type="text" id="in-counters" placeholder="例如：便當,T65K2步槍,MHR112無線電機">
+
     <button class="btn-big" style="background:#27ae60;margin-bottom:10px" onclick="saveData()">✅ 儲存並生成</button>
     <div style="border-top:1px solid #ccc;padding-top:10px;display:flex;gap:10px">
         <button class="btn-big" style="background:#7f8c8d" onclick="exportData()">📤 匯出</button>
@@ -135,29 +136,33 @@ body.dark .copy-btn{background:#000;border:1px solid #0f0;color:#0f0}
 <div class="control-bar">
     <button id="mode-btn" class="btn-mode" onclick="toggleMode()">⚠️ 事故: 關</button>
     <button class="btn-mode" style="border-color:#27ae60;color:#27ae60" onclick="markAllPresent()">⚡ 餘員全到</button>
+    <button id="sort-btn" class="btn-mode" style="border-color:#8e44ad;color:#8e44ad" onclick="toggleSort()">🔃 排序: 原序</button>
     <button class="btn-mode" style="border-color:#c0392b;color:#c0392b" onclick="showMissing()">📢 查未到</button>
     <button class="btn-mode" style="background:#95a5a6;color:#fff;border:none" onclick="resetAll()">🔄 重置</button>
 </div>
 <div id="roster" class="roster-grid"></div>
+<div id="counters-area" class="counter-box"></div>
 
 <div id="modal" class="modal"><div class="m-content"><h3 id="m-name"></h3>
 <div style="margin-bottom:10px"><input id="note-input" type="text" placeholder="備註 (如: 2100返, 發燒...)"></div>
-<div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:8px" placeholder="自訂原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px">OK</button></div><div class="opts" id="opts-container"></div><button class="o-btn" style="background:#95a5a6;width:100%;margin-top:10px" onclick="closeM()">取消</button></div></div>
+<div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:8px" placeholder="自訂原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px">OK</button></div>
+<div class="opts" id="opts-container"></div>
+<label class="switch-label"><input type="checkbox" id="lock-status"> 🔒 鎖定此狀態</label>
+<button class="o-btn" style="background:#95a5a6;width:100%;margin-top:10px" onclick="closeM()">取消</button></div></div>
 
 <div id="his-list-modal" class="his-list-modal"><div class="his-content"><h3 style="margin-top:0;color:var(--txt)">📜 已存紀錄</h3><div id="his-items-container" class="his-items"></div><button class="btn-big" style="background:#95a5a6;margin-top:5px" onclick="closeHisList()">關閉</button></div></div>
 
 <script>
-const K_CUR='army_v22_cur',K_HIS='army_v22_his',K_THEME='army_v22_theme';
-let D={o:[],n:[],s:[],t:[],st:{},nt:{},u:'',rs:''},isM=false,cur='',reportStr='';
+const K_CUR='army_v26_cur',K_HIS='army_v26_his';
+let D={o:[],n:[],s:[],t:[],st:{},nt:{},lck:{},tm:{},cnt:{},u:'',rs:'',cns:''},isM=false,isSorted=false,cur='',reportStr='';
 const DEFAULT_REASONS = "休假,外宿,補休,衛哨,安官,戰情,公差,受訓,支援,轉診,住院,隔離";
+const DEFAULT_COUNTERS = "便當,槍枝";
 
 document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('history-date').valueAsDate=new Date();
-    if(localStorage.getItem(K_THEME)==='dark') document.body.classList.add('dark');
     load();updateHisCount();
 });
 
-function toggleTheme(){document.body.classList.toggle('dark');localStorage.setItem(K_THEME, document.body.classList.contains('dark')?'dark':'light');}
 function copyReport(){if(!reportStr) return alert("無資料");navigator.clipboard.writeText(reportStr).then(()=>{alert("✅ 已複製！");}).catch(e=>alert("複製失敗"));}
 function exportData(){const data={cur:JSON.parse(localStorage.getItem(K_CUR)||'{}'),his:JSON.parse(localStorage.getItem(K_HIS)||'{}')};prompt("複製備份碼:",JSON.stringify(data));}
 function importData(){const str=prompt("貼上備份碼:");if(str){try{const d=JSON.parse(str);if(d.cur&&d.his){localStorage.setItem(K_CUR,JSON.stringify(d.cur));localStorage.setItem(K_HIS,JSON.stringify(d.his));alert("✅ 還原成功");location.reload()}else throw new Error}catch(e){alert("❌ 格式錯誤")}}}
@@ -166,43 +171,130 @@ function toggleSetup(){document.getElementById('setup-area').classList.toggle('s
 function toggleHistory(){document.getElementById('history-area').classList.toggle('show');document.getElementById('setup-area').classList.remove('show');document.getElementById('help-area').classList.remove('show');updateHisCount()}
 function getHis(){const r=localStorage.getItem(K_HIS);return r?JSON.parse(r):{}}
 function updateHisCount(){const h=getHis();document.getElementById('history-count').innerText=Object.keys(h).length}
-function getAbsCount(){const all=[...D.o,...D.n,...D.s,...D.t];let abs=0;all.forEach(n=>{if(!D.st[n])abs++});return abs}
+function getAbsCount(){const all=[...D.o,...D.n,...D.s,...D.t];let abs=0;all.forEach(n=>{if(!D.st[n] && !n.startsWith('-'))abs++});return abs}
 function saveToDate(){const d=document.getElementById('history-date').value,p=document.getElementById('history-period').value;if(!d)return alert("選日期");const abs=getAbsCount();if(abs>0&&!confirm(`⚠️ 還有 ${abs} 員未到！確定存檔？`))return;const k=d+'_'+p,h=getHis();h[k]=JSON.parse(JSON.stringify(D));localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();alert("已存檔")}
 function loadFromDate(){const d=document.getElementById('history-date').value,p=document.getElementById('history-period').value;loadHistoryKey(d+'_'+p, d)}
 function clearHistory(){if(confirm("清空歷史？"))localStorage.removeItem(K_HIS),updateHisCount(),alert("已清空")}
 function parse(t){return t?t.split(/[\s,、\n]+/).filter(x=>x.trim()):[]}
 function toggleMode(){isM=!isM;const b=document.getElementById('mode-btn');b.innerText=isM?"⚠️ 事故: 開":"⚠️ 事故: 關";b.classList.toggle('active')}
-function saveData(){D.u=document.getElementById('in-unit').value.trim();D.rs=document.getElementById('in-reasons').value.trim();D.o=parse(document.getElementById('in-off').value);D.n=parse(document.getElementById('in-nco').value);D.s=parse(document.getElementById('in-sol').value);D.t=parse(document.getElementById('in-tra').value);if(!D.o.length&&!D.n.length&&!D.s.length&&!D.t.length)return alert("請輸入名字");persist();render();toggleSetup()}
+function saveData(){
+    D.u=document.getElementById('in-unit').value.trim();
+    D.rs=document.getElementById('in-reasons').value.trim();
+    D.cns=document.getElementById('in-counters').value.trim();
+    D.o=parse(document.getElementById('in-off').value);D.n=parse(document.getElementById('in-nco').value);D.s=parse(document.getElementById('in-sol').value);D.t=parse(document.getElementById('in-tra').value);
+    if(!D.o.length&&!D.n.length&&!D.s.length&&!D.t.length)return alert("請輸入名字");
+    persist();render();toggleSetup();
+}
 function persist(){localStorage.setItem(K_CUR,JSON.stringify(D))}
-function load(){const r=localStorage.getItem(K_CUR);if(r){D=JSON.parse(r);if(!D.nt)D.nt={};fillSetup();render()}else{toggleSetup()}}
-function fillSetup(){document.getElementById('in-unit').value=D.u||'';document.getElementById('in-reasons').value=D.rs||DEFAULT_REASONS;document.getElementById('in-off').value=D.o.join(' ');document.getElementById('in-nco').value=D.n.join(' ');document.getElementById('in-sol').value=D.s.join(' ');document.getElementById('in-tra').value=D.t.join(' ')}
+function load(){const r=localStorage.getItem(K_CUR);if(r){D=JSON.parse(r);if(!D.nt)D.nt={};if(!D.lck)D.lck={};if(!D.tm)D.tm={};if(!D.cnt)D.cnt={};fillSetup();render()}else{toggleSetup()}}
+function fillSetup(){
+    document.getElementById('in-unit').value=D.u||'';
+    document.getElementById('in-reasons').value=D.rs||DEFAULT_REASONS;
+    document.getElementById('in-counters').value=D.cns||DEFAULT_COUNTERS;
+    document.getElementById('in-off').value=D.o.join(' ');document.getElementById('in-nco').value=D.n.join(' ');document.getElementById('in-sol').value=D.s.join(' ');document.getElementById('in-tra').value=D.t.join(' ');
+}
 function filterRoster(){const t=document.getElementById('search-input').value.toLowerCase();document.querySelectorAll('.p-btn').forEach(b=>{b.style.display=b.innerText.toLowerCase().includes(t)?'flex':'none'})}
-function showMissing(){const m=[...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n]);if(m.length===0)return alert("👍 全員已到");alert(`📢 未到 (${m.length}員)：\n\n${m.join('、')}`)}
-// V22 Batch Present
-function markAllPresent(){if(confirm("確定要將所有「未點名」的人設為「實到」嗎？\n(原本的事故不會被覆蓋)")){[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if(!D.st[n])D.st[n]='p'});persist();render()}}
+function showMissing(){const m=[...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n] && !n.startsWith('-'));if(m.length===0)return alert("👍 全員已到");alert(`📢 未到 (${m.length}員)：\n\n${m.join('、')}`)}
+function markAllPresent(){if(confirm("一鍵將未點名設為實到？(保留鎖定/事故)")){const now=new Date();const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if(!D.st[n] && !n.startsWith('-')){D.st[n]='p';D.tm[n]=time}});persist();render()}}
+
+function toggleSort(){
+    isSorted = !isSorted;
+    const b = document.getElementById('sort-btn');
+    b.innerText = isSorted ? "🔃 排序: 未到優先" : "🔃 排序: 原序";
+    b.classList.toggle('active');
+    render();
+}
 
 function render(){
     const c=document.getElementById('roster');c.innerHTML='';
-    const add=(nm,cls)=>{
-        const b=document.createElement('button');b.className=`p-btn ${cls}`;
-        const s=D.st[nm];const note=D.nt?D.nt[nm]:'';
-        let h=`<span>${nm}</span>`;
-        if(s&&s!=='p')h+=`<span class="st-tag">${s}</span>`;
-        if(note)h+=`<span class="st-note">${note}</span>`;
-        b.innerHTML=h;
-        if(s==='p')b.classList.add('st-pre');else if(s)b.classList.add('st-exc');
-        b.onclick=()=>{
-            if(isM){
-                cur=nm;document.getElementById('m-name').innerText=nm;
-                document.getElementById('custom-r').value='';
-                document.getElementById('note-input').value=D.nt&&D.nt[nm]?D.nt[nm]:'';
-                renderModalOpts();document.getElementById('modal').classList.add('show');
-            }else{D.st[nm]=(D.st[nm]==='p'?null:'p');persist();render()}
-        };c.appendChild(b)
+    const processName=(r)=>{const m=r.match(/^(.*?)[（\(](.*)[）\)]$/);return m?{name:m[1],sub:m[2]}:{name:r,sub:''}};
+    
+    const renderGroup=(list, cls)=>{
+        let sortedList = [...list];
+        if(isSorted){
+            sortedList.sort((a,b)=>{
+                if(a.startsWith('-') || b.startsWith('-')) return 0;
+                const getScore = (n) => {
+                    if(!D.st[n]) return 0;
+                    if(D.st[n]!=='p') return 1;
+                    return 2;
+                }
+                return getScore(a) - getScore(b);
+            });
+        }
+
+        sortedList.forEach(rawNm=>{
+            if(rawNm.startsWith('-') || rawNm.startsWith('#')){
+                const sep = document.createElement('div');
+                sep.className = 'sep-row';
+                sep.innerText = rawNm.replace(/[-#]/g, ' ').trim();
+                c.appendChild(sep);
+                return;
+            }
+
+            const {name,sub}=processName(rawNm);
+            const b=document.createElement('button');b.className=`p-btn ${cls}`;
+            const s=D.st[rawNm],note=D.nt?D.nt[rawNm]:'',lock=D.lck&&D.lck[rawNm],time=D.tm&&D.tm[rawNm]?D.tm[rawNm]:'';
+            let h=`<span>${name}</span>`;
+            if(sub)h+=`<span class="st-sub">${sub}</span>`;
+            if(s&&s!=='p')h+=`<span class="st-tag">${s}</span>`;
+            if(note)h+=`<span class="st-note">${note}</span>`;
+            if(lock)b.classList.add('st-lock');
+            if(s==='p'&&time)h+=`<span class="st-time">${time}</span>`;
+            b.innerHTML=h;
+            if(s==='p')b.classList.add('st-pre');else if(s)b.classList.add('st-exc');
+            b.onclick=()=>{
+                if(navigator.vibrate)navigator.vibrate(15);
+                if(isM){
+                    cur=rawNm;document.getElementById('m-name').innerText=name;
+                    document.getElementById('custom-r').value='';
+                    document.getElementById('note-input').value=D.nt&&D.nt[rawNm]?D.nt[rawNm]:'';
+                    document.getElementById('lock-status').checked=!!(D.lck&&D.lck[rawNm]);
+                    renderModalOpts();document.getElementById('modal').classList.add('show');
+                }else{
+                    if(D.st[rawNm]==='p'){
+                        if(D.lck&&D.lck[rawNm])return alert("已鎖定！");
+                        D.st[rawNm]=null;delete D.tm[rawNm];
+                    }else{
+                        if(D.lck&&D.lck[rawNm])return alert("已鎖定！");
+                        D.st[rawNm]='p';
+                        const now=new Date();D.tm[rawNm]=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
+                    }
+                    persist();render();
+                }
+            };c.appendChild(b)
+        });
     };
-    D.o.forEach(x=>add(x,'bg-off'));D.n.forEach(x=>add(x,'bg-nco'));D.s.forEach(x=>add(x,'bg-sol'));D.t.forEach(x=>add(x,'bg-tra'));
+    
+    renderGroup(D.o,'bg-off');renderGroup(D.n,'bg-nco');renderGroup(D.s,'bg-sol');renderGroup(D.t,'bg-tra');
+    renderCounters();
     updT();filterRoster();
 }
+
+function renderCounters(){
+    const c=document.getElementById('counters-area');c.innerHTML='';
+    const list = (D.cns || DEFAULT_COUNTERS).split(/[,，]/).map(x=>x.trim()).filter(x=>x);
+    list.forEach(name=>{
+        if(!D.cnt[name]) D.cnt[name]=0;
+        const div = document.createElement('div');div.className='cnt-item';
+        div.innerHTML=`
+            <span style="font-size:0.8rem;font-weight:bold">${name}</span>
+            <span class="cnt-val">${D.cnt[name]}</span>
+            <div class="cnt-ctrl">
+                <button class="cnt-btn" onclick="modCnt('${name}',-1)">-</button>
+                <button class="cnt-btn" onclick="modCnt('${name}',1)">+</button>
+            </div>
+        `;
+        c.appendChild(div);
+    });
+}
+function modCnt(name, val){
+    if(!D.cnt)D.cnt={};
+    D.cnt[name] = (D.cnt[name]||0) + val;
+    if(D.cnt[name]<0) D.cnt[name]=0;
+    persist(); renderCounters();
+}
+
 function renderModalOpts(){
     const c=document.getElementById('opts-container');c.innerHTML='';
     (D.rs||DEFAULT_REASONS).split(/[,，]/).map(x=>x.trim()).filter(x=>x).forEach(r=>{
@@ -218,39 +310,37 @@ function subCus(){const v=document.getElementById('custom-r').value.trim();if(v)
 function setS(v){
     D.st[cur]=v;
     const n=document.getElementById('note-input').value.trim();
-    if(!D.nt)D.nt={};
+    const locked=document.getElementById('lock-status').checked;
+    if(!D.nt)D.nt={};if(!D.lck)D.lck={};
     if(n)D.nt[cur]=n;else delete D.nt[cur];
+    if(locked)D.lck[cur]=true;else delete D.lck[cur];
+    if(v==='p'||!v)delete D.tm[cur];
     closeM();persist();render()
 }
 function closeM(){document.getElementById('modal').classList.remove('show')}
-function resetAll(){if(confirm("重置狀態?"))D.st={},persist(),render()}
+function resetAll(){if(confirm("重置？(鎖定者不變)")){[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if((!D.lck||!D.lck[n])&&!n.startsWith('-')){delete D.st[n];delete D.nt[n];delete D.tm[n]}});persist();render()}}
 function updT(){
-    const calc=(l,k,res)=>{l.forEach(n=>{const s=D.st[n];if(s==='p')res[k].p++;else if(s){res[k].e++;if(!res.dt[s])res.dt[s]=[];res.dt[s].push(n)}})};
-    const R={o:{t:D.o.length,p:0,e:0},n:{t:D.n.length,p:0,e:0},s:{t:D.s.length,p:0,e:0},t:{t:D.t.length,p:0,e:0},dt:{}};
+    const calc=(l,k,res)=>{l.forEach(n=>{if(n.startsWith('-'))return;const s=D.st[n];if(s==='p')res[k].p++;else if(s){res[k].e++;if(!res.dt[s])res.dt[s]=[];res.dt[s].push(n)}})};
+    const R={o:{t:D.o.filter(x=>!x.startsWith('-')).length,p:0,e:0},n:{t:D.n.filter(x=>!x.startsWith('-')).length,p:0,e:0},s:{t:D.s.filter(x=>!x.startsWith('-')).length,p:0,e:0},t:{t:D.t.filter(x=>!x.startsWith('-')).length,p:0,e:0},dt:{}};
     calc(D.o,'o',R);calc(D.n,'n',R);calc(D.s,'s',R);calc(D.t,'t',R);
     const tot={t:R.o.t+R.n.t+R.s.t+R.t.t,p:R.o.p+R.n.p+R.s.p+R.t.p,e:R.o.e+R.n.e+R.s.e+R.t.e};
     const r=document.getElementById('stats-body');
     const row=(l,c,d)=>`<tr><td class="${c}">${l}</td><td>${d.t}</td><td class="c-pre">${d.p}</td><td class="c-exc">${d.e}</td><td class="c-abs">${d.t-d.p-d.e}</td></tr>`;
     r.innerHTML=row('軍官','r-off',R.o)+row('士官','r-nco',R.n)+row('士兵','r-sol',R.s)+row('訓員','r-tra',R.t)+`<tr style="background:#eee;color:#000"><td class="r-tot">合</td><td class="r-tot">${tot.t}</td><td class="r-tot c-pre">${tot.p}</td><td class="r-tot c-exc">${tot.e}</td><td class="r-tot c-abs">${tot.t-tot.p-tot.e}</td></tr>`;
-    
-    // V22 Progress Bar
     const pb=document.getElementById('p-bar');
-    if(tot.t>0){
-        const pp=(tot.p/tot.t)*100,ep=(tot.e/tot.t)*100,ap=((tot.t-tot.p-tot.e)/tot.t)*100;
-        pb.innerHTML=`<div class="pb-p" style="width:${pp}%"></div><div class="pb-e" style="width:${ep}%"></div><div class="pb-a" style="width:${ap}%"></div>`;
-    }
-
+    if(tot.t>0){const pp=(tot.p/tot.t)*100,ep=(tot.e/tot.t)*100,ap=((tot.t-tot.p-tot.e)/tot.t)*100;pb.innerHTML=`<div class="pb-p" style="width:${pp}%"></div><div class="pb-e" style="width:${ep}%"></div><div class="pb-a" style="width:${ap}%"></div>`;}
     const db=document.getElementById('detail-board'),dt=document.getElementById('detail-tags');dt.innerHTML='';
     let now=new Date(),u=D.u?D.u:"";
     reportStr=`【部隊點名回報】\n單位：${u}\n時間：${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} (${now.getHours()}:${now.getMinutes().toString().padStart(2,'0')})\n`;
-    reportStr+=`應到：${tot.t}員 (官${D.o.length} 士${D.n.length} 兵${D.s.length} 訓${D.t.length})\n實到：${tot.p}員 (官${R.o.p} 士${R.n.p} 兵${R.s.p} 訓${R.t.p})\n事故：${tot.e}員 (官${R.o.e} 士${R.n.e} 兵${R.s.e} 訓${R.t.e})\n未到：${tot.t-tot.p-tot.e}員\n----------------\n`;
+    reportStr+=`應到：${tot.t}員 (官${D.o.filter(x=>!x.startsWith('-')).length} 士${D.n.filter(x=>!x.startsWith('-')).length} 兵${D.s.filter(x=>!x.startsWith('-')).length} 訓${D.t.filter(x=>!x.startsWith('-')).length})\n`;
+    reportStr+=`實到：${tot.p}員 (官${R.o.p} 士${R.n.p} 兵${R.s.p} 訓${R.t.p})\n事故：${tot.e}員 (官${R.o.e} 士${R.n.e} 兵${R.s.e} 訓${R.t.e})\n未到：${tot.t-tot.p-tot.e}員\n----------------\n`;
+    const getName = (raw) => raw.split(/[（\(]/)[0];
     if(tot.e>0){
         db.style.display='block';
         for(let[k,arr]of Object.entries(R.dt)){
             let co=0,cn=0,cs=0,ct=0;
             arr.forEach(nm=>{if(D.o.includes(nm))co++;else if(D.n.includes(nm))cn++;else if(D.s.includes(nm))cs++;else if(D.t.includes(nm))ct++});
-            // V22 Report with notes
-            let namesWithNotes = arr.map(nm => D.nt && D.nt[nm] ? `${nm}[${D.nt[nm]}]` : nm);
+            let namesWithNotes = arr.map(nm => {let cleanName = getName(nm);return D.nt && D.nt[nm] ? `${cleanName}[${D.nt[nm]}]` : cleanName;});
             let nameSummary = namesWithNotes.length > 1 ? `${namesWithNotes[0]}等${namesWithNotes.length}員` : namesWithNotes[0];
             reportStr+=`${k}：${arr.length}員 (${nameSummary})\n`;
             dt.innerHTML+=`<div class="detail-row"><b>${k}: ${arr.length}員</b> <span class="breakdown">(官${co} 士${cn} 兵${cs} 訓${ct})</span><span class="name-list">(${namesWithNotes.join(' ')})</span></div>`
