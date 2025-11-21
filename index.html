@@ -1,12 +1,19 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(正式版1.1)</title><style>
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>部隊點名系統(優化版2.0)</title>
+<style>
 :root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
-body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:40px;transition:0.3s}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:40px;transition:0.3s;-webkit-tap-highlight-color:transparent}
 .top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
-.btn-big{background:var(--hl);color:var(--btn-txt);border:1px solid var(--hl);padding:10px;border-radius:8px;font-weight:bold;flex:1;cursor:pointer;font-size:0.95rem;min-width:80px}
+.btn-big{background:var(--hl);color:var(--btn-txt);border:none;padding:12px;border-radius:8px;font-weight:bold;flex:1;cursor:pointer;font-size:0.95rem;min-width:80px;box-shadow:0 2px 5px rgba(0,0,0,0.1);transition:transform 0.1s}
+.btn-big:active{transform:scale(0.98)}
 .stats-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:10px;position:sticky;top:0;z-index:99;overflow-x:auto}
 .stats-table{width:100%;border-collapse:collapse;font-size:.9rem;color:var(--txt)}
 .stats-table th,.stats-table td{padding:8px 2px;border-bottom:1px solid var(--border);text-align:center}
-.stats-table th{background:var(--bg);color:var(--txt)}
+.stats-table th{background:var(--bg);color:var(--txt);font-size:0.8rem}
 .r-off{color:#e74c3c;font-weight:bold} .r-nco{color:#3498db;font-weight:bold} .r-sol{color:#27ae60;font-weight:bold} .r-tra{color:#9b59b6;font-weight:bold}
 .r-tot{font-weight:bold;background:var(--bg)}
 .c-pre{color:#27ae60;background:rgba(39,174,96,.1)} .c-exc{color:#f39c12;background:rgba(243,156,18,.1)} .c-abs{color:#c0392b;opacity:.8}
@@ -14,132 +21,140 @@ body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;paddi
 .detail-row{background:var(--bg);padding:8px 10px;border-radius:6px;border:1px solid var(--border);color:var(--txt);font-size:.95rem;margin-bottom:6px;line-height:1.4}
 .breakdown{font-size:0.85rem;opacity:0.8;margin-left:5px;font-weight:normal}
 .name-list{font-weight:normal;font-size:.9rem;margin-top:4px;padding-top:4px;border-top:1px dashed var(--border);display:block;color:var(--txt)}
-.setup-area{background:var(--card);padding:15px;border-radius:12px;margin-bottom:20px;display:none;border:2px solid var(--hl);text-align:left}
-.setup-area.show{display:block}
-textarea, input[type="text"]{width:100%;padding:10px;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;background:var(--card);color:var(--txt);font-size:1rem}
-textarea{height:60px;margin-bottom:5px}
-input[type="text"]{margin-bottom:10px}
-.control-bar{display:flex;gap:10px;margin-bottom:15px;justify-content:center;flex-wrap:wrap}
-.btn-mode{padding:8px 12px;border-radius:20px;border:2px solid #7f8c8d;background:0 0;font-weight:bold;color:#555;cursor:pointer}
+/* Setup Area Styles */
+.setup-area{background:var(--card);padding:15px;border-radius:12px;margin-bottom:20px;display:none;border:2px solid var(--hl);text-align:left;box-shadow:0 5px 15px rgba(0,0,0,0.2)}
+.setup-area.show{display:block;animation:fadeIn 0.3s}
+.input-group {margin-bottom: 15px; position: relative;}
+.input-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;}
+.btn-insert {font-size:0.8rem; padding:4px 8px; background:#95a5a6; color:white; border:none; border-radius:4px; cursor:pointer;}
+textarea, input[type="text"]{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;box-sizing:border-box;background:#fafafa;color:var(--txt);font-size:1rem;font-family:inherit}
+textarea:focus, input[type="text"]:focus{outline:none;border-color:var(--hl);background:#fff}
+textarea{height:70px;resize:vertical}
+/* Rosters */
+.control-bar{display:flex;gap:8px;margin-bottom:15px;justify-content:center;flex-wrap:wrap}
+.btn-mode{padding:8px 12px;border-radius:20px;border:2px solid #7f8c8d;background:0 0;font-weight:bold;color:#555;cursor:pointer;font-size:0.9rem;transition:0.2s}
 .btn-mode.active{background:#e67e22;color:#fff;border-color:#e67e22}
-.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:8px}
-.p-btn{min-height:75px;border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:bold;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px}
+.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:8px}
+.p-btn{min-height:75px;border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:bold;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
 .bg-off{background:#e74c3c} .bg-nco{background:#3498db} .bg-sol{background:#27ae60} .bg-tra{background:#9b59b6}
 .st-pre{background:#555!important;opacity:.5;text-decoration:line-through}
-.st-pre::after{content:'✔';position:absolute;top:4px;right:4px}
-.st-exc{background:#f39c12!important;border:2px solid #d35400}
-.st-tag{font-size:.7rem;background:rgba(0,0,0,.2);padding:2px 5px;border-radius:4px;margin-top:3px}
-.st-note{font-size:.7rem;color:#fff;background:rgba(0,0,0,0.5);padding:1px 4px;border-radius:3px;margin-top:2px;max-width:90%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.st-sub{font-size:0.75rem;opacity:0.8;font-weight:normal;margin-top:1px}
+.st-pre::after{content:'✔';position:absolute;top:4px;right:4px;font-size:0.8rem}
+.st-exc{background:#f39c12!important;border:2px solid #d35400;color:#fff}
+.st-tag{font-size:.7rem;background:rgba(0,0,0,.25);padding:2px 6px;border-radius:4px;margin-top:3px}
+.st-note{font-size:.7rem;color:#fff;background:rgba(0,0,0,0.6);padding:1px 5px;border-radius:3px;margin-top:2px;max-width:95%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-sub{font-size:0.75rem;opacity:0.9;font-weight:normal;margin-top:1px}
 .st-lock::before{content:'🔒';position:absolute;top:4px;left:4px;font-size:0.8rem}
 .st-time{font-size:0.65rem;position:absolute;bottom:2px;right:4px;opacity:0.8;font-weight:normal}
-.sep-row{grid-column:1/-1;background:var(--border);color:var(--txt);padding:5px;font-size:0.85rem;font-weight:bold;border-radius:4px;margin-top:5px;margin-bottom:5px;text-align:center}
+.sep-row{grid-column:1/-1;background:#ecf0f1;color:#2c3e50;padding:6px;font-size:0.9rem;font-weight:bold;border-radius:6px;margin:8px 0 4px 0;text-align:center;border-left:4px solid var(--hl)}
+/* Modals */
+.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:200;backdrop-filter:blur(2px)}
+.modal.show{display:flex;animation:fadeIn 0.2s}
+.m-content{background:var(--card);padding:20px;border-radius:16px;width:85%;max-width:340px;box-shadow:0 10px 25px rgba(0,0,0,0.2)}
+.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
+.o-btn{padding:12px 2px;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:.9rem;font-weight:bold}
+.bg-v{background:#e67e22} .bg-g{background:#2c3e50} .bg-s{background:#c0392b} .bg-d{background:#8e44ad}
+.history-panel{background:var(--bg);padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid var(--hl);display:none}
+.history-panel.show{display:block}
+.copy-btn{width:100%;padding:12px;background:#27ae60;color:white;border:none;border-radius:8px;font-weight:bold;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:1rem;box-shadow:0 3px 6px rgba(39,174,96,0.3)}
+.copy-btn:active{transform:translateY(2px)}
+.search-input{width:100%;padding:12px;border-radius:30px;border:2px solid #3498db;text-align:center;font-size:1rem;background:var(--card);color:var(--txt);margin-bottom:10px}
+.progress-bar{height:8px;width:100%;background:#eee;border-radius:4px;margin-top:5px;display:flex;overflow:hidden}
+.pb-p{background:#27ae60;height:100%} .pb-e{background:#f39c12;height:100%} .pb-a{background:#c0392b;height:100%}
+.switch-label{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:15px;background:#f0f0f0;padding:10px;border-radius:8px;cursor:pointer;color:#333}
+/* Counters */
 .counter-box{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px;padding:10px;background:var(--card);border-top:2px solid var(--border)}
 .cnt-item{display:flex;flex-direction:column;align-items:center;background:var(--bg);padding:5px 10px;border-radius:8px;border:1px solid var(--border);min-width:80px}
 .cnt-val{font-size:1.5rem;font-weight:bold;margin:5px 0}
 .cnt-ctrl{display:flex;gap:5px}
 .cnt-btn{width:30px;height:30px;border:none;border-radius:50%;font-weight:bold;cursor:pointer;background:var(--hl);color:#fff}
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:200}
-.modal.show{display:flex}
-.m-content{background:var(--card);padding:20px;border-radius:12px;width:85%;max-width:320px;border:1px solid var(--hl)}
-.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
-.o-btn{padding:10px 2px;border:none;border-radius:6px;color:#fff;cursor:pointer;font-size:.9rem}
-.bg-v{background:#e67e22} .bg-g{background:#2c3e50} .bg-s{background:#c0392b} .bg-d{background:#8e44ad}
-.history-panel{background:var(--bg);padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid var(--hl);display:none}
-.history-panel.show{display:block}
-.date-group{display:flex;gap:5px;margin-bottom:10px}
-.date-input{padding:10px;font-size:1.1rem;border-radius:6px;border:1px solid #ccc;box-sizing:border-box;background:var(--card);color:var(--txt)}
-.h-btn-group{display:flex;gap:10px}
+/* Helpers */
 .help-panel{background:var(--card);padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid var(--hl);display:none;text-align:left;box-shadow:0 4px 10px rgba(0,0,0,0.1)}
 .help-panel.show{display:block}
 .help-list{padding-left:20px;margin:0;font-size:0.95rem;line-height:1.8;color:var(--txt)}
-.help-list li{margin-bottom:8px}
-.his-list-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:250}
-.his-list-modal.show{display:flex}
-.his-content{background:var(--card);width:90%;max-width:350px;border-radius:12px;padding:15px;max-height:80vh;display:flex;flex-direction:column;border:1px solid var(--hl)}
-.his-items{overflow-y:auto;flex:1;margin-bottom:10px;border:1px solid var(--border);border-radius:6px}
-.his-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border);background:var(--card);color:var(--txt)}
-.his-info{text-align:left;flex:1}
-.his-time{font-weight:bold;font-size:1rem}
-.his-period{font-size:0.85rem;opacity:0.7;margin-left:5px}
-.copy-btn{width:100%;padding:10px;background:#27ae60;color:white;border:none;border-radius:6px;font-weight:bold;margin-bottom:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}
-.search-box{margin-bottom:10px;position:relative}
-.search-input{width:100%;padding:12px;border-radius:30px;border:2px solid #3498db;text-align:center;font-size:1rem;background:var(--card);color:var(--txt)}
-.progress-bar{height:8px;width:100%;background:#eee;border-radius:4px;margin-top:5px;display:flex;overflow:hidden}
-.pb-p{background:#27ae60;height:100%}
-.pb-e{background:#f39c12;height:100%}
-.pb-a{background:#c0392b;height:100%}
-.switch-label{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:15px;background:#f0f0f0;padding:10px;border-radius:8px;cursor:pointer;color:#333}
-.warning-footer{
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: #f1c40f; 
-    color: #333;
-    padding: 5px 0;
-    font-size: 0.85rem;
-    font-weight: bold;
-    text-align: center;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.1);
-    z-index: 300;
-}
-</style></head><body>
+.warning-footer{position:fixed;bottom:0;left:0;width:100%;background:#f1c40f;color:#333;padding:5px 0;font-size:0.85rem;font-weight:bold;text-align:center;box-shadow:0 -2px 5px rgba(0,0,0,0.1);z-index:300}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
 
 <div class="top-bar">
-    <button class="btn-big" onclick="toggleSetup()">📝 設定</button>
+    <button class="btn-big" onclick="toggleSetup()">⚙️ 設定</button>
     <button class="btn-big" style="background:#8e44ad" onclick="toggleHistory()">📅 歷史</button>
     <button class="btn-big" style="background:#3498db" onclick="toggleHelp()">📖 說明</button>
 </div>
 
 <div id="help-area" class="help-panel">
-    <h3 style="margin-top:0;color:#2980b9">📖 簡易使用說明</h3>
+    <h3 style="margin-top:0;color:#2980b9">📖 2.0版 使用說明</h3>
     <ul class="help-list">
-        <li><b>1. 建立資料：</b>點選「📝 設定」，輸入單位與名單，支援 <code>---排組---</code> 格式。</li>
-        <li><b>2. 開始點名：</b>點擊姓名設為「實到」；切換「⚠️ 事故」可標記休假或衛哨。</li>
-        <li><b>3. 複製回報：</b>
+        <li><b>1. 建立資料：</b>點選「設定」，支援快速加入排組分隔線。</li>
+        <li><b>2. 點名操作：</b>點擊設為「實到」；開啟「⚠️ 事故」模式可標記休假、衛哨等。</li>
+        <li><b>3. 快速回報：</b>
             <ul>
-                <li>**營士督回報：** 事故人員請在備註欄填寫「21收」「24收」「07收」以利收假統計。</li>
-                <li>**值星回報：** 點名完成後，點選下方任一複製按鈕即可貼上。</li>
+                <li>**營士督回報：** 事故備註請填「21收」「24收」以利統計。</li>
+                <li>**一鍵備份：** 設定頁面新增一鍵備份按鈕，直接複製代碼。</li>
             </ul>
         </li>
-        <li><b>4. 輔助功能：</b>提供歷史存檔/讀取、「未到優先」排序、快速全到、計數器等功能。</li>
     </ul>
-    <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">我知道了</button></div>
+    <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">關閉</button></div>
 </div>
 
 <div id="setup-area" class="setup-area">
     <h3 style="margin-top:0;color:var(--hl)">🏢 單位設定</h3>
-    <input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)">
+    <div class="input-group"><input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)"></div>
+    
     <h3 style="color:var(--hl)">🛠️ 自訂事故按鈕</h3>
-    <textarea id="in-reasons" style="height:50px" placeholder="預設：休假,外宿,補休,衛哨,安官..."></textarea>
-    <h3>輸入名單 (人名空格隔開 可加入支援排組分隔線 --- )</h3>
-    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="上尉吳○○ 中尉張○○"></textarea>
-    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="---一排--- 士官長謝○○"></textarea>
-    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="---一排--- 上兵王小明 一兵李大華 ---二排--- 上兵陳二百"></textarea>
-    <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="二兵張狗蛋"></textarea>
-    <h3 style="color:var(--hl)">🔢 計數器設定 (用逗號隔開)</h3>
-    <input type="text" id="in-counters" placeholder="例如：便當,T65K2,無線電">
-    <button class="btn-big" style="background:#27ae60;margin-bottom:10px" onclick="saveData()">✅ 儲存並生成點名板</button>
-    <div style="border-top:1px solid #ccc;padding-top:10px;display:flex;gap:10px">
-        <button class="btn-big" style="background:#7f8c8d" onclick="exportData()">📤 匯出</button>
-        <button class="btn-big" style="background:#7f8c8d" onclick="importData()">📥 匯入</button>
+    <div class="input-group"><textarea id="in-reasons" style="height:50px" placeholder="預設：休假,外宿,補休,衛哨,安官..."></textarea></div>
+
+    <h3>人員名單設定</h3>
+    <div style="font-size:0.85rem;color:#7f8c8d;margin-bottom:10px">提示：可直接從 Excel 或 Line 貼上人名，空格隔開。點擊按鈕插入分組線。</div>
+
+    <div class="input-group">
+        <div class="input-header"><span style="color:#e74c3c;font-weight:bold">🛑 軍官</span><button class="btn-insert" onclick="insertSep('in-off')">➕ 插入排組</button></div>
+        <textarea id="in-off" placeholder="上尉吳○○ 中尉張○○"></textarea>
+    </div>
+
+    <div class="input-group">
+        <div class="input-header"><span style="color:#3498db;font-weight:bold">🔷 士官</span><button class="btn-insert" onclick="insertSep('in-nco')">➕ 插入排組</button></div>
+        <textarea id="in-nco" placeholder="士官長謝○○"></textarea>
+    </div>
+
+    <div class="input-group">
+        <div class="input-header"><span style="color:#27ae60;font-weight:bold">🟩 士兵</span><button class="btn-insert" onclick="insertSep('in-sol')">➕ 插入排組</button></div>
+        <textarea id="in-sol" placeholder="上兵王小明 一兵李大華"></textarea>
+    </div>
+
+    <div class="input-group">
+        <div class="input-header"><span style="color:#9b59b6;font-weight:bold">🟣 訓員</span><button class="btn-insert" onclick="insertSep('in-tra')">➕ 插入排組</button></div>
+        <textarea id="in-tra" placeholder="二兵張狗蛋"></textarea>
+    </div>
+
+    <h3 style="color:var(--hl)">🔢 計數器設定</h3>
+    <div class="input-group"><input type="text" id="in-counters" placeholder="例如：便當,T65K2,無線電"></div>
+    
+    <button class="btn-big" style="background:#27ae60;margin-bottom:15px;width:100%" onclick="saveData()">✅ 儲存並生成點名板</button>
+    
+    <div style="border-top:1px solid #ccc;padding-top:15px;display:flex;gap:10px">
+        <button class="btn-big" style="background:#7f8c8d" onclick="exportData()">📤 一鍵備份代碼</button>
+        <button class="btn-big" style="background:#7f8c8d" onclick="importData()">📥 一鍵讀取代碼</button>
     </div>
 </div>
 
 <div id="history-area" class="history-panel">
-    <h3>📅 時段紀錄</h3>
+    <h3>📅 歷史紀錄</h3>
     <div style="display:flex;justify-content:space-between;margin-bottom:10px;background:var(--card);padding:8px;border-radius:6px;border:1px solid var(--border)">
         <span style="font-size:0.9rem">已存: <b id="history-count" style="color:#e67e22">0</b> 筆</span>
         <button onclick="showHistoryList()" style="background:#3498db;color:white;border:none;padding:5px 10px;border-radius:4px;font-weight:bold">👁️ 清單</button>
     </div>
-    <div class="date-group"><input type="date" id="history-date" class="date-input" style="flex:2"><select id="history-period" class="date-input" style="flex:1.5"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間</option></select></div>
-    <div class="h-btn-group"><button class="btn-big" style="background:#27ae60" onclick="saveToDate()">📥 存檔</button><button class="btn-big" style="background:#e67e22" onclick="loadFromDate()">📤 讀取</button></div>
+    <div style="display:flex;gap:5px;margin-bottom:10px">
+        <input type="date" id="history-date" style="flex:2;padding:10px;border-radius:6px;border:1px solid #ccc">
+        <select id="history-period" style="flex:1.5;padding:10px;border-radius:6px;border:1px solid #ccc;background:#fff"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間</option></select>
+    </div>
+    <div style="display:flex;gap:10px"><button class="btn-big" style="background:#27ae60" onclick="saveToDate()">📥 存檔</button><button class="btn-big" style="background:#e67e22" onclick="loadFromDate()">📤 讀取</button></div>
     <div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部</button></div>
 </div>
 
-<button class="copy-btn" style="background:#8e44ad; margin-bottom: 5px;" onclick="copyCSMReport()">📋 一鍵產出營士督長回報內容</button>
-<button class="copy-btn" onclick="copyReport()">📋 一鍵產出值星群組回報內容</button>
+<button class="copy-btn" style="background:#8e44ad" onclick="copyCSMReport()">📋 一鍵產出營士督長回報</button>
+<button class="copy-btn" onclick="copyReport()">📋 複製 一鍵產出值星群組回報</button>
 
 <div class="stats-box">
     <table class="stats-table"><thead><tr><th>階級</th><th>應到</th><th>實到</th><th>事故</th><th>未點</th></tr></thead><tbody id="stats-body"></tbody></table>
@@ -147,9 +162,7 @@ input[type="text"]{margin-bottom:10px}
 </div>
 <div id="detail-board" class="detail-board"><b>📋 事故明細:</b> <div id="detail-tags" style="margin-top:5px"></div></div>
 
-<div class="search-box">
-    <input type="text" id="search-input" class="search-input" placeholder="🔍 輸入名字快速找人..." oninput="filterRoster()">
-</div>
+<div style="margin-bottom:10px"><input type="text" id="search-input" class="search-input" placeholder="🔍 輸入名字快速找人..." oninput="filterRoster()"></div>
 
 <div class="control-bar">
     <button id="mode-btn" class="btn-mode" onclick="toggleMode()">⚠️ 事故: 關</button>
@@ -163,15 +176,17 @@ input[type="text"]{margin-bottom:10px}
 
 <div id="modal" class="modal"><div class="m-content"><h3 id="m-name"></h3>
 <div style="margin-bottom:10px"><input id="note-input" type="text" placeholder="備註 (如: 21收, 受訓, 發燒...)"></div>
-<div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:8px" placeholder="自訂原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px">OK</button></div>
+<div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:10px;border:1px solid #ccc;border-radius:6px" placeholder="自訂原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px;width:40px">OK</button></div>
 <div class="opts" id="opts-container"></div>
 <label class="switch-label"><input type="checkbox" id="lock-status"> 🔒 鎖定此狀態</label>
 <button class="o-btn" style="background:#95a5a6;width:100%;margin-top:10px" onclick="closeM()">取消</button></div></div>
 
-<div id="his-list-modal" class="his-list-modal"><div class="his-content"><h3 style="margin-top:0;color:var(--txt)">📜 已存紀錄</h3><div id="his-items-container" class="his-items"></div><button class="btn-big" style="background:#95a5a6;margin-top:5px" onclick="closeHisList()">關閉</button></div></div>
+<div id="his-list-modal" class="modal" style="z-index:250"><div class="m-content" style="max-height:80vh;display:flex;flex-direction:column"><h3 style="margin-top:0">📜 已存紀錄</h3><div id="his-items-container" style="overflow-y:auto;flex:1;margin-bottom:10px;border:1px solid #eee;border-radius:6px"></div><button class="btn-big" style="background:#95a5a6" onclick="closeHisList()">關閉</button></div></div>
+
+<div class="warning-footer">⚠️ 產出數據僅供參考，最終由個人負責。</div>
 
 <script>
-const K_CUR='army_v27_csm',K_HIS='army_v26_his';
+const K_CUR='army_v2_cur',K_HIS='army_v2_his';
 let D={o:[],n:[],s:[],t:[],st:{},nt:{},lck:{},tm:{},cnt:{},u:'',rs:'',cns:''},isM=false,isSorted=false,cur='',reportStr='';
 const DEFAULT_REASONS = "休假,外宿,補休,衛哨,安官,戰情,公差,受訓,支援,轉診,住院,隔離";
 const DEFAULT_COUNTERS = "便當,槍枝";
@@ -181,24 +196,65 @@ document.addEventListener('DOMContentLoaded',()=>{
     load();updateHisCount();
 });
 
+// --- New Feature: Insert Separator ---
+function insertSep(id){
+    const name = prompt("請輸入分組/排組名稱 (例如: 一排, 支援排):");
+    if(name){
+        const el = document.getElementById(id);
+        const val = el.value;
+        const start = el.selectionStart;
+        const end = el.selectionEnd;
+        const textToInsert = ` ---${name}--- `;
+        el.value = val.substring(0, start) + textToInsert + val.substring(end);
+        el.focus();
+        el.selectionStart = el.selectionEnd = start + textToInsert.length;
+    }
+}
+
+// --- Optimized Export/Import ---
+function exportData(){
+    const data={cur:JSON.parse(localStorage.getItem(K_CUR)||'{}'),his:JSON.parse(localStorage.getItem(K_HIS)||'{}')};
+    const str = JSON.stringify(data);
+    if(navigator.clipboard){
+        navigator.clipboard.writeText(str).then(()=>alert("✅ 備份碼已複製到剪貼簿！\n請直接去 Line 或筆記本貼上即可。")).catch(()=>fallbackCopy(str));
+    } else {
+        fallbackCopy(str);
+    }
+}
+function fallbackCopy(str){
+    prompt("您的瀏覽器不支援一鍵複製，請手動全選複製下方代碼：", str);
+}
+
+function importData(){
+    const str=prompt("請貼上備份碼:");
+    if(str){
+        try{
+            const d=JSON.parse(str);
+            if(d.cur&&d.his){
+                localStorage.setItem(K_CUR,JSON.stringify(d.cur));
+                localStorage.setItem(K_HIS,JSON.stringify(d.his));
+                alert("✅ 資料還原成功！");location.reload();
+            }else throw new Error;
+        }catch(e){alert("❌ 代碼格式錯誤")}
+    }
+}
+
+// --- Core Logic ---
 function copyReport(){
     const abs = getAbsCount();
     if(abs > 0) return alert(`⚠️ 還有 ${abs} 員未點名！\n請按「📢 查未到」按鈕修正。`);
     if(!reportStr) return alert("無資料");
-    navigator.clipboard.writeText(reportStr).then(()=>{alert("✅ 已複製！");}).catch(e=>alert("複製失敗"));
+    navigator.clipboard.writeText(reportStr).then(()=>{alert("✅ 已複製值星群組回報！");}).catch(e=>alert("複製失敗"));
 }
-
-function exportData(){const data={cur:JSON.parse(localStorage.getItem(K_CUR)||'{}'),his:JSON.parse(localStorage.getItem(K_HIS)||'{}')};prompt("複製備份碼:",JSON.stringify(data));}
-function importData(){const str=prompt("貼上備份碼:");if(str){try{const d=JSON.parse(str);if(d.cur&&d.his){localStorage.setItem(K_CUR,JSON.stringify(d.cur));localStorage.setItem(K_HIS,JSON.stringify(d.his));alert("✅ 還原成功");location.reload()}else throw new Error}catch(e){alert("❌ 格式錯誤")}}}
 function toggleHelp(){document.getElementById('help-area').classList.toggle('show');document.getElementById('setup-area').classList.remove('show');document.getElementById('history-area').classList.remove('show')}
 function toggleSetup(){document.getElementById('setup-area').classList.toggle('show');document.getElementById('help-area').classList.remove('show');document.getElementById('history-area').classList.remove('show')}
 function toggleHistory(){document.getElementById('history-area').classList.toggle('show');document.getElementById('setup-area').classList.remove('show');document.getElementById('help-area').classList.remove('show');updateHisCount()}
 function getHis(){const r=localStorage.getItem(K_HIS);return r?JSON.parse(r):{}}
 function updateHisCount(){const h=getHis();document.getElementById('history-count').innerText=Object.keys(h).length}
 function getAbsCount(){const all=[...D.o,...D.n,...D.s,...D.t];let abs=0;all.forEach(n=>{if(!D.st[n] && !n.startsWith('-'))abs++});return abs}
-function saveToDate(){const d=document.getElementById('history-date').value,p=document.getElementById('history-period').value;if(!d)return alert("選日期");const abs=getAbsCount();if(abs>0&&!confirm(`⚠️ 還有 ${abs} 員未到！確定存檔？`))return;const k=d+'_'+p,h=getHis();h[k]=JSON.parse(JSON.stringify(D));localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();alert("已存檔")}
+function saveToDate(){const d=document.getElementById('history-date').value,p=document.getElementById('history-period').value;if(!d)return alert("選日期");const abs=getAbsCount();if(abs>0&&!confirm(`⚠️ 還有 ${abs} 員未到！確定存檔？`))return;const k=d+'_'+p,h=getHis();h[k]=JSON.parse(JSON.stringify(D));localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();alert("✅ 已存檔")}
 function loadFromDate(){const d=document.getElementById('history-date').value,p=document.getElementById('history-period').value;loadHistoryKey(d+'_'+p, d)}
-function clearHistory(){if(confirm("清空歷史？"))localStorage.removeItem(K_HIS),updateHisCount(),alert("已清空")}
+function clearHistory(){if(confirm("確定清空所有歷史紀錄？"))localStorage.removeItem(K_HIS),updateHisCount(),alert("已清空")}
 function parse(t){return t?t.split(/[\s,、\n]+/).filter(x=>x.trim()):[]}
 function toggleMode(){isM=!isM;const b=document.getElementById('mode-btn');b.innerText=isM?"⚠️ 事故: 開":"⚠️ 事故: 關";b.classList.toggle('active')}
 function saveData(){
@@ -220,43 +276,29 @@ function fillSetup(){
 function filterRoster(){const t=document.getElementById('search-input').value.toLowerCase();document.querySelectorAll('.p-btn').forEach(b=>{b.style.display=b.innerText.toLowerCase().includes(t)?'flex':'none'})}
 function showMissing(){const m=[...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n] && !n.startsWith('-'));if(m.length===0)return alert("👍 全員已到");alert(`📢 未到 (${m.length}員)：\n\n${m.join('、')}`)}
 function markAllPresent(){if(confirm("一鍵將未點名設為實到？(保留鎖定/事故)")){const now=new Date();const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if(!D.st[n] && !n.startsWith('-')){D.st[n]='p';D.tm[n]=time}});persist();render()}}
-
-function toggleSort(){
-    isSorted = !isSorted;
-    const b = document.getElementById('sort-btn');
-    b.innerText = isSorted ? "🔃 排序: 未到優先" : "🔃 排序: 原序";
-    b.classList.toggle('active');
-    render();
-}
+function toggleSort(){isSorted=!isSorted;const b=document.getElementById('sort-btn');b.innerText=isSorted?"🔃 排序: 未到優先":"🔃 排序: 原序";b.classList.toggle('active');render()}
 
 function render(){
     const c=document.getElementById('roster');c.innerHTML='';
     const processName=(r)=>{const m=r.match(/^(.*?)[（\(](.*)[）\)]$/);return m?{name:m[1],sub:m[2]}:{name:r,sub:''}};
-    
     const renderGroup=(list, cls)=>{
         let sortedList = [...list];
         if(isSorted){
-            // 修正排序邏輯：過濾分隔線，只排人員
             sortedList = sortedList.filter(x => !x.startsWith('-') && !x.startsWith('#'));
             sortedList.sort((a,b)=>{
-                const getScore = (n) => {
-                    if(!D.st[n]) return 0; // 未到最前
-                    if(D.st[n]!=='p') return 1; // 事故次之
-                    return 2; // 實到最後
-                }
-                return getScore(a) - getScore(b);
+                const getScore=(n)=>{if(!D.st[n])return 0;if(D.st[n]!=='p')return 1;return 2;}
+                return getScore(a)-getScore(b);
             });
         }
-
         sortedList.forEach(rawNm=>{
+            // Divider Rendering
             if(!isSorted && (rawNm.startsWith('-') || rawNm.startsWith('#'))){
                 const sep = document.createElement('div');
                 sep.className = 'sep-row';
-                sep.innerText = rawNm.replace(/[-#]/g, ' ').trim();
+                sep.innerText = rawNm.replace(/[-#]/g, '').trim();
                 c.appendChild(sep);
                 return;
             }
-
             const {name,sub}=processName(rawNm);
             const b=document.createElement('button');b.className=`p-btn ${cls}`;
             const s=D.st[rawNm],note=D.nt?D.nt[rawNm]:'',lock=D.lck&&D.lck[rawNm],time=D.tm&&D.tm[rawNm]?D.tm[rawNm]:'';
@@ -290,7 +332,6 @@ function render(){
             };c.appendChild(b)
         });
     };
-    
     renderGroup(D.o,'bg-off');renderGroup(D.n,'bg-nco');renderGroup(D.s,'bg-sol');renderGroup(D.t,'bg-tra');
     renderCounters();
     updT();filterRoster();
@@ -333,18 +374,15 @@ function setS(v){
 function closeM(){document.getElementById('modal').classList.remove('show')}
 function resetAll(){if(confirm("重置？(鎖定者不變)")){[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if((!D.lck||!D.lck[n])&&!n.startsWith('-')){delete D.st[n];delete D.nt[n];delete D.tm[n]}});persist();render()}}
 
-// 統計計算核心功能
 function calculateStats(){
     const calc=(l,k,res)=>{l.forEach(n=>{if(n.startsWith('-')||n.startsWith('#'))return;const s=D.st[n];if(s==='p')res[k].p++;else if(s){res[k].e++;if(!res.dt[s])res.dt[s]=[];res.dt[s].push(n)}})};
     const getListLen = (l) => l.filter(x=>!x.startsWith('-')&&!x.startsWith('#')).length;
-    // 使用四個獨立階級進行統計
     const R={o:{t:getListLen(D.o),p:0,e:0},n:{t:getListLen(D.n),p:0,e:0},s:{t:getListLen(D.s),p:0,e:0},t:{t:getListLen(D.t),p:0,e:0},dt:{}};
     calc(D.o,'o',R);calc(D.n,'n',R);calc(D.s,'s',R);calc(D.t,'t',R);
     R.tot={t:R.o.t+R.n.t+R.s.t+R.t.t,p:R.o.p+R.n.p+R.s.p+R.t.p,e:R.o.e+R.n.e+R.s.e+R.t.e}; 
     return R;
 }
 
-// 報表更新 (一般點名回報用)
 function updT(){
     const R = calculateStats();
     const tot = R.tot;
@@ -356,18 +394,14 @@ function updT(){
     
     const db=document.getElementById('detail-board'),dt=document.getElementById('detail-tags');dt.innerHTML='';
     let now=new Date(),u=D.u?D.u:"";
-
-    // --- 輔助函數：清除備註中的收假資訊 ---
     const getName = (raw) => raw.split(/[（\(]/)[0];
     const cleanNoteForDisplay = (note) => {
         if (!note) return '';
-        // 移除 21收, 24收, 07收 (收假相關的備註)
         return note.replace(/2[14]收|07收/g, '').trim();
     };
-    // ------------------------------------
 
     reportStr=`【部隊點名回報】\n單位：${u}\n時間：${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} (${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')})\n`;
-    reportStr+=`應到：${tot.t}員 (官${R.o.t} 士${R.n.t} 兵${R.s.t} 訓${R.t.t})\n`; // Use 4 ranks
+    reportStr+=`應到：${tot.t}員 (官${R.o.t} 士${R.n.t} 兵${R.s.t} 訓${R.t.t})\n`;
     reportStr+=`實到：${tot.p}員 (官${R.o.p} 士${R.n.p} 兵${R.s.p} 訓${R.t.p})\n事故：${tot.e}員 (官${R.o.e} 士${R.n.e} 兵${R.s.e} 訓${R.t.e})\n未到：${tot.t-tot.p-tot.e}員\n----------------\n`;
 
     if(tot.e>0){
@@ -375,27 +409,19 @@ function updT(){
         for(let[k,arr]of Object.entries(R.dt)){
             let co=0,cn=0,cs=0,ct=0;
             arr.forEach(nm=>{if(D.o.includes(nm))co++;else if(D.n.includes(nm))cn++;else if(D.s.includes(nm))cs++;else if(D.t.includes(nm))ct++});
-            
-            // 產生用於 UI 和回報摘要的清單 (已清除收假備註)
             let namesForDisplay = arr.map(nm => {
                 let cleanName = getName(nm);
                 let note = D.nt && D.nt[nm] ? D.nt[nm] : '';
                 let displayNote = cleanNoteForDisplay(note);
-                // 只有在 displayNote 存在時才加上 [備註]
                 return displayNote ? `${cleanName}[${displayNote}]` : cleanName;
             });
-
-            // 報表摘要行
             let nameSummary = namesForDisplay.length > 1 ? `${namesForDisplay[0]}等${namesForDisplay.length}員` : namesForDisplay[0];
             reportStr+=`${k}：${arr.length}員 (${nameSummary})\n`;
-            
-            // UI 事故明細列表
             dt.innerHTML+=`<div class="detail-row"><b>${k}: ${arr.length}員</b> <span class="breakdown">(官${co} 士${cn} 兵${cs} 訓${ct})</span><span class="name-list">(${namesForDisplay.join(' ')})</span></div>`
         }
     }else{db.style.display='none';reportStr+="無事故人員\n"}
 }
 
-// 輔助函式：取得清單中各階級數量
 const getRankCount = (list) => {
     let o=0, n=0, s=0, t=0;
     list.forEach(name => {
@@ -407,7 +433,6 @@ const getRankCount = (list) => {
     return {o, n, s, t}; 
 };
 
-// 輔助函式：將階級數量轉換為簡潔文字 (只顯示非零項)
 const formatRankSummary = (cnt) => {
     let rankParts = [];
     if (cnt.o > 0) rankParts.push(`${cnt.o}官`);
@@ -417,8 +442,6 @@ const formatRankSummary = (cnt) => {
     return rankParts.length > 0 ? rankParts.join('') : '0員';
 };
 
-
-// 營士督回報生成功能 (從備註抓取收假名單)
 function copyCSMReport(){
     const abs = getAbsCount();
     if(abs > 0) return alert(`⚠️ 還有 ${abs} 員未點名！\n請按「📢 查未到」按鈕修正。`);
@@ -430,38 +453,30 @@ function copyCSMReport(){
     const getName = (raw) => raw.split(/[（\(]/)[0];
     const allPersonnel = [...D.o,...D.n,...D.s,...D.t];
 
-    // 2. Identify returning members from notes (D.nt)
     const returnLists = {r21: [], r24: [], r07: []};
     const returningNames = [];
     allPersonnel.forEach(name => {
-        if(D.st[name] && D.st[name] !== 'p' && D.nt[name]){ // Must be an absence/accident and have a note
-            const note = D.nt[name].toLowerCase().replace(/\s/g, ''); // Remove spaces for better matching
+        if(D.st[name] && D.st[name] !== 'p' && D.nt[name]){
+            const note = D.nt[name].toLowerCase().replace(/\s/g, '');
             if (note.includes('21收') && !returningNames.includes(name)) { returnLists.r21.push(name); returningNames.push(name); }
             else if (note.includes('24收') && !returningNames.includes(name)) { returnLists.r24.push(name); returningNames.push(name); }
             else if (note.includes('07收') && !returningNames.includes(name)) { returnLists.r07.push(name); returningNames.push(name); }
         }
     });
 
-    // 1. Header & Summary (Modified V27.9)
     let report = `營士督好\n\n`;
-    
-    // Summary line with 4 ranks separate (應到/實到)
     report += `${u}回報（${(now.getMonth()+1)}/${now.getDate()}）收假\n`;
     report += `應到：${R.o.t}官${R.n.t}士${R.s.t}兵${R.t.t}訓\n`; 
-    report += `實到：${R.o.p}官${R.n.p}士${R.s.p}兵${R.t.p}訓\n`; 
-    
-    // List of all present members
+    report += `實到：${R.o.p}官${R.n.p}士${R.s.p}兵${R.t.p}訓\n`;
     const allPresent = allPersonnel.filter(n => D.st[n] === 'p' && !n.startsWith('-') && !n.startsWith('#'));
     const presentNames = allPresent.map(getName);
     report += `（${presentNames.length > 0 ? getName(presentNames[0]) : '無'}等${allPresent.length}員）\n\n`;
-    
-    // 3. Return Time Breakdown (21/24/07)
+
     const lists = [
         {time: '21收假', data: returnLists.r21},
         {time: '24收假', data: returnLists.r24},
         {time: '07收假', data: returnLists.r07}
     ];
-
     lists.forEach(item => {
         const list = item.data;
         const count = list.length;
@@ -469,55 +484,53 @@ function copyCSMReport(){
             report += `${item.time}：無\n`;
         } else {
             const cnt = getRankCount(list);
-            const rankSummary = formatRankSummary(cnt); // Use the new function for concise rank summary
+            const rankSummary = formatRankSummary(cnt);
             const summary = `${getName(list[0])}等${count}員（${rankSummary}）`;
-            
             report += `${item.time}：${summary}\n`;
             report += `${list.map(getName).join('\n')}\n\n`;
         }
     });
-    
     report += '事故：\n';
     
-    // 4. Absence Breakdown (excluding the returning members we just listed)
     const totalAccidentCount = tot.e - returningNames.length;
-
     if (totalAccidentCount === 0) {
         report += '無事故人員\n';
     } else {
         for(let [reason, arr] of Object.entries(R.dt)){
             const filteredArr = arr.filter(name => !returningNames.includes(name));
-            
             if(filteredArr.length > 0){
                 let cnt = getRankCount(filteredArr);
-                const rankSummary = formatRankSummary(cnt); // Use the new function for concise rank summary
-                
+                const rankSummary = formatRankSummary(cnt);
                 report += `${reason}：${rankSummary}\n`;
-                // List names with notes if available
                 const namesWithNotes = filteredArr.map(nm => {
                     let cleanName = getName(nm);
-                    // Hide 21收/24收/07收 in the detail notes as they were listed above
                     const detailNote = (D.nt && D.nt[nm]) ? D.nt[nm].replace(/2[14]收|07收/g, '').replace(/收/g, '').trim() : '';
                     return detailNote ? `${cleanName}[${detailNote}]` : cleanName;
                 });
-                
                 report += `${namesWithNotes.join('\n')}\n\n`;
             }
         }
     }
-    
     navigator.clipboard.writeText(report).then(()=>{alert("✅ 已複製營士督回報！");}).catch(e=>alert("複製失敗"));
 }
 
-
-function showHistoryList(){const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';const k=Object.keys(h).sort().reverse();if(k.length===0){c.innerHTML='<div style="padding:20px;color:#aaa">無紀錄</div>'}else{const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 夜間'};k.forEach(key=>{const [d,p]=key.split('_'),pt=m[p]||p;const dv=document.createElement('div');dv.className='his-item';dv.innerHTML=`<div class="his-info" onclick="loadHistoryKey('${key}','${d} ${pt}')"><div class="his-time">${d}</div><div class="his-period">${pt}</div></div><button style="background:#c0392b;color:white;border:none;padding:5px;border-radius:4px;margin-left:10px" onclick="deleteHistoryKey('${key}')">🗑️</button>`;c.appendChild(dv)})};document.getElementById('his-list-modal').classList.add('show')}
+function showHistoryList(){
+    const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';
+    const k=Object.keys(h).sort().reverse();
+    if(k.length===0){c.innerHTML='<div style="padding:20px;color:#aaa">無紀錄</div>'}else{
+        const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 查鋪'};
+        k.forEach(key=>{
+            const [d,p]=key.split('_'),pt=m[p]||p;
+            const dv=document.createElement('div');dv.className='his-item';dv.style.display='flex';dv.style.justifyContent='space-between';dv.style.padding='12px';dv.style.borderBottom='1px solid #eee';
+            dv.innerHTML=`<div style="text-align:left;cursor:pointer" onclick="loadHistoryKey('${key}','${d} ${pt}')"><div style="font-weight:bold">${d}</div><div style="opacity:0.7;font-size:0.9rem">${pt}</div></div><button style="background:#c0392b;color:white;border:none;padding:5px 10px;border-radius:6px" onclick="deleteHistoryKey('${key}')">刪除</button>`;
+            c.appendChild(dv)
+        })
+    };
+    document.getElementById('his-list-modal').classList.add('show')
+}
 function closeHisList(){document.getElementById('his-list-modal').classList.remove('show')}
-function loadHistoryKey(k,s){const h=getHis();if(!h[k])return alert("遺失");if(confirm(`還原 [${s}] ?`)){D=h[k];persist();render();fillSetup();alert("已讀取");closeHisList();toggleHistory()}}
-function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
+function loadHistoryKey(k,s){const h=getHis();if(!h[k])return alert("遺失");if(confirm(`還原 [${s}] 紀錄?`)){D=h[k];persist();render();fillSetup();alert("✅ 已讀取");closeHisList();toggleHistory()}}
+function deleteHistoryKey(k){if(confirm("確定刪除此紀錄?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
 </script>
-<div class="warning-footer">
-    ⚠️數據僅供參考，最終由值星負責。
-</div>
-</body></html>
-
-
+</body>
+</html>
