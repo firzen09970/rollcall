@@ -350,7 +350,7 @@ function updT(){
     const tot = R.tot;
     const r=document.getElementById('stats-body');
     const row=(l,c,d)=>`<tr><td class="${c}">${l}</td><td>${d.t}</td><td class="c-pre">${d.p}</td><td class="c-exc">${d.e}</td><td class="c-abs">${d.t-d.p-d.e}</td></tr>`;
-    r.innerHTML=row('軍官','r-off',R.o)+row('士官','r-nco',R.n)+row('士兵','r-sol',R.s)+row('訓員','r-tra',R.t)+`<tr style="background:#eee;color:#000"><td class="r-tot">合</td><td class="r-tot">${tot.t}</td><td class="r-tot c-pre">${tot.p}</td><td class="r-tot c-exc">${tot.e}</td><td class="r-tot c-abs">${tot.t-tot.p-tot.e}</td></tr>`;
+    r.innerHTML=row('軍官','r-off',R.o)+row('士官','r-nco',R.n)+row('士兵','r-sol',R.s)+row('訓員','r-tra',R.t)+`<tr style="background:#eee;color:#000"><td class="r-tot">合計</td><td class="r-tot">${tot.t}</td><td class="r-tot c-pre">${tot.p}</td><td class="r-tot c-exc">${tot.e}</td><td class="r-tot c-abs">${tot.t-tot.p-tot.e}</td></tr>`;
     const pb=document.getElementById('p-bar');
     if(tot.t>0){const pp=(tot.p/tot.t)*100,ep=(tot.e/tot.t)*100,ap=((tot.t-tot.p-tot.e)/tot.t)*100;pb.innerHTML=`<div class="pb-p" style="width:${pp}%"></div><div class="pb-e" style="width:${ep}%"></div><div class="pb-a" style="width:${ap}%"></div>`;}
     
@@ -519,4 +519,5 @@ function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k]
     ⚠️數據僅供參考，最終由值星負責。
 </div>
 </body></html>
+
 
