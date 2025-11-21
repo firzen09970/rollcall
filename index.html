@@ -137,8 +137,8 @@ input[type="text"]{margin-bottom:10px}
     <div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部</button></div>
 </div>
 
-<button class="copy-btn" style="background:#8e44ad; margin-bottom: 5px;" onclick="copyCSMReport()">📋 營士督長回報內容</button>
-<button class="copy-btn" onclick="copyReport()">📋 一鍵複製值星群組回報內容</button>
+<button class="copy-btn" style="background:#8e44ad; margin-bottom: 5px;" onclick="copyCSMReport()">📋 一鍵產出營士督長回報內容</button>
+<button class="copy-btn" onclick="copyReport()">📋 一鍵產出值星群組回報內容</button>
 
 <div class="stats-box">
     <table class="stats-table"><thead><tr><th>階級</th><th>應到</th><th>實到</th><th>事故</th><th>未點</th></tr></thead><tbody id="stats-body"></tbody></table>
@@ -518,4 +518,5 @@ function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k]
     ⚠️數據僅供參考，最終由值星負責。
 </div>
 </body></html>
+
 
