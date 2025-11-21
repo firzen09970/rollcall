@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>部隊點名系統(優化版2.0)</title>
+<title>部隊點名系統(優化版2.1)</title>
 <style>
 :root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
 body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:40px;transition:0.3s;-webkit-tap-highlight-color:transparent}
@@ -84,11 +84,12 @@ textarea{height:70px;resize:vertical}
 </div>
 
 <div id="help-area" class="help-panel">
-    <h3 style="margin-top:0;color:#2980b9">📖 2.0版 使用說明</h3>
+    <h3 style="margin-top:0;color:#2980b9">📖 2.1版 使用說明</h3>
     <ul class="help-list">
         <li><b>1. 建立資料：</b>點選「設定」，支援快速加入排組分隔線。</li>
         <li><b>2. 點名操作：</b>點擊設為「實到」；開啟「⚠️ 事故」模式可標記休假、衛哨等。</li>
-        <li><b>3. 快速回報：</b>
+        <li><b>3. 排序功能：</b>開啟「🔃 排序」時，所有「未到」人員(不分階級)會自動排到最上方，實到者(包含軍官)會沉到下方。</li>
+        <li><b>4. 快速回報：</b>
             <ul>
                 <li>**營士督回報：** 事故備註請填「21收」「24收」以利統計。</li>
                 <li>**一鍵備份：** 設定頁面新增一鍵備份按鈕，直接複製代碼。</li>
@@ -109,22 +110,22 @@ textarea{height:70px;resize:vertical}
     <div style="font-size:0.85rem;color:#7f8c8d;margin-bottom:10px">提示：可直接從 Excel 或 Line 貼上人名，空格隔開。點擊按鈕插入分組線。</div>
 
     <div class="input-group">
-        <div class="input-header"><span style="color:#e74c3c;font-weight:bold">🛑 軍官</span><button class="btn-insert" onclick="insertSep('in-off')">➕ 插入排組</button></div>
+        <div class="input-header"><span style="color:#e74c3c;font-weight:bold">🛑 軍官</span><button class="btn-insert" onclick="insertSep('in-off')">➕ 插入分組</button></div>
         <textarea id="in-off" placeholder="上尉吳○○ 中尉張○○"></textarea>
     </div>
 
     <div class="input-group">
-        <div class="input-header"><span style="color:#3498db;font-weight:bold">🔷 士官</span><button class="btn-insert" onclick="insertSep('in-nco')">➕ 插入排組</button></div>
+        <div class="input-header"><span style="color:#3498db;font-weight:bold">🔷 士官</span><button class="btn-insert" onclick="insertSep('in-nco')">➕ 插入分組</button></div>
         <textarea id="in-nco" placeholder="士官長謝○○"></textarea>
     </div>
 
     <div class="input-group">
-        <div class="input-header"><span style="color:#27ae60;font-weight:bold">🟩 士兵</span><button class="btn-insert" onclick="insertSep('in-sol')">➕ 插入排組</button></div>
+        <div class="input-header"><span style="color:#27ae60;font-weight:bold">🟩 士兵</span><button class="btn-insert" onclick="insertSep('in-sol')">➕ 插入分組</button></div>
         <textarea id="in-sol" placeholder="上兵王小明 一兵李大華"></textarea>
     </div>
 
     <div class="input-group">
-        <div class="input-header"><span style="color:#9b59b6;font-weight:bold">🟣 訓員</span><button class="btn-insert" onclick="insertSep('in-tra')">➕ 插入排組</button></div>
+        <div class="input-header"><span style="color:#9b59b6;font-weight:bold">🟣 訓員</span><button class="btn-insert" onclick="insertSep('in-tra')">➕ 插入分組</button></div>
         <textarea id="in-tra" placeholder="二兵張狗蛋"></textarea>
     </div>
 
@@ -135,7 +136,7 @@ textarea{height:70px;resize:vertical}
     
     <div style="border-top:1px solid #ccc;padding-top:15px;display:flex;gap:10px">
         <button class="btn-big" style="background:#7f8c8d" onclick="exportData()">📤 一鍵備份代碼</button>
-        <button class="btn-big" style="background:#7f8c8d" onclick="importData()">📥 一鍵讀取代碼</button>
+        <button class="btn-big" style="background:#7f8c8d" onclick="importData()">📥 讀取代碼</button>
     </div>
 </div>
 
@@ -153,8 +154,8 @@ textarea{height:70px;resize:vertical}
     <div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部</button></div>
 </div>
 
-<button class="copy-btn" style="background:#8e44ad" onclick="copyCSMReport()">📋 一鍵產出營士督長回報</button>
-<button class="copy-btn" onclick="copyReport()">📋 一鍵產出值星群組回報</button>
+<button class="copy-btn" style="background:#8e44ad" onclick="copyCSMReport()">📋 複製 營士督長回報</button>
+<button class="copy-btn" onclick="copyReport()">📋 複製 值星回報</button>
 
 <div class="stats-box">
     <table class="stats-table"><thead><tr><th>階級</th><th>應到</th><th>實到</th><th>事故</th><th>未點</th></tr></thead><tbody id="stats-body"></tbody></table>
@@ -183,7 +184,7 @@ textarea{height:70px;resize:vertical}
 
 <div id="his-list-modal" class="modal" style="z-index:250"><div class="m-content" style="max-height:80vh;display:flex;flex-direction:column"><h3 style="margin-top:0">📜 已存紀錄</h3><div id="his-items-container" style="overflow-y:auto;flex:1;margin-bottom:10px;border:1px solid #eee;border-radius:6px"></div><button class="btn-big" style="background:#95a5a6" onclick="closeHisList()">關閉</button></div></div>
 
-<div class="warning-footer">⚠️ 產出數據僅供參考，最終由個人負責。</div>
+<div class="warning-footer">⚠️ 數據僅供參考，最終由值星負責。</div>
 
 <script>
 const K_CUR='army_v2_cur',K_HIS='army_v2_his';
@@ -198,7 +199,7 @@ document.addEventListener('DOMContentLoaded',()=>{
 
 // --- New Feature: Insert Separator ---
 function insertSep(id){
-    const name = prompt("請輸入分組/排組名稱 (例如: 一排, 支援排):");
+    const name = prompt("請輸入分組/排組名稱 (例如: 一排, 支援連):");
     if(name){
         const el = document.getElementById(id);
         const val = el.value;
@@ -244,7 +245,7 @@ function copyReport(){
     const abs = getAbsCount();
     if(abs > 0) return alert(`⚠️ 還有 ${abs} 員未點名！\n請按「📢 查未到」按鈕修正。`);
     if(!reportStr) return alert("無資料");
-    navigator.clipboard.writeText(reportStr).then(()=>{alert("✅ 已複製值星群組回報！");}).catch(e=>alert("複製失敗"));
+    navigator.clipboard.writeText(reportStr).then(()=>{alert("✅ 已複製值星回報！");}).catch(e=>alert("複製失敗"));
 }
 function toggleHelp(){document.getElementById('help-area').classList.toggle('show');document.getElementById('setup-area').classList.remove('show');document.getElementById('history-area').classList.remove('show')}
 function toggleSetup(){document.getElementById('setup-area').classList.toggle('show');document.getElementById('help-area').classList.remove('show');document.getElementById('history-area').classList.remove('show')}
@@ -278,61 +279,99 @@ function showMissing(){const m=[...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n] 
 function markAllPresent(){if(confirm("一鍵將未點名設為實到？(保留鎖定/事故)")){const now=new Date();const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if(!D.st[n] && !n.startsWith('-')){D.st[n]='p';D.tm[n]=time}});persist();render()}}
 function toggleSort(){isSorted=!isSorted;const b=document.getElementById('sort-btn');b.innerText=isSorted?"🔃 排序: 未到優先":"🔃 排序: 原序";b.classList.toggle('active');render()}
 
+// --- Improved Render Logic with Cross-Rank Sorting ---
 function render(){
     const c=document.getElementById('roster');c.innerHTML='';
+    
+    // Helper for name processing
     const processName=(r)=>{const m=r.match(/^(.*?)[（\(](.*)[）\)]$/);return m?{name:m[1],sub:m[2]}:{name:r,sub:''}};
-    const renderGroup=(list, cls)=>{
-        let sortedList = [...list];
-        if(isSorted){
-            sortedList = sortedList.filter(x => !x.startsWith('-') && !x.startsWith('#'));
-            sortedList.sort((a,b)=>{
-                const getScore=(n)=>{if(!D.st[n])return 0;if(D.st[n]!=='p')return 1;return 2;}
-                return getScore(a)-getScore(b);
-            });
-        }
-        sortedList.forEach(rawNm=>{
-            // Divider Rendering
-            if(!isSorted && (rawNm.startsWith('-') || rawNm.startsWith('#'))){
-                const sep = document.createElement('div');
-                sep.className = 'sep-row';
-                sep.innerText = rawNm.replace(/[-#]/g, '').trim();
-                c.appendChild(sep);
-                return;
-            }
-            const {name,sub}=processName(rawNm);
-            const b=document.createElement('button');b.className=`p-btn ${cls}`;
-            const s=D.st[rawNm],note=D.nt?D.nt[rawNm]:'',lock=D.lck&&D.lck[rawNm],time=D.tm&&D.tm[rawNm]?D.tm[rawNm]:'';
-            let h=`<span>${name}</span>`;
-            if(sub)h+=`<span class="st-sub">${sub}</span>`;
-            if(s&&s!=='p')h+=`<span class="st-tag">${s}</span>`;
-            if(note)h+=`<span class="st-note">${note}</span>`;
-            if(lock)b.classList.add('st-lock');
-            if(s==='p'&&time)h+=`<span class="st-time">${time}</span>`;
-            b.innerHTML=h;
-            if(s==='p')b.classList.add('st-pre');else if(s)b.classList.add('st-exc');
-            b.onclick=()=>{
-                if(navigator.vibrate)navigator.vibrate(15);
-                if(isM){
-                    cur=rawNm;document.getElementById('m-name').innerText=name;
-                    document.getElementById('custom-r').value='';
-                    document.getElementById('note-input').value=D.nt&&D.nt[rawNm]?D.nt[rawNm]:'';
-                    document.getElementById('lock-status').checked=!!(D.lck&&D.lck[rawNm]);
-                    renderModalOpts();document.getElementById('modal').classList.add('show');
+    
+    // Helper for creating buttons
+    const makeBtn = (rawNm, cls) => {
+        const {name,sub}=processName(rawNm);
+        const b=document.createElement('button');b.className=`p-btn ${cls}`;
+        const s=D.st[rawNm],note=D.nt?D.nt[rawNm]:'',lock=D.lck&&D.lck[rawNm],time=D.tm&&D.tm[rawNm]?D.tm[rawNm]:'';
+        
+        let h=`<span>${name}</span>`;
+        if(sub)h+=`<span class="st-sub">${sub}</span>`;
+        if(s&&s!=='p')h+=`<span class="st-tag">${s}</span>`;
+        if(note)h+=`<span class="st-note">${note}</span>`;
+        if(lock)b.classList.add('st-lock');
+        if(s==='p'&&time)h+=`<span class="st-time">${time}</span>`;
+        
+        b.innerHTML=h;
+        if(s==='p')b.classList.add('st-pre');else if(s)b.classList.add('st-exc');
+        
+        b.onclick=()=>{
+            if(navigator.vibrate)navigator.vibrate(15);
+            if(isM){
+                cur=rawNm;document.getElementById('m-name').innerText=name;
+                document.getElementById('custom-r').value='';
+                document.getElementById('note-input').value=D.nt&&D.nt[rawNm]?D.nt[rawNm]:'';
+                document.getElementById('lock-status').checked=!!(D.lck&&D.lck[rawNm]);
+                renderModalOpts();document.getElementById('modal').classList.add('show');
+            }else{
+                if(D.st[rawNm]==='p'){
+                    if(D.lck&&D.lck[rawNm])return alert("已鎖定！");
+                    D.st[rawNm]=null;delete D.tm[rawNm];
                 }else{
-                    if(D.st[rawNm]==='p'){
-                        if(D.lck&&D.lck[rawNm])return alert("已鎖定！");
-                        D.st[rawNm]=null;delete D.tm[rawNm];
-                    }else{
-                        if(D.lck&&D.lck[rawNm])return alert("已鎖定！");
-                        D.st[rawNm]='p';
-                        const now=new Date();D.tm[rawNm]=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-                    }
-                    persist();render();
+                    if(D.lck&&D.lck[rawNm])return alert("已鎖定！");
+                    D.st[rawNm]='p';
+                    const now=new Date();D.tm[rawNm]=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
                 }
-            };c.appendChild(b)
-        });
+                persist();render();
+            }
+        };
+        return b;
     };
-    renderGroup(D.o,'bg-off');renderGroup(D.n,'bg-nco');renderGroup(D.s,'bg-sol');renderGroup(D.t,'bg-tra');
+
+    // Helper for separators
+    const makeSep = (rawNm) => {
+        const sep = document.createElement('div');
+        sep.className = 'sep-row';
+        sep.innerText = rawNm.replace(/[-#]/g, '').trim();
+        return sep;
+    };
+
+    if(isSorted){
+        // --- Sorted Mode: Mix all ranks and sort by status (Missing > Excused > Present) ---
+        let all = [];
+        D.o.forEach(n=>all.push({n,c:'bg-off'}));
+        D.n.forEach(n=>all.push({n,c:'bg-nco'}));
+        D.s.forEach(n=>all.push({n,c:'bg-sol'}));
+        D.t.forEach(n=>all.push({n,c:'bg-tra'}));
+
+        // Filter out separators in sorted mode for cleaner view
+        all = all.filter(x => !x.n.startsWith('-') && !x.n.startsWith('#'));
+
+        all.sort((a,b)=>{
+            const getScore=(nm)=>{
+                if(!D.st[nm]) return 0;   // Missing (Top)
+                if(D.st[nm]!=='p') return 1; // Accident/Excused (Middle)
+                return 2;                 // Present (Bottom)
+            }
+            return getScore(a.n)-getScore(b.n);
+        });
+
+        all.forEach(item => c.appendChild(makeBtn(item.n, item.c)));
+
+    } else {
+        // --- Default Mode: Render by Rank with Separators ---
+        const renderGroup = (list, cls) => {
+            list.forEach(rawNm => {
+                if(rawNm.startsWith('-') || rawNm.startsWith('#')){
+                    c.appendChild(makeSep(rawNm));
+                } else {
+                    c.appendChild(makeBtn(rawNm, cls));
+                }
+            });
+        };
+        renderGroup(D.o,'bg-off');
+        renderGroup(D.n,'bg-nco');
+        renderGroup(D.s,'bg-sol');
+        renderGroup(D.t,'bg-tra');
+    }
+
     renderCounters();
     updT();filterRoster();
 }
@@ -518,7 +557,7 @@ function showHistoryList(){
     const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';
     const k=Object.keys(h).sort().reverse();
     if(k.length===0){c.innerHTML='<div style="padding:20px;color:#aaa">無紀錄</div>'}else{
-        const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 查鋪'};
+        const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 夜間'};
         k.forEach(key=>{
             const [d,p]=key.split('_'),pt=m[p]||p;
             const dv=document.createElement('div');dv.className='his-item';dv.style.display='flex';dv.style.justifyContent='space-between';dv.style.padding='12px';dv.style.borderBottom='1px solid #eee';
@@ -534,4 +573,3 @@ function deleteHistoryKey(k){if(confirm("確定刪除此紀錄?")){const h=getHi
 </script>
 </body>
 </html>
-
