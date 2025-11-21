@@ -132,7 +132,7 @@ input[type="text"]{margin-bottom:10px}
         <span style="font-size:0.9rem">已存: <b id="history-count" style="color:#e67e22">0</b> 筆</span>
         <button onclick="showHistoryList()" style="background:#3498db;color:white;border:none;padding:5px 10px;border-radius:4px;font-weight:bold">👁️ 清單</button>
     </div>
-    <div class="date-group"><input type="date" id="history-date" class="date-input" style="flex:2"><select id="history-period" class="date-input" style="flex:1.5"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間</option></select></div>
+    <div class="date-group"><input type="date" id="history-date" class="date-input" style="flex:2"><select id="history-period" class="date-input" style="flex:1.5"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間查鋪</option></select></div>
     <div class="h-btn-group"><button class="btn-big" style="background:#27ae60" onclick="saveToDate()">📥 存檔</button><button class="btn-big" style="background:#e67e22" onclick="loadFromDate()">📤 讀取</button></div>
     <div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部</button></div>
 </div>
@@ -518,6 +518,7 @@ function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k]
     ⚠️數據僅供參考，最終由值星負責。
 </div>
 </body></html>
+
 
 
 
