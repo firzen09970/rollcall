@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(正式版1.0)</title><style>
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>部隊點名系統(正式版1.1)</title><style>
 :root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
 body{font-family:sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:40px;transition:0.3s}
 .top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
@@ -55,6 +55,7 @@ input[type="text"]{margin-bottom:10px}
 .help-list{padding-left:20px;margin:0;font-size:0.95rem;line-height:1.8;color:var(--txt)}
 .help-list li{margin-bottom:8px}
 .his-list-modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);display:none;justify-content:center;align-items:center;z-index:250}
+.his-list-modal.show{display:flex}
 .his-content{background:var(--card);width:90%;max-width:350px;border-radius:12px;padding:15px;max-height:80vh;display:flex;flex-direction:column;border:1px solid var(--hl)}
 .his-items{overflow-y:auto;flex:1;margin-bottom:10px;border:1px solid var(--border);border-radius:6px}
 .his-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-bottom:1px solid var(--border);background:var(--card);color:var(--txt)}
@@ -94,8 +95,8 @@ input[type="text"]{margin-bottom:10px}
 <div id="help-area" class="help-panel">
     <h3 style="margin-top:0;color:#2980b9">📖 簡易使用說明</h3>
     <ul class="help-list">
-        <li><b>1. 建立名單：</b>點選「📝 設定」，輸入單位、名單（支援 <code>---排組---</code> 分隔線）及自訂計數器。</li>
-        <li><b>2. 開始點名：</b>點擊姓名設為「實到」。切換「⚠️ 事故」可標註原因、備註（如鎖定）。</li>
+        <li><b>1. 建立資料：</b>點選「📝 設定」，輸入單位與名單，支援 <code>---排組---</code> 格式。</li>
+        <li><b>2. 開始點名：</b>點擊姓名設為「實到」；切換「⚠️ 事故」可標記休假或衛哨。</li>
         <li><b>3. 複製回報：</b>
             <ul>
                 <li>**營士督回報：** 事故人員請在備註欄填寫「21收」「24收」「07收」以利收假統計。</li>
@@ -112,10 +113,10 @@ input[type="text"]{margin-bottom:10px}
     <input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)">
     <h3 style="color:var(--hl)">🛠️ 自訂事故按鈕</h3>
     <textarea id="in-reasons" style="height:50px" placeholder="預設：休假,外宿,補休,衛哨,安官..."></textarea>
-    <h3>輸入名單 (人名用空格分開 支援排組分隔線 --- )</h3>
-    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="---排組名稱---上尉吳○○ 中尉張○○"></textarea>
-    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="---排組名稱--- 士官長謝○○"></textarea>
-    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="----排組名稱--- 上兵王小明 一兵李大華 ---排組名稱--- 上兵陳二貨"></textarea>
+    <h3>輸入名單 (支援排組分隔線 --- )</h3>
+    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="上尉吳○○ 中尉○○『"></textarea>
+    <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="---一排--- 士官長謝○○"></textarea>
+    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="---一排--- 上兵王小明 一兵李大華 ---二排--- 上兵陳二"></textarea>
     <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="二兵張狗蛋"></textarea>
     <h3 style="color:var(--hl)">🔢 計數器設定 (用逗號隔開)</h3>
     <input type="text" id="in-counters" placeholder="例如：便當,T65K2,無線電">
@@ -132,16 +133,16 @@ input[type="text"]{margin-bottom:10px}
         <span style="font-size:0.9rem">已存: <b id="history-count" style="color:#e67e22">0</b> 筆</span>
         <button onclick="showHistoryList()" style="background:#3498db;color:white;border:none;padding:5px 10px;border-radius:4px;font-weight:bold">👁️ 清單</button>
     </div>
-    <div class="date-group"><input type="date" id="history-date" class="date-input" style="flex:2"><select id="history-period" class="date-input" style="flex:1.5"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間查鋪</option></select></div>
+    <div class="date-group"><input type="date" id="history-date" class="date-input" style="flex:2"><select id="history-period" class="date-input" style="flex:1.5"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間</option></select></div>
     <div class="h-btn-group"><button class="btn-big" style="background:#27ae60" onclick="saveToDate()">📥 存檔</button><button class="btn-big" style="background:#e67e22" onclick="loadFromDate()">📤 讀取</button></div>
     <div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部</button></div>
 </div>
 
-<button class="copy-btn" style="background:#8e44ad; margin-bottom: 5px;" onclick="copyCSMReport()">📋 一鍵產出營士督長回報內容</button>
-<button class="copy-btn" onclick="copyReport()">📋 一鍵產出值星群組回報內容</button>
+<button class="copy-btn" style="background:#8e44ad; margin-bottom: 5px;" onclick="copyCSMReport()">📋 營士督長回報內容</button>
+<button class="copy-btn" onclick="copyReport()">📋 一鍵複製值星群組回報內容</button>
 
 <div class="stats-box">
-    <table class="stats-table"><thead><tr><th>階級</th><th>應到</th><th>實到</th><th>事故</th><th>未點</th></tr></thead><tbody id="stats-body"></tbody></table>
+    <table class="stats-table"><thead><tr><th>階級</th><th>應</th><th>實</th><th>故</th><th>未</th></tr></thead><tbody id="stats-body"></tbody></table>
     <div class="progress-bar" id="p-bar"></div>
 </div>
 <div id="detail-board" class="detail-board"><b>📋 事故明細:</b> <div id="detail-tags" style="margin-top:5px"></div></div>
@@ -349,7 +350,7 @@ function updT(){
     const tot = R.tot;
     const r=document.getElementById('stats-body');
     const row=(l,c,d)=>`<tr><td class="${c}">${l}</td><td>${d.t}</td><td class="c-pre">${d.p}</td><td class="c-exc">${d.e}</td><td class="c-abs">${d.t-d.p-d.e}</td></tr>`;
-    r.innerHTML=row('軍官','r-off',R.o)+row('士官','r-nco',R.n)+row('士兵','r-sol',R.s)+row('訓員','r-tra',R.t)+`<tr style="background:#eee;color:#000"><td class="r-tot">合計</td><td class="r-tot">${tot.t}</td><td class="r-tot c-pre">${tot.p}</td><td class="r-tot c-exc">${tot.e}</td><td class="r-tot c-abs">${tot.t-tot.p-tot.e}</td></tr>`;
+    r.innerHTML=row('軍官','r-off',R.o)+row('士官','r-nco',R.n)+row('士兵','r-sol',R.s)+row('訓員','r-tra',R.t)+`<tr style="background:#eee;color:#000"><td class="r-tot">合</td><td class="r-tot">${tot.t}</td><td class="r-tot c-pre">${tot.p}</td><td class="r-tot c-exc">${tot.e}</td><td class="r-tot c-abs">${tot.t-tot.p-tot.e}</td></tr>`;
     const pb=document.getElementById('p-bar');
     if(tot.t>0){const pp=(tot.p/tot.t)*100,ep=(tot.e/tot.t)*100,ap=((tot.t-tot.p-tot.e)/tot.t)*100;pb.innerHTML=`<div class="pb-p" style="width:${pp}%"></div><div class="pb-e" style="width:${ep}%"></div><div class="pb-a" style="width:${ap}%"></div>`;}
     
@@ -452,7 +453,7 @@ function copyCSMReport(){
     // List of all present members
     const allPresent = allPersonnel.filter(n => D.st[n] === 'p' && !n.startsWith('-') && !n.startsWith('#'));
     const presentNames = allPresent.map(getName);
-    report += `（${presentNames.length > 0 ? presentNames[0] : '無'}等${allPresent.length}員）\n\n`;
+    report += `（${presentNames.length > 0 ? getName(presentNames[0]) : '無'}等${allPresent.length}員）\n\n`;
     
     // 3. Return Time Breakdown (21/24/07)
     const lists = [
@@ -509,7 +510,7 @@ function copyCSMReport(){
 }
 
 
-function showHistoryList(){const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';const k=Object.keys(h).sort().reverse();if(k.length===0){c.innerHTML='<div style="padding:20px;color:#aaa">無紀錄</div>'}else{const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 夜間'};k.forEach(key=>{const [d,p]=key.split('_'),pt=m[p]||p;const dv=document.createElement('div');dv.className='his-item';dv.innerHTML=`<div class="his-info" onclick=\"loadHistoryKey('${key}','${d} ${pt}')\"><div class=\"his-time\">${d}</div><div class=\"his-period\">${pt}</div></div><button style=\"background:#c0392b;color:white;border:none;padding:5px;border-radius:4px;margin-left:10px\" onclick=\"deleteHistoryKey('${key}')\">🗑️</button>`;c.appendChild(dv)})};document.getElementById('his-list-modal').classList.add('show')}
+function showHistoryList(){const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';const k=Object.keys(h).sort().reverse();if(k.length===0){c.innerHTML='<div style="padding:20px;color:#aaa">無紀錄</div>'}else{const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 夜間'};k.forEach(key=>{const [d,p]=key.split('_'),pt=m[p]||p;const dv=document.createElement('div');dv.className='his-item';dv.innerHTML=`<div class="his-info" onclick="loadHistoryKey('${key}','${d} ${pt}')"><div class="his-time">${d}</div><div class="his-period">${pt}</div></div><button style="background:#c0392b;color:white;border:none;padding:5px;border-radius:4px;margin-left:10px" onclick="deleteHistoryKey('${key}')">🗑️</button>`;c.appendChild(dv)})};document.getElementById('his-list-modal').classList.add('show')}
 function closeHisList(){document.getElementById('his-list-modal').classList.remove('show')}
 function loadHistoryKey(k,s){const h=getHis();if(!h[k])return alert("遺失");if(confirm(`還原 [${s}] ?`)){D=h[k];persist();render();fillSetup();alert("已讀取");closeHisList();toggleHistory()}}
 function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
@@ -518,8 +519,3 @@ function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k]
     ⚠️數據僅供參考，最終由值星負責。
 </div>
 </body></html>
-
-
-
-
-
