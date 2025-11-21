@@ -112,10 +112,10 @@ input[type="text"]{margin-bottom:10px}
     <input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)">
     <h3 style="color:var(--hl)">🛠️ 自訂事故按鈕</h3>
     <textarea id="in-reasons" style="height:50px" placeholder="預設：休假,外宿,補休,衛哨,安官..."></textarea>
-    <h3>輸入名單 (支援排組分隔線 --- )</h3>
-    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="---排組名稱---上尉吳○○ 中尉○○"></textarea>
+    <h3>輸入名單 (人名用空格分開 支援排組分隔線 --- )</h3>
+    <div style="color:#e74c3c">🛑 軍官</div><textarea id="in-off" placeholder="---排組名稱---上尉吳○○ 中尉張○○"></textarea>
     <div style="color:#3498db">🔷 士官</div><textarea id="in-nco" placeholder="---排組名稱--- 士官長謝○○"></textarea>
-    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="----排組名稱--- 上兵王小明 一兵李大華 ---排組名稱--- 上兵陳二"></textarea>
+    <div style="color:#27ae60">🟩 士兵</div><textarea id="in-sol" placeholder="----排組名稱--- 上兵王小明 一兵李大華 ---排組名稱--- 上兵陳二貨"></textarea>
     <div style="color:#9b59b6">🟣 訓員</div><textarea id="in-tra" placeholder="二兵張狗蛋"></textarea>
     <h3 style="color:var(--hl)">🔢 計數器設定 (用逗號隔開)</h3>
     <input type="text" id="in-counters" placeholder="例如：便當,T65K2,無線電">
@@ -518,6 +518,7 @@ function deleteHistoryKey(k){if(confirm("刪除?")){const h=getHis();delete h[k]
     ⚠️數據僅供參考，最終由值星負責。
 </div>
 </body></html>
+
 
 
 
