@@ -3,573 +3,676 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>部隊點名系統(優化版2.1)</title>
+<title>部隊點名管理系統 v2.6</title>
 <style>
-:root{--bg:#f0f2f5;--txt:#333;--card:#fff;--border:#eee;--hl:#2c3e50;--btn-txt:#fff}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--txt);margin:0;padding:10px;text-align:center;user-select:none;padding-bottom:40px;transition:0.3s;-webkit-tap-highlight-color:transparent}
-.top-bar{display:flex;gap:5px;margin-bottom:10px;justify-content:center;flex-wrap:wrap}
-.btn-big{background:var(--hl);color:var(--btn-txt);border:none;padding:12px;border-radius:8px;font-weight:bold;flex:1;cursor:pointer;font-size:0.95rem;min-width:80px;box-shadow:0 2px 5px rgba(0,0,0,0.1);transition:transform 0.1s}
-.btn-big:active{transform:scale(0.98)}
-.stats-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:5px;box-shadow:0 2px 8px rgba(0,0,0,.1);margin-bottom:10px;position:sticky;top:0;z-index:99;overflow-x:auto}
-.stats-table{width:100%;border-collapse:collapse;font-size:.9rem;color:var(--txt)}
-.stats-table th,.stats-table td{padding:8px 2px;border-bottom:1px solid var(--border);text-align:center}
-.stats-table th{background:var(--bg);color:var(--txt);font-size:0.8rem}
-.r-off{color:#e74c3c;font-weight:bold} .r-nco{color:#3498db;font-weight:bold} .r-sol{color:#27ae60;font-weight:bold} .r-tra{color:#9b59b6;font-weight:bold}
-.r-tot{font-weight:bold;background:var(--bg)}
-.c-pre{color:#27ae60;background:rgba(39,174,96,.1)} .c-exc{color:#f39c12;background:rgba(243,156,18,.1)} .c-abs{color:#c0392b;opacity:.8}
-.detail-board{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px;margin-bottom:15px;display:none;text-align:left;font-size:.9rem}
-.detail-row{background:var(--bg);padding:8px 10px;border-radius:6px;border:1px solid var(--border);color:var(--txt);font-size:.95rem;margin-bottom:6px;line-height:1.4}
-.breakdown{font-size:0.85rem;opacity:0.8;margin-left:5px;font-weight:normal}
-.name-list{font-weight:normal;font-size:.9rem;margin-top:4px;padding-top:4px;border-top:1px dashed var(--border);display:block;color:var(--txt)}
-/* Setup Area Styles */
-.setup-area{background:var(--card);padding:15px;border-radius:12px;margin-bottom:20px;display:none;border:2px solid var(--hl);text-align:left;box-shadow:0 5px 15px rgba(0,0,0,0.2)}
-.setup-area.show{display:block;animation:fadeIn 0.3s}
-.input-group {margin-bottom: 15px; position: relative;}
-.input-header {display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;}
-.btn-insert {font-size:0.8rem; padding:4px 8px; background:#95a5a6; color:white; border:none; border-radius:4px; cursor:pointer;}
-textarea, input[type="text"]{width:100%;padding:12px;border-radius:8px;border:1px solid #ccc;box-sizing:border-box;background:#fafafa;color:var(--txt);font-size:1rem;font-family:inherit}
-textarea:focus, input[type="text"]:focus{outline:none;border-color:var(--hl);background:#fff}
-textarea{height:70px;resize:vertical}
-/* Rosters */
-.control-bar{display:flex;gap:8px;margin-bottom:15px;justify-content:center;flex-wrap:wrap}
-.btn-mode{padding:8px 12px;border-radius:20px;border:2px solid #7f8c8d;background:0 0;font-weight:bold;color:#555;cursor:pointer;font-size:0.9rem;transition:0.2s}
-.btn-mode.active{background:#e67e22;color:#fff;border-color:#e67e22}
-.roster-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:8px}
-.p-btn{min-height:75px;border:none;border-radius:8px;color:#fff;font-size:1rem;font-weight:bold;cursor:pointer;position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px;box-shadow:0 2px 4px rgba(0,0,0,0.1)}
-.bg-off{background:#e74c3c} .bg-nco{background:#3498db} .bg-sol{background:#27ae60} .bg-tra{background:#9b59b6}
-.st-pre{background:#555!important;opacity:.5;text-decoration:line-through}
-.st-pre::after{content:'✔';position:absolute;top:4px;right:4px;font-size:0.8rem}
-.st-exc{background:#f39c12!important;border:2px solid #d35400;color:#fff}
-.st-tag{font-size:.7rem;background:rgba(0,0,0,.25);padding:2px 6px;border-radius:4px;margin-top:3px}
-.st-note{font-size:.7rem;color:#fff;background:rgba(0,0,0,0.6);padding:1px 5px;border-radius:3px;margin-top:2px;max-width:95%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.st-sub{font-size:0.75rem;opacity:0.9;font-weight:normal;margin-top:1px}
-.st-lock::before{content:'🔒';position:absolute;top:4px;left:4px;font-size:0.8rem}
-.st-time{font-size:0.65rem;position:absolute;bottom:2px;right:4px;opacity:0.8;font-weight:normal}
-.sep-row{grid-column:1/-1;background:#ecf0f1;color:#2c3e50;padding:6px;font-size:0.9rem;font-weight:bold;border-radius:6px;margin:8px 0 4px 0;text-align:center;border-left:4px solid var(--hl)}
-/* Modals */
-.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.6);display:none;justify-content:center;align-items:center;z-index:200;backdrop-filter:blur(2px)}
-.modal.show{display:flex;animation:fadeIn 0.2s}
-.m-content{background:var(--card);padding:20px;border-radius:16px;width:85%;max-width:340px;box-shadow:0 10px 25px rgba(0,0,0,0.2)}
-.opts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px}
-.o-btn{padding:12px 2px;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:.9rem;font-weight:bold}
-.bg-v{background:#e67e22} .bg-g{background:#2c3e50} .bg-s{background:#c0392b} .bg-d{background:#8e44ad}
-.history-panel{background:var(--bg);padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid var(--hl);display:none}
-.history-panel.show{display:block}
-.copy-btn{width:100%;padding:12px;background:#27ae60;color:white;border:none;border-radius:8px;font-weight:bold;margin-bottom:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-size:1rem;box-shadow:0 3px 6px rgba(39,174,96,0.3)}
-.copy-btn:active{transform:translateY(2px)}
-.search-input{width:100%;padding:12px;border-radius:30px;border:2px solid #3498db;text-align:center;font-size:1rem;background:var(--card);color:var(--txt);margin-bottom:10px}
-.progress-bar{height:8px;width:100%;background:#eee;border-radius:4px;margin-top:5px;display:flex;overflow:hidden}
-.pb-p{background:#27ae60;height:100%} .pb-e{background:#f39c12;height:100%} .pb-a{background:#c0392b;height:100%}
-.switch-label{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:15px;background:#f0f0f0;padding:10px;border-radius:8px;cursor:pointer;color:#333}
-/* Counters */
-.counter-box{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:20px;padding:10px;background:var(--card);border-top:2px solid var(--border)}
-.cnt-item{display:flex;flex-direction:column;align-items:center;background:var(--bg);padding:5px 10px;border-radius:8px;border:1px solid var(--border);min-width:80px}
-.cnt-val{font-size:1.5rem;font-weight:bold;margin:5px 0}
-.cnt-ctrl{display:flex;gap:5px}
-.cnt-btn{width:30px;height:30px;border:none;border-radius:50%;font-weight:bold;cursor:pointer;background:var(--hl);color:#fff}
-/* Helpers */
-.help-panel{background:var(--card);padding:15px;border-radius:12px;margin-bottom:20px;border:2px solid var(--hl);display:none;text-align:left;box-shadow:0 4px 10px rgba(0,0,0,0.1)}
-.help-panel.show{display:block}
-.help-list{padding-left:20px;margin:0;font-size:0.95rem;line-height:1.8;color:var(--txt)}
-.warning-footer{position:fixed;bottom:0;left:0;width:100%;background:#f1c40f;color:#333;padding:5px 0;font-size:0.85rem;font-weight:bold;text-align:center;box-shadow:0 -2px 5px rgba(0,0,0,0.1);z-index:300}
-@keyframes fadeIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+:root{
+  --primary: #f5a962;
+  --bg: #f9f7f3;
+  --card: #ffffff;
+  --text: #3d3d3d;
+  --text-light: #7f7f7f;
+  --border: #ebe7e0;
+  --danger: #e74c3c;
+  --success: #27ae60;
+  --warning: #f39c12;
+  --info: #3498db;
+  --purple: #9b59b6;
+}
+
+*{box-sizing:border-box}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  margin:0;
+  padding:0;
+  text-align:center;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+  padding-bottom:80px; /* 底部空間 */
+}
+
+/* ========== 頁面結構 ========== */
+.page-container{
+  max-width:800px;
+  margin:0 auto;
+  padding:15px;
+}
+
+/* ========== 頂部 Header ========== */
+.header-section{
+  background:var(--card);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:15px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.03);
+  border:1px solid var(--border);
+  text-align:left;
+}
+
+.page-title{
+  font-size:1.4rem;
+  font-weight:800;
+  color:var(--text);
+  margin:0 0 10px 0;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.search-input{
+  width:100%;
+  padding:12px;
+  border:2px solid var(--border);
+  border-radius:12px;
+  background:var(--bg);
+  font-size:1rem;
+  text-align:center;
+  transition:0.2s;
+}
+.search-input:focus{ outline:none; border-color:var(--primary); background:#fff; }
+
+/* ========== 數據儀表板 ========== */
+.stats-dashboard {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.stat-card {
+    background: var(--card);
+    padding: 10px 5px;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.stat-label { font-size: 0.75rem; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }
+.stat-value { font-size: 1.4rem; font-weight: 800; line-height: 1.1; }
+
+.val-total { color: var(--text); }
+.val-present { color: var(--success); }
+.val-excuse { color: var(--warning); }
+.val-absent { color: var(--danger); }
+
+/* ========== 階級統計與進度條 ========== */
+.rank-box {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid var(--border);
+    font-size: 0.85rem;
+}
+.rank-table { width: 100%; border-collapse: collapse; }
+.rank-table th { color: var(--text-light); font-weight: 600; padding: 4px; }
+.rank-table td { font-weight: 700; padding: 6px 4px; border-top: 1px solid var(--border); }
+
+.progress-container { height: 8px; width: 100%; display: flex; border-radius: 4px; overflow: hidden; margin-top: 10px; }
+.pb-seg { height: 100%; }
+
+/* ========== 控制按鈕區 ========== */
+.control-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.action-btn {
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.1s;
+}
+.action-btn:active { transform: scale(0.96); }
+
+/* ========== 點名列表 ========== */
+.roster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+    gap: 8px;
+    padding-bottom: 20px;
+}
+
+.roster-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    min-height: 80px;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+.roster-card:active { transform: scale(0.95); }
+
+/* 階級條 */
+.rank-strip { position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 12px 12px 0 0; }
+.rs-off { background: var(--danger); }
+.rs-nco { background: var(--info); }
+.rs-sol { background: var(--success); }
+.rs-tra { background: var(--purple); }
+
+.card-name { font-size: 1rem; font-weight: 700; color: var(--text); z-index: 1; margin-top: 4px; }
+.card-sub { font-size: 0.75rem; color: var(--text-light); }
+
+/* 狀態樣式 */
+.st-pre { background: #f0f2f5; opacity: 0.6; }
+.st-pre .card-name { text-decoration: line-through; color: var(--text-light); }
+.st-pre::after { content: '✓'; position: absolute; font-size: 2rem; color: var(--success); opacity: 0.3; }
+
+.st-exc { background: #fff8e1; border: 1px solid var(--warning); }
+.tag-exc { 
+    background: var(--warning); color: white; font-size: 0.7rem; 
+    padding: 2px 6px; border-radius: 4px; margin-top: 4px; 
+    max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.icon-lock { position: absolute; top: 5px; right: 5px; font-size: 0.8rem; }
+.time-stamp { position: absolute; bottom: 3px; right: 5px; font-size: 0.6rem; opacity: 0.7; }
+
+/* 分隔線 */
+.sep-row { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin: 15px 0 5px 0; color: var(--text-light); font-weight: 600; font-size: 0.9rem; }
+.sep-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ========== Modal 彈窗 ========== */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(3px); }
+.modal.show { display: flex; animation: fadeIn 0.2s; }
+.modal-box { background: var(--card); width: 90%; max-width: 360px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+
+/* 事故按鈕網格 */
+.modal-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
+.opt-btn { 
+    padding: 12px 0; border: none; border-radius: 8px; 
+    font-weight: 600; color: white; cursor: pointer; font-size: 0.95rem; 
+    transition: 0.1s;
+}
+.opt-btn:active { transform: scale(0.95); opacity: 0.9; }
+
+/* ========== 設定/歷史面板 ========== */
+.panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; opacity: 0; pointer-events: none; transition: 0.3s; }
+.panel-overlay.show { opacity: 1; pointer-events: auto; }
+.panel-content { 
+    position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); 
+    border-radius: 20px 20px 0 0; padding: 20px; max-height: 85vh; overflow-y: auto; 
+    transform: translateY(100%); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
+}
+.panel-overlay.show .panel-content { transform: translateY(0); }
+
+.input-group { margin-bottom: 15px; text-align: left; }
+.form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-size: 1rem; }
+textarea.form-control { resize: vertical; }
+
+/* 浮動按鈕 */
+.fab-container { position: fixed; top: 15px; right: 15px; z-index: 90; display: flex; gap: 8px; }
+.fab-btn { width: 40px; height: 40px; border-radius: 50%; border: none; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.15); font-size: 1.2rem; cursor: pointer; }
+
+/* Toast */
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: #333; color: white; padding: 10px 20px; border-radius: 30px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 300; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+/* 事故明細板 */
+.detail-board { background: #fff8f0; border: 1px solid #ffe0b2; border-radius: 12px; padding: 12px; margin-bottom: 15px; text-align: left; display: none; }
+.detail-item { font-size: 0.9rem; margin-bottom: 4px; color: var(--text); line-height: 1.4; }
+
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
 </style>
 </head>
 <body>
 
-<div class="top-bar">
-    <button class="btn-big" onclick="toggleSetup()">⚙️ 設定</button>
-    <button class="btn-big" style="background:#8e44ad" onclick="toggleHistory()">📅 歷史</button>
-    <button class="btn-big" style="background:#3498db" onclick="toggleHelp()">📖 說明</button>
+<!-- 頂部按鈕 -->
+<div class="fab-container">
+    <button class="fab-btn" onclick="togglePanel('setup-panel')">⚙️</button>
+    <button class="fab-btn" onclick="togglePanel('history-panel')">📅</button>
+    <button class="fab-btn" onclick="togglePanel('help-panel')">❔</button>
 </div>
 
-<div id="help-area" class="help-panel">
-    <h3 style="margin-top:0;color:#2980b9">📖 2.1版 使用說明</h3>
-    <ul class="help-list">
-        <li><b>1. 建立資料：</b>點選「設定」，支援快速加入排組分隔線。</li>
-        <li><b>2. 點名操作：</b>點擊設為「實到」；開啟「⚠️ 事故」模式可標記休假、衛哨等。</li>
-        <li><b>3. 排序功能：</b>開啟「🔃 排序」時，所有「未到」人員(不分階級)會自動排到最上方，實到者(包含軍官)會沉到下方。</li>
-        <li><b>4. 快速回報：</b>
-            <ul>
-                <li>**營士督回報：** 事故備註請填「21收」「24收」以利統計。</li>
-                <li>**一鍵備份：** 設定頁面新增一鍵備份按鈕，直接複製代碼。</li>
-            </ul>
-        </li>
-    </ul>
-    <div style="text-align:center;margin-top:15px"><button class="btn-big" style="background:#34495e;width:100px" onclick="toggleHelp()">關閉</button></div>
-</div>
-
-<div id="setup-area" class="setup-area">
-    <h3 style="margin-top:0;color:var(--hl)">🏢 單位設定</h3>
-    <div class="input-group"><input type="text" id="in-unit" placeholder="輸入單位名稱 (例如：步一連)"></div>
+<div class="page-container">
     
-    <h3 style="color:var(--hl)">🛠️ 自訂事故按鈕</h3>
-    <div class="input-group"><textarea id="in-reasons" style="height:50px" placeholder="預設：休假,外宿,補休,衛哨,安官..."></textarea></div>
-
-    <h3>人員名單設定</h3>
-    <div style="font-size:0.85rem;color:#7f8c8d;margin-bottom:10px">提示：可直接從 Excel 或 Line 貼上人名，空格隔開。點擊按鈕插入分組線。</div>
-
-    <div class="input-group">
-        <div class="input-header"><span style="color:#e74c3c;font-weight:bold">🛑 軍官</span><button class="btn-insert" onclick="insertSep('in-off')">➕ 插入分組</button></div>
-        <textarea id="in-off" placeholder="上尉吳○○ 中尉張○○"></textarea>
+    <!-- 標題與搜尋 -->
+    <div class="header-section">
+        <h1 class="page-title">📝 部隊點名系統 <span style="font-size:0.8rem;background:var(--primary);color:white;padding:2px 8px;border-radius:10px">v2.6</span></h1>
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 輸入姓名快速查找..." oninput="filterRoster()">
     </div>
 
-    <div class="input-group">
-        <div class="input-header"><span style="color:#3498db;font-weight:bold">🔷 士官</span><button class="btn-insert" onclick="insertSep('in-nco')">➕ 插入分組</button></div>
-        <textarea id="in-nco" placeholder="士官長謝○○"></textarea>
+    <!-- 儀表板 -->
+    <div class="stats-dashboard">
+        <div class="stat-card">
+            <span class="stat-label">應到</span><span class="stat-value val-total" id="stat-total">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">已到</span><span class="stat-value val-present" id="stat-present">0</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-label">事故</span><span class="stat-value val-excuse" id="stat-excuse">0</span>
+        </div>
+        <div class="stat-card" style="background:#fff5f5;border-color:#ffccd5">
+            <span class="stat-label">未到</span><span class="stat-value val-absent" id="stat-absent">0</span>
+        </div>
     </div>
 
-    <div class="input-group">
-        <div class="input-header"><span style="color:#27ae60;font-weight:bold">🟩 士兵</span><button class="btn-insert" onclick="insertSep('in-sol')">➕ 插入分組</button></div>
-        <textarea id="in-sol" placeholder="上兵王小明 一兵李大華"></textarea>
+    <!-- 階級統計 -->
+    <div class="rank-box">
+        <div class="progress-container" id="p-bar"></div>
+        <table class="rank-table" style="margin-top:10px">
+            <thead><tr><th>階級</th><th>應到</th><th style="color:var(--success)">實到</th><th style="color:var(--warning)">事故</th><th style="color:var(--danger)">未到</th></tr></thead>
+            <tbody id="rank-stats-body"></tbody>
+        </table>
     </div>
 
-    <div class="input-group">
-        <div class="input-header"><span style="color:#9b59b6;font-weight:bold">🟣 訓員</span><button class="btn-insert" onclick="insertSep('in-tra')">➕ 插入分組</button></div>
-        <textarea id="in-tra" placeholder="二兵張狗蛋"></textarea>
+    <!-- 事故明細 -->
+    <div id="detail-board" class="detail-board">
+        <strong style="color:#d35400">📌 事故明細：</strong>
+        <div id="detail-tags" style="margin-top:6px"></div>
     </div>
 
-    <h3 style="color:var(--hl)">🔢 計數器設定</h3>
-    <div class="input-group"><input type="text" id="in-counters" placeholder="例如：便當,T65K2,無線電"></div>
-    
-    <button class="btn-big" style="background:#27ae60;margin-bottom:15px;width:100%" onclick="saveData()">✅ 儲存並生成點名板</button>
-    
-    <div style="border-top:1px solid #ccc;padding-top:15px;display:flex;gap:10px">
-        <button class="btn-big" style="background:#7f8c8d" onclick="exportData()">📤 一鍵備份代碼</button>
-        <button class="btn-big" style="background:#7f8c8d" onclick="importData()">📥 讀取代碼</button>
+    <!-- 按鈕區 -->
+    <div class="control-grid">
+        <button class="action-btn" id="mode-btn" onclick="toggleMode()" style="background:var(--text);grid-column:1/-1">⚠️ 事故模式：關</button>
+        <button class="action-btn" style="background:var(--success)" onclick="markAllPresent()">⚡ 餘員全到</button>
+        <button class="action-btn" style="background:var(--danger)" onclick="showMissing()">📢 查未到</button>
+        <button class="action-btn" style="background:var(--info)" onclick="toggleSort()" id="sort-btn">🔃 排序：原序</button>
+        <button class="action-btn" style="background:var(--text-light)" onclick="resetAll()">🔄 重置狀態</button>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-bottom:20px">
+        <button class="action-btn" style="flex:1;background:var(--purple)" onclick="copyCSMReport()">📋 營士督回報</button>
+        <button class="action-btn" style="flex:1;background:var(--primary)" onclick="copyReport()">📋 值星回報</button>
+    </div>
+
+    <!-- 名單 -->
+    <div id="roster" class="roster-grid"></div>
+
+</div>
+
+<!-- 設定面板 -->
+<div id="setup-panel" class="panel-overlay">
+    <div class="panel-content">
+        <h2 style="margin:0 0 20px 0">⚙️ 系統設定</h2>
+        <div class="input-group">
+            <label>單位名稱</label><input type="text" id="in-unit" class="form-control" placeholder="例如：步一連">
+        </div>
+        <div class="input-group">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>🛑 軍官</strong><span style="color:var(--info);cursor:pointer" onclick="insertSep('in-off')">+分組</span></div>
+            <textarea id="in-off" class="form-control" style="height:60px"></textarea>
+        </div>
+        <div class="input-group">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>🔷 士官</strong><span style="color:var(--info);cursor:pointer" onclick="insertSep('in-nco')">+分組</span></div>
+            <textarea id="in-nco" class="form-control" style="height:60px"></textarea>
+        </div>
+        <div class="input-group">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>🟩 士兵</strong><span style="color:var(--info);cursor:pointer" onclick="insertSep('in-sol')">+分組</span></div>
+            <textarea id="in-sol" class="form-control" style="height:80px"></textarea>
+        </div>
+        <div class="input-group">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>🟣 訓員</strong><span style="color:var(--info);cursor:pointer" onclick="insertSep('in-tra')">+分組</span></div>
+            <textarea id="in-tra" class="form-control" style="height:60px"></textarea>
+        </div>
+        <div class="input-group">
+            <label>自訂事故 (逗號分隔)</label>
+            <input type="text" id="in-reasons" class="form-control">
+        </div>
+        <button class="action-btn" style="width:100%;background:var(--success);margin-bottom:10px" onclick="saveData()">✅ 儲存設定</button>
+        <div style="display:flex;gap:10px">
+            <button class="action-btn" style="flex:1;background:var(--text-light)" onclick="exportData()">📤 備份</button>
+            <button class="action-btn" style="flex:1;background:var(--text-light)" onclick="importData()">📥 讀取</button>
+        </div>
+        <button class="action-btn" style="width:100%;background:transparent;color:var(--text);margin-top:10px" onclick="togglePanel('setup-panel')">關閉</button>
     </div>
 </div>
 
-<div id="history-area" class="history-panel">
-    <h3>📅 歷史紀錄</h3>
-    <div style="display:flex;justify-content:space-between;margin-bottom:10px;background:var(--card);padding:8px;border-radius:6px;border:1px solid var(--border)">
-        <span style="font-size:0.9rem">已存: <b id="history-count" style="color:#e67e22">0</b> 筆</span>
-        <button onclick="showHistoryList()" style="background:#3498db;color:white;border:none;padding:5px 10px;border-radius:4px;font-weight:bold">👁️ 清單</button>
+<!-- 歷史面板 -->
+<div id="history-panel" class="panel-overlay">
+    <div class="panel-content">
+        <h2 style="margin:0 0 15px 0">📅 歷史紀錄 (<span id="history-count">0</span>)</h2>
+        <div style="background:var(--bg);padding:15px;border-radius:10px;margin-bottom:15px">
+            <input type="date" id="history-date" class="form-control" style="margin-bottom:10px">
+            <select id="history-period" class="form-control" style="margin-bottom:10px">
+                <option value="am">☀️ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間</option>
+            </select>
+            <div style="display:flex;gap:10px">
+                <button class="action-btn" style="flex:1;background:var(--success)" onclick="saveToDate()">📥 存檔</button>
+                <button class="action-btn" style="flex:1;background:var(--primary)" onclick="loadFromDate()">📤 讀取</button>
+            </div>
+        </div>
+        <button class="action-btn" style="width:100%;background:var(--info);margin-bottom:10px" onclick="showHistoryList()">📜 所有紀錄清單</button>
+        <button class="action-btn" style="width:100%;background:var(--danger)" onclick="clearHistory()">🗑️ 清空歷史</button>
+        <button class="action-btn" style="width:100%;background:transparent;color:var(--text);margin-top:10px" onclick="togglePanel('history-panel')">關閉</button>
     </div>
-    <div style="display:flex;gap:5px;margin-bottom:10px">
-        <input type="date" id="history-date" style="flex:2;padding:10px;border-radius:6px;border:1px solid #ccc">
-        <select id="history-period" style="flex:1.5;padding:10px;border-radius:6px;border:1px solid #ccc;background:#fff"><option value="am">☀ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間</option></select>
+</div>
+
+<!-- 說明面板 -->
+<div id="help-panel" class="panel-overlay">
+    <div class="panel-content">
+        <h2>📖 使用說明</h2>
+        <div style="text-align:left;line-height:1.6">
+            <p><strong>1. 設定名單：</strong>右上角 ⚙️ 設定，貼上名字(空格分隔)。</p>
+            <p><strong>2. 點名：</strong>點卡片切換狀態。開啟「事故模式」可標記原因。</p>
+            <p><strong>3. 顏色說明：</strong>
+                <br>🟠 休假類 (休假, 外宿...)
+                <br>🟢 勤務類 (衛哨, 安官...)
+                <br>🔵 公務類 (公差, 受訓...)
+                <br>🔴 醫療類 (轉診, 住院...)
+            </p>
+            <p><strong>4. 回報：</strong>底部按鈕可一鍵複製。</p>
+        </div>
+        <button class="action-btn" style="width:100%;background:var(--text-light);margin-top:20px" onclick="togglePanel('help-panel')">關閉</button>
     </div>
-    <div style="display:flex;gap:10px"><button class="btn-big" style="background:#27ae60" onclick="saveToDate()">📥 存檔</button><button class="btn-big" style="background:#e67e22" onclick="loadFromDate()">📤 讀取</button></div>
-    <div style="margin-top:15px;border-top:1px solid #ccc;padding-top:10px"><button class="btn-big" style="background:#c0392b;font-size:0.9rem" onclick="clearHistory()">🗑️ 清除全部</button></div>
 </div>
 
-<button class="copy-btn" style="background:#8e44ad" onclick="copyCSMReport()">📋 複製 營士督長回報</button>
-<button class="copy-btn" onclick="copyReport()">📋 複製 值星回報</button>
-
-<div class="stats-box">
-    <table class="stats-table"><thead><tr><th>階級</th><th>應到</th><th>實到</th><th>事故</th><th>未點</th></tr></thead><tbody id="stats-body"></tbody></table>
-    <div class="progress-bar" id="p-bar"></div>
+<!-- 點名彈窗 -->
+<div id="modal" class="modal">
+    <div class="modal-box">
+        <h3 id="m-name" style="margin:0 0 15px 0;text-align:center;font-size:1.3rem"></h3>
+        <input type="text" id="note-input" class="form-control" placeholder="備註 (如: 21收, 發燒...)" style="margin-bottom:10px">
+        <div style="display:flex;gap:5px;margin-bottom:15px">
+            <input id="custom-r" type="text" class="form-control" placeholder="自訂原因">
+            <button onclick="subCus()" style="width:60px;border:none;background:var(--info);color:white;border-radius:8px">OK</button>
+        </div>
+        <div class="modal-options" id="opts-container"></div>
+        <label style="display:flex;align-items:center;gap:8px;justify-content:center;margin:15px 0;cursor:pointer">
+            <input type="checkbox" id="lock-status" style="transform:scale(1.3)">
+            <span>🔒 鎖定狀態 (重置時保留)</span>
+        </label>
+        <button class="action-btn" style="width:100%;background:#bdc3c7;color:#333" onclick="closeM()">取消</button>
+    </div>
 </div>
-<div id="detail-board" class="detail-board"><b>📋 事故明細:</b> <div id="detail-tags" style="margin-top:5px"></div></div>
 
-<div style="margin-bottom:10px"><input type="text" id="search-input" class="search-input" placeholder="🔍 輸入名字快速找人..." oninput="filterRoster()"></div>
-
-<div class="control-bar">
-    <button id="mode-btn" class="btn-mode" onclick="toggleMode()">⚠️ 事故: 關</button>
-    <button class="btn-mode" style="border-color:#27ae60;color:#27ae60" onclick="markAllPresent()">⚡ 餘員全到</button>
-    <button id="sort-btn" class="btn-mode" style="border-color:#8e44ad;color:#8e44ad" onclick="toggleSort()">🔃 排序: 原序</button>
-    <button class="btn-mode" style="border-color:#c0392b;color:#c0392b" onclick="showMissing()">📢 查未到</button>
-    <button class="btn-mode" style="background:#95a5a6;color:#fff;border:none" onclick="resetAll()">🔄 重置</button>
+<!-- 歷史清單彈窗 -->
+<div id="his-list-modal" class="modal" style="z-index:250">
+    <div class="modal-box" style="max-height:80vh;display:flex;flex-direction:column">
+        <h3 style="margin-top:0">📜 存檔紀錄</h3>
+        <div id="his-items-container" style="overflow-y:auto;flex:1;margin-bottom:15px;border:1px solid var(--border);border-radius:8px"></div>
+        <button class="action-btn" style="background:#bdc3c7;color:#333" onclick="closeHisList()">關閉</button>
+    </div>
 </div>
-<div id="roster" class="roster-grid"></div>
-<div id="counters-area" class="counter-box"></div>
 
-<div id="modal" class="modal"><div class="m-content"><h3 id="m-name"></h3>
-<div style="margin-bottom:10px"><input id="note-input" type="text" placeholder="備註 (如: 21收, 受訓, 發燒...)"></div>
-<div style="display:flex;gap:5px;margin-bottom:10px"><input id="custom-r" style="flex:1;padding:10px;border:1px solid #ccc;border-radius:6px" placeholder="自訂原因"><button onclick="subCus()" style="background:#3498db;color:#fff;border:none;border-radius:4px;width:40px">OK</button></div>
-<div class="opts" id="opts-container"></div>
-<label class="switch-label"><input type="checkbox" id="lock-status"> 🔒 鎖定此狀態</label>
-<button class="o-btn" style="background:#95a5a6;width:100%;margin-top:10px" onclick="closeM()">取消</button></div></div>
-
-<div id="his-list-modal" class="modal" style="z-index:250"><div class="m-content" style="max-height:80vh;display:flex;flex-direction:column"><h3 style="margin-top:0">📜 已存紀錄</h3><div id="his-items-container" style="overflow-y:auto;flex:1;margin-bottom:10px;border:1px solid #eee;border-radius:6px"></div><button class="btn-big" style="background:#95a5a6" onclick="closeHisList()">關閉</button></div></div>
-
-<div class="warning-footer">⚠️ 數據僅供參考，最終由值星負責。</div>
+<!-- Toast -->
+<div id="toast" class="toast"></div>
 
 <script>
 const K_CUR='army_v2_cur',K_HIS='army_v2_his';
-let D={o:[],n:[],s:[],t:[],st:{},nt:{},lck:{},tm:{},cnt:{},u:'',rs:'',cns:''},isM=false,isSorted=false,cur='',reportStr='';
+let D={o:[],n:[],s:[],t:[],st:{},nt:{},lck:{},tm:{},u:'',rs:''},isM=false,isSorted=false,cur='',reportStr='';
 const DEFAULT_REASONS = "休假,外宿,補休,衛哨,安官,戰情,公差,受訓,支援,轉診,住院,隔離";
-const DEFAULT_COUNTERS = "便當,槍枝";
 
 document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('history-date').valueAsDate=new Date();
-    load();updateHisCount();
+    load(); updateHisCount();
 });
 
-// --- New Feature: Insert Separator ---
+// UI Helpers
+function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerText = msg; t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 2000);
+}
+function togglePanel(id) {
+    const p = document.getElementById(id);
+    if(p.classList.contains('show')) p.classList.remove('show');
+    else {
+        document.querySelectorAll('.panel-overlay').forEach(e=>e.classList.remove('show'));
+        p.classList.add('show');
+        if(id==='history-panel') updateHisCount();
+    }
+}
+
+// Data Logic
 function insertSep(id){
-    const name = prompt("請輸入分組/排組名稱 (例如: 一排, 支援連):");
+    const name = prompt("輸入分組名稱 (如: 一排):");
     if(name){
         const el = document.getElementById(id);
         const val = el.value;
-        const start = el.selectionStart;
-        const end = el.selectionEnd;
-        const textToInsert = ` ---${name}--- `;
-        el.value = val.substring(0, start) + textToInsert + val.substring(end);
-        el.focus();
-        el.selectionStart = el.selectionEnd = start + textToInsert.length;
+        const txt = ` ---${name}--- `;
+        el.value = val.slice(0, el.selectionStart) + txt + val.slice(el.selectionEnd);
+        saveData();
     }
 }
-
-// --- Optimized Export/Import ---
 function exportData(){
-    const data={cur:JSON.parse(localStorage.getItem(K_CUR)||'{}'),his:JSON.parse(localStorage.getItem(K_HIS)||'{}')};
-    const str = JSON.stringify(data);
-    if(navigator.clipboard){
-        navigator.clipboard.writeText(str).then(()=>alert("✅ 備份碼已複製到剪貼簿！\n請直接去 Line 或筆記本貼上即可。")).catch(()=>fallbackCopy(str));
-    } else {
-        fallbackCopy(str);
-    }
+    const d=JSON.stringify({cur:JSON.parse(localStorage.getItem(K_CUR)||'{}'),his:JSON.parse(localStorage.getItem(K_HIS)||'{}')});
+    navigator.clipboard.writeText(d).then(()=>showToast("✅ 備份碼已複製")).catch(()=>prompt("複製:",d));
 }
-function fallbackCopy(str){
-    prompt("您的瀏覽器不支援一鍵複製，請手動全選複製下方代碼：", str);
-}
-
 function importData(){
-    const str=prompt("請貼上備份碼:");
-    if(str){
-        try{
-            const d=JSON.parse(str);
-            if(d.cur&&d.his){
-                localStorage.setItem(K_CUR,JSON.stringify(d.cur));
-                localStorage.setItem(K_HIS,JSON.stringify(d.his));
-                alert("✅ 資料還原成功！");location.reload();
-            }else throw new Error;
-        }catch(e){alert("❌ 代碼格式錯誤")}
-    }
+    const s=prompt("貼上備份碼:");
+    if(s){try{const d=JSON.parse(s);localStorage.setItem(K_CUR,JSON.stringify(d.cur));localStorage.setItem(K_HIS,JSON.stringify(d.his));location.reload()}catch{alert("格式錯誤")}}
 }
-
-// --- Core Logic ---
-function copyReport(){
-    const abs = getAbsCount();
-    if(abs > 0) return alert(`⚠️ 還有 ${abs} 員未點名！\n請按「📢 查未到」按鈕修正。`);
-    if(!reportStr) return alert("無資料");
-    navigator.clipboard.writeText(reportStr).then(()=>{alert("✅ 已複製值星回報！");}).catch(e=>alert("複製失敗"));
-}
-function toggleHelp(){document.getElementById('help-area').classList.toggle('show');document.getElementById('setup-area').classList.remove('show');document.getElementById('history-area').classList.remove('show')}
-function toggleSetup(){document.getElementById('setup-area').classList.toggle('show');document.getElementById('help-area').classList.remove('show');document.getElementById('history-area').classList.remove('show')}
-function toggleHistory(){document.getElementById('history-area').classList.toggle('show');document.getElementById('setup-area').classList.remove('show');document.getElementById('help-area').classList.remove('show');updateHisCount()}
-function getHis(){const r=localStorage.getItem(K_HIS);return r?JSON.parse(r):{}}
-function updateHisCount(){const h=getHis();document.getElementById('history-count').innerText=Object.keys(h).length}
-function getAbsCount(){const all=[...D.o,...D.n,...D.s,...D.t];let abs=0;all.forEach(n=>{if(!D.st[n] && !n.startsWith('-'))abs++});return abs}
-function saveToDate(){const d=document.getElementById('history-date').value,p=document.getElementById('history-period').value;if(!d)return alert("選日期");const abs=getAbsCount();if(abs>0&&!confirm(`⚠️ 還有 ${abs} 員未到！確定存檔？`))return;const k=d+'_'+p,h=getHis();h[k]=JSON.parse(JSON.stringify(D));localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();alert("✅ 已存檔")}
-function loadFromDate(){const d=document.getElementById('history-date').value,p=document.getElementById('history-period').value;loadHistoryKey(d+'_'+p, d)}
-function clearHistory(){if(confirm("確定清空所有歷史紀錄？"))localStorage.removeItem(K_HIS),updateHisCount(),alert("已清空")}
-function parse(t){return t?t.split(/[\s,、\n]+/).filter(x=>x.trim()):[]}
-function toggleMode(){isM=!isM;const b=document.getElementById('mode-btn');b.innerText=isM?"⚠️ 事故: 開":"⚠️ 事故: 關";b.classList.toggle('active')}
 function saveData(){
     D.u=document.getElementById('in-unit').value.trim();
     D.rs=document.getElementById('in-reasons').value.trim();
-    D.cns=document.getElementById('in-counters').value.trim();
     D.o=parse(document.getElementById('in-off').value);D.n=parse(document.getElementById('in-nco').value);D.s=parse(document.getElementById('in-sol').value);D.t=parse(document.getElementById('in-tra').value);
-    if(!D.o.length&&!D.n.length&&!D.s.length&&!D.t.length)return alert("請輸入名字");
-    persist();render();toggleSetup();
+    persist();render();togglePanel('setup-panel');showToast("✅ 設定已儲存");
 }
 function persist(){localStorage.setItem(K_CUR,JSON.stringify(D))}
-function load(){const r=localStorage.getItem(K_CUR);if(r){D=JSON.parse(r);if(!D.nt)D.nt={};if(!D.lck)D.lck={};if(!D.tm)D.tm={};if(!D.cnt)D.cnt={};fillSetup();render()}else{toggleSetup()}}
+function parse(t){return t?t.split(/[\s,、\n]+/).filter(x=>x.trim()):[]}
+function load(){
+    const r=localStorage.getItem(K_CUR);
+    if(r){D=JSON.parse(r);fillSetup();render()}else{togglePanel('setup-panel')}
+}
 function fillSetup(){
     document.getElementById('in-unit').value=D.u||'';
     document.getElementById('in-reasons').value=D.rs||DEFAULT_REASONS;
-    document.getElementById('in-counters').value=D.cns||DEFAULT_COUNTERS;
     document.getElementById('in-off').value=D.o.join(' ');document.getElementById('in-nco').value=D.n.join(' ');document.getElementById('in-sol').value=D.s.join(' ');document.getElementById('in-tra').value=D.t.join(' ');
 }
-function filterRoster(){const t=document.getElementById('search-input').value.toLowerCase();document.querySelectorAll('.p-btn').forEach(b=>{b.style.display=b.innerText.toLowerCase().includes(t)?'flex':'none'})}
-function showMissing(){const m=[...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n] && !n.startsWith('-'));if(m.length===0)return alert("👍 全員已到");alert(`📢 未到 (${m.length}員)：\n\n${m.join('、')}`)}
-function markAllPresent(){if(confirm("一鍵將未點名設為實到？(保留鎖定/事故)")){const now=new Date();const time=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if(!D.st[n] && !n.startsWith('-')){D.st[n]='p';D.tm[n]=time}});persist();render()}}
-function toggleSort(){isSorted=!isSorted;const b=document.getElementById('sort-btn');b.innerText=isSorted?"🔃 排序: 未到優先":"🔃 排序: 原序";b.classList.toggle('active');render()}
 
-// --- Improved Render Logic with Cross-Rank Sorting ---
-function render(){
-    const c=document.getElementById('roster');c.innerHTML='';
-    
-    // Helper for name processing
-    const processName=(r)=>{const m=r.match(/^(.*?)[（\(](.*)[）\)]$/);return m?{name:m[1],sub:m[2]}:{name:r,sub:''}};
-    
-    // Helper for creating buttons
-    const makeBtn = (rawNm, cls) => {
-        const {name,sub}=processName(rawNm);
-        const b=document.createElement('button');b.className=`p-btn ${cls}`;
-        const s=D.st[rawNm],note=D.nt?D.nt[rawNm]:'',lock=D.lck&&D.lck[rawNm],time=D.tm&&D.tm[rawNm]?D.tm[rawNm]:'';
-        
-        let h=`<span>${name}</span>`;
-        if(sub)h+=`<span class="st-sub">${sub}</span>`;
-        if(s&&s!=='p')h+=`<span class="st-tag">${s}</span>`;
-        if(note)h+=`<span class="st-note">${note}</span>`;
-        if(lock)b.classList.add('st-lock');
-        if(s==='p'&&time)h+=`<span class="st-time">${time}</span>`;
-        
-        b.innerHTML=h;
-        if(s==='p')b.classList.add('st-pre');else if(s)b.classList.add('st-exc');
-        
-        b.onclick=()=>{
-            if(navigator.vibrate)navigator.vibrate(15);
-            if(isM){
-                cur=rawNm;document.getElementById('m-name').innerText=name;
-                document.getElementById('custom-r').value='';
-                document.getElementById('note-input').value=D.nt&&D.nt[rawNm]?D.nt[rawNm]:'';
-                document.getElementById('lock-status').checked=!!(D.lck&&D.lck[rawNm]);
-                renderModalOpts();document.getElementById('modal').classList.add('show');
-            }else{
-                if(D.st[rawNm]==='p'){
-                    if(D.lck&&D.lck[rawNm])return alert("已鎖定！");
-                    D.st[rawNm]=null;delete D.tm[rawNm];
-                }else{
-                    if(D.lck&&D.lck[rawNm])return alert("已鎖定！");
-                    D.st[rawNm]='p';
-                    const now=new Date();D.tm[rawNm]=`${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')}`;
-                }
-                persist();render();
-            }
-        };
-        return b;
-    };
+// Core Roster
+function toggleMode(){ isM=!isM; document.getElementById('mode-btn').innerText=isM?"⚠️ 事故模式：開":"⚠️ 事故模式：關"; document.getElementById('mode-btn').style.background=isM?"var(--warning)":"var(--text)"; }
+function toggleSort(){ isSorted=!isSorted; document.getElementById('sort-btn').innerText=isSorted?"🔃 排序：未到優先":"🔃 排序：原序"; render(); }
+function filterRoster(){ const k=document.getElementById('search-input').value.toLowerCase(); document.querySelectorAll('.roster-card').forEach(c=>c.style.display=c.innerText.toLowerCase().includes(k)?'flex':'none'); }
 
-    // Helper for separators
-    const makeSep = (rawNm) => {
-        const sep = document.createElement('div');
-        sep.className = 'sep-row';
-        sep.innerText = rawNm.replace(/[-#]/g, '').trim();
-        return sep;
-    };
-
-    if(isSorted){
-        // --- Sorted Mode: Mix all ranks and sort by status (Missing > Excused > Present) ---
-        let all = [];
-        D.o.forEach(n=>all.push({n,c:'bg-off'}));
-        D.n.forEach(n=>all.push({n,c:'bg-nco'}));
-        D.s.forEach(n=>all.push({n,c:'bg-sol'}));
-        D.t.forEach(n=>all.push({n,c:'bg-tra'}));
-
-        // Filter out separators in sorted mode for cleaner view
-        all = all.filter(x => !x.n.startsWith('-') && !x.n.startsWith('#'));
-
-        all.sort((a,b)=>{
-            const getScore=(nm)=>{
-                if(!D.st[nm]) return 0;   // Missing (Top)
-                if(D.st[nm]!=='p') return 1; // Accident/Excused (Middle)
-                return 2;                 // Present (Bottom)
-            }
-            return getScore(a.n)-getScore(b.n);
-        });
-
-        all.forEach(item => c.appendChild(makeBtn(item.n, item.c)));
-
-    } else {
-        // --- Default Mode: Render by Rank with Separators ---
-        const renderGroup = (list, cls) => {
-            list.forEach(rawNm => {
-                if(rawNm.startsWith('-') || rawNm.startsWith('#')){
-                    c.appendChild(makeSep(rawNm));
-                } else {
-                    c.appendChild(makeBtn(rawNm, cls));
-                }
-            });
-        };
-        renderGroup(D.o,'bg-off');
-        renderGroup(D.n,'bg-nco');
-        renderGroup(D.s,'bg-sol');
-        renderGroup(D.t,'bg-tra');
+function markAllPresent(){
+    if(confirm("將所有未點名者設為「實到」？")){
+        const t = new Date().toTimeString().slice(0,5);
+        [...D.o,...D.n,...D.s,...D.t].forEach(n=>{ if(!D.st[n] && !n.startsWith('-')){ D.st[n]='p'; D.tm[n]=t; }});
+        persist();render();showToast("⚡ 已全設為實到");
     }
-
-    renderCounters();
-    updT();filterRoster();
+}
+function resetAll(){
+    if(confirm("重置所有狀態？(鎖定者除外)")){
+        [...D.o,...D.n,...D.s,...D.t].forEach(n=>{ if(!D.lck||!D.lck[n]){ delete D.st[n]; delete D.nt[n]; delete D.tm[n]; }});
+        persist();render();showToast("🔄 重置完成");
+    }
+}
+function getAbsCount(){ return [...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n]&&!n.startsWith('-')).length; }
+function showMissing(){
+    const m = [...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n]&&!n.startsWith('-'));
+    if(m.length===0) showToast("👍 全員已到"); else alert(`未到 (${m.length}):\n${m.join('、')}`);
 }
 
-function renderCounters(){
-    const c=document.getElementById('counters-area');c.innerHTML='';
-    const list = (D.cns || DEFAULT_COUNTERS).split(/[,，]/).map(x=>x.trim()).filter(x=>x);
-    list.forEach(name=>{
-        if(!D.cnt[name]) D.cnt[name]=0;
-        const div = document.createElement('div');div.className='cnt-item';
-        div.innerHTML=`<span style="font-size:0.8rem;font-weight:bold">${name}</span><span class="cnt-val">${D.cnt[name]}</span><div class="cnt-ctrl"><button class="cnt-btn" onclick="modCnt('${name}',-1)">-</button><button class="cnt-btn" onclick="modCnt('${name}',1)">+</button></div>`;
-        c.appendChild(div);
+// Render
+function render(){
+    const c=document.getElementById('roster'); c.innerHTML='';
+    const groups = [{l:D.o,c:'rs-off'},{l:D.n,c:'rs-nco'},{l:D.s,c:'rs-sol'},{l:D.t,c:'rs-tra'}];
+    let items = [];
+    if(isSorted){
+        groups.forEach(g=>g.l.forEach(n=>{if(!n.startsWith('-')&&!n.startsWith('#'))items.push({n,t:g.c})}));
+        items.sort((a,b)=>{ const sc=(nm)=>!D.st[nm]?0:(D.st[nm]!=='p'?1:2); return sc(a.n)-sc(b.n) });
+    }
+    const mkCard = (n,cls) => {
+        if(n.startsWith('-')||n.startsWith('#')){
+            const d=document.createElement('div'); d.className='sep-row'; d.innerHTML=`<div class="sep-line"></div>${n.replace(/[-#]/g,'').trim()}<div class="sep-line"></div>`; return d;
+        }
+        const card = document.createElement('div');
+        const st = D.st[n];
+        card.className = `roster-card ${st==='p'?'st-pre':(st?'st-exc':'')}`;
+        
+        let sub='', name=n, m=n.match(/^(.*?)[（\(](.*)[）\)]$/);
+        if(m){ name=m[1]; sub=m[2]; }
+
+        let h = `<div class="rank-strip ${cls}"></div><div class="card-name">${name}</div>`;
+        if(sub) h += `<div class="card-sub">${sub}</div>`;
+        
+        if(st && st!=='p') {
+             // 簡單的顏色判斷用於卡片上的小標籤
+             let bg = '#f39c12'; // Default Orange
+             if(['轉診','住院','隔離'].some(k=>st.includes(k))) bg='#e74c3c';
+             else if(['公差','受訓','支援'].some(k=>st.includes(k))) bg='#3498db';
+             else if(['衛哨','安官','戰情'].some(k=>st.includes(k))) bg='#27ae60';
+             h += `<div class="tag-exc" style="background:${bg}">${st}</div>`;
+        }
+        if(D.nt && D.nt[n]) h += `<div class="card-sub" style="color:var(--primary)">📝${D.nt[n]}</div>`;
+        if(D.lck && D.lck[n]) h += `<div class="icon-lock">🔒</div>`;
+        if(D.tm && D.tm[n] && st==='p') h += `<div class="time-stamp">${D.tm[n]}</div>`;
+
+        card.innerHTML = h;
+        card.onclick = () => cardClick(n, name);
+        return card;
+    };
+
+    if(isSorted) items.forEach(i=>c.appendChild(mkCard(i.n,i.t)));
+    else groups.forEach(g=>g.l.forEach(n=>c.appendChild(mkCard(n,g.c))));
+    
+    updateStats(); filterRoster();
+}
+
+function cardClick(n, name){
+    if(navigator.vibrate) navigator.vibrate(10);
+    if(isM){
+        cur=n; document.getElementById('m-name').innerText=name;
+        document.getElementById('custom-r').value='';
+        document.getElementById('note-input').value=D.nt[n]||'';
+        document.getElementById('lock-status').checked=!!D.lck[n];
+        renderOpts();
+        document.getElementById('modal').classList.add('show');
+    } else {
+        if(D.lck[n]) return showToast("🔒 此人員已鎖定");
+        if(D.st[n]==='p') { delete D.st[n]; delete D.tm[n]; }
+        else { D.st[n]='p'; D.tm[n]=new Date().toTimeString().slice(0,5); }
+        persist(); render();
+    }
+}
+
+// ⚠️ 顏色分類邏輯核心 ⚠️
+function renderOpts(){
+    const c=document.getElementById('opts-container'); c.innerHTML='';
+    const rs=(D.rs||DEFAULT_REASONS).split(/[,，]/);
+    rs.forEach(r=>{
+        if(!r.trim())return;
+        const b=document.createElement('button'); b.className='opt-btn'; b.innerText=r;
+        let bg='#9b59b6'; // 預設紫
+        // 紅: 醫療
+        if(['轉診','住院','隔離','發燒','病假'].some(k=>r.includes(k))) bg='#e74c3c';
+        // 藍: 公務/受訓
+        else if(['公差','受訓','支援','出差'].some(k=>r.includes(k))) bg='#3498db';
+        // 綠: 勤務
+        else if(['衛哨','安官','戰情','值星'].some(k=>r.includes(k))) bg='#27ae60';
+        // 橘: 休假
+        else if(['休假','外宿','補休'].some(k=>r.includes(k))) bg='#f39c12';
+        
+        b.style.background=bg;
+        b.onclick=()=>setSt(r);
+        c.appendChild(b);
     });
+    const clr=document.createElement('button'); clr.className='opt-btn'; clr.innerText='清除狀態';
+    clr.style.background='#95a5a6'; clr.style.gridColumn='1/-1'; clr.onclick=()=>setSt(null);
+    c.appendChild(clr);
 }
-function modCnt(name, val){if(!D.cnt)D.cnt={};D.cnt[name]=(D.cnt[name]||0)+val;if(D.cnt[name]<0)D.cnt[name]=0;persist();renderCounters();}
 
-function renderModalOpts(){
-    const c=document.getElementById('opts-container');c.innerHTML='';
-    (D.rs||DEFAULT_REASONS).split(/[,，]/).map(x=>x.trim()).filter(x=>x).forEach(r=>{
-        const b=document.createElement('button');b.className='o-btn bg-v';
-        if(['衛哨','安官','戰情'].includes(r))b.className='o-btn bg-g';
-        if(['轉診','住院','隔離'].includes(r))b.className='o-btn bg-s';
-        if(['公差','受訓','支援'].includes(r))b.className='o-btn bg-d';
-        b.innerText=r;b.onclick=()=>setS(r);c.appendChild(b)
-    });
-    const r=document.createElement('button');r.className='o-btn';r.style.background='#1abc9c';r.style.gridColumn='span 3';r.innerText='無事故 (返回未到)';r.onclick=()=>setS(null);c.appendChild(r)
-}
-function subCus(){const v=document.getElementById('custom-r').value.trim();if(v)setS(v)}
-function setS(v){
+function subCus(){ const v=document.getElementById('custom-r').value.trim(); if(v) setSt(v); }
+function setSt(v){
     D.st[cur]=v;
     const n=document.getElementById('note-input').value.trim();
-    const locked=document.getElementById('lock-status').checked;
-    if(!D.nt)D.nt={};if(!D.lck)D.lck={};
-    if(n)D.nt[cur]=n;else delete D.nt[cur];
-    if(locked)D.lck[cur]=true;else delete D.lck[cur];
-    if(v==='p'||!v)delete D.tm[cur];
-    closeM();persist();render()
+    if(n)D.nt[cur]=n; else delete D.nt[cur];
+    if(document.getElementById('lock-status').checked)D.lck[cur]=true; else delete D.lck[cur];
+    if(v==='p'||!v) delete D.tm[cur];
+    closeM(); persist(); render();
 }
-function closeM(){document.getElementById('modal').classList.remove('show')}
-function resetAll(){if(confirm("重置？(鎖定者不變)")){[...D.o,...D.n,...D.s,...D.t].forEach(n=>{if((!D.lck||!D.lck[n])&&!n.startsWith('-')){delete D.st[n];delete D.nt[n];delete D.tm[n]}});persist();render()}}
+function closeM(){ document.getElementById('modal').classList.remove('show'); }
 
-function calculateStats(){
-    const calc=(l,k,res)=>{l.forEach(n=>{if(n.startsWith('-')||n.startsWith('#'))return;const s=D.st[n];if(s==='p')res[k].p++;else if(s){res[k].e++;if(!res.dt[s])res.dt[s]=[];res.dt[s].push(n)}})};
-    const getListLen = (l) => l.filter(x=>!x.startsWith('-')&&!x.startsWith('#')).length;
-    const R={o:{t:getListLen(D.o),p:0,e:0},n:{t:getListLen(D.n),p:0,e:0},s:{t:getListLen(D.s),p:0,e:0},t:{t:getListLen(D.t),p:0,e:0},dt:{}};
-    calc(D.o,'o',R);calc(D.n,'n',R);calc(D.s,'s',R);calc(D.t,'t',R);
-    R.tot={t:R.o.t+R.n.t+R.s.t+R.t.t,p:R.o.p+R.n.p+R.s.p+R.t.p,e:R.o.e+R.n.e+R.s.e+R.t.e}; 
-    return R;
-}
+// Stats & Report
+function updateStats(){
+    const calc=(l)=>l.filter(n=>!n.startsWith('-')&&!n.startsWith('#')).reduce((a,n)=>{
+        a.t++; const s=D.st[n];
+        if(s==='p')a.p++; else if(s){ a.e++; if(!a.dt[s])a.dt[s]=[]; a.dt[s].push(n); }
+        return a;
+    },{t:0,p:0,e:0,dt:{}});
+    const Ro=calc(D.o), Rn=calc(D.n), Rs=calc(D.s), Rt=calc(D.t);
+    const T={t:Ro.t+Rn.t+Rs.t+Rt.t, p:Ro.p+Rn.p+Rs.p+Rt.p, e:Ro.e+Rn.e+Rs.e+Rt.e};
+    const Abs=T.t-T.p-T.e;
 
-function updT(){
-    const R = calculateStats();
-    const tot = R.tot;
-    const r=document.getElementById('stats-body');
-    const row=(l,c,d)=>`<tr><td class="${c}">${l}</td><td>${d.t}</td><td class="c-pre">${d.p}</td><td class="c-exc">${d.e}</td><td class="c-abs">${d.t-d.p-d.e}</td></tr>`;
-    r.innerHTML=row('軍官','r-off',R.o)+row('士官','r-nco',R.n)+row('士兵','r-sol',R.s)+row('訓員','r-tra',R.t)+`<tr style="background:#eee;color:#000"><td class="r-tot">合計</td><td class="r-tot">${tot.t}</td><td class="r-tot c-pre">${tot.p}</td><td class="r-tot c-exc">${tot.e}</td><td class="r-tot c-abs">${tot.t-tot.p-tot.e}</td></tr>`;
-    const pb=document.getElementById('p-bar');
-    if(tot.t>0){const pp=(tot.p/tot.t)*100,ep=(tot.e/tot.t)*100,ap=((tot.t-tot.p-tot.e)/tot.t)*100;pb.innerHTML=`<div class="pb-p" style="width:${pp}%"></div><div class="pb-e" style="width:${ep}%"></div><div class="pb-a" style="width:${ap}%"></div>`;}
+    document.getElementById('stat-total').innerText=T.t; document.getElementById('stat-present').innerText=T.p;
+    document.getElementById('stat-excuse').innerText=T.e; document.getElementById('stat-absent').innerText=Abs;
+
+    const row=(n,d,i)=>`<tr><td>${i} ${n}</td><td>${d.t}</td><td style="color:var(--success)">${d.p}</td><td style="color:var(--warning)">${d.e}</td><td style="color:var(--danger)">${d.t-d.p-d.e}</td></tr>`;
+    document.getElementById('rank-stats-body').innerHTML = row('軍官',Ro,'🛑')+row('士官',Rn,'🔷')+row('士兵',Rs,'🟩')+row('訓員',Rt,'🟣');
     
-    const db=document.getElementById('detail-board'),dt=document.getElementById('detail-tags');dt.innerHTML='';
-    let now=new Date(),u=D.u?D.u:"";
-    const getName = (raw) => raw.split(/[（\(]/)[0];
-    const cleanNoteForDisplay = (note) => {
-        if (!note) return '';
-        return note.replace(/2[14]收|07收/g, '').trim();
-    };
+    if(T.t>0) document.getElementById('p-bar').innerHTML = `<div class="pb-seg" style="width:${(T.p/T.t)*100}%;background:var(--success)"></div><div class="pb-seg" style="width:${(T.e/T.t)*100}%;background:var(--warning)"></div><div class="pb-seg" style="width:${(Abs/T.t)*100}%;background:var(--danger)"></div>`;
 
-    reportStr=`【部隊點名回報】\n單位：${u}\n時間：${now.getFullYear()}-${(now.getMonth()+1).toString().padStart(2,'0')}-${now.getDate().toString().padStart(2,'0')} (${now.getHours().toString().padStart(2,'0')}:${now.getMinutes().toString().padStart(2,'0')})\n`;
-    reportStr+=`應到：${tot.t}員 (官${R.o.t} 士${R.n.t} 兵${R.s.t} 訓${R.t.t})\n`;
-    reportStr+=`實到：${tot.p}員 (官${R.o.p} 士${R.n.p} 兵${R.s.p} 訓${R.t.p})\n事故：${tot.e}員 (官${R.o.e} 士${R.n.e} 兵${R.s.e} 訓${R.t.e})\n未到：${tot.t-tot.p-tot.e}員\n----------------\n`;
-
-    if(tot.e>0){
+    // Detail & Report
+    const db=document.getElementById('detail-board'), dt=document.getElementById('detail-tags');
+    dt.innerHTML='';
+    const mergedDt={};
+    [Ro,Rn,Rs,Rt].forEach(r=>{ for(let[k,a]of Object.entries(r.dt)){ if(!mergedDt[k])mergedDt[k]=[]; mergedDt[k].push(...a); }});
+    
+    if(T.e>0){
         db.style.display='block';
-        for(let[k,arr]of Object.entries(R.dt)){
-            let co=0,cn=0,cs=0,ct=0;
-            arr.forEach(nm=>{if(D.o.includes(nm))co++;else if(D.n.includes(nm))cn++;else if(D.s.includes(nm))cs++;else if(D.t.includes(nm))ct++});
-            let namesForDisplay = arr.map(nm => {
-                let cleanName = getName(nm);
-                let note = D.nt && D.nt[nm] ? D.nt[nm] : '';
-                let displayNote = cleanNoteForDisplay(note);
-                return displayNote ? `${cleanName}[${displayNote}]` : cleanName;
-            });
-            let nameSummary = namesForDisplay.length > 1 ? `${namesForDisplay[0]}等${namesForDisplay.length}員` : namesForDisplay[0];
-            reportStr+=`${k}：${arr.length}員 (${nameSummary})\n`;
-            dt.innerHTML+=`<div class="detail-row"><b>${k}: ${arr.length}員</b> <span class="breakdown">(官${co} 士${cn} 兵${cs} 訓${ct})</span><span class="name-list">(${namesForDisplay.join(' ')})</span></div>`
+        for(let[k,arr]of Object.entries(mergedDt)){
+            const ns=arr.map(x=>x.split(/[（\(]/)[0]+(D.nt[x]?`[${D.nt[x]}]`:'')).join(' ');
+            dt.innerHTML+=`<div class="detail-item"><strong>${k} (${arr.length}):</strong> ${ns}</div>`;
         }
-    }else{db.style.display='none';reportStr+="無事故人員\n"}
+    } else db.style.display='none';
+
+    // Gen Report String
+    let now=new Date();
+    let r=`【部隊點名回報】\n單位：${D.u||''}\n時間：${now.getMonth()+1}/${now.getDate()} ${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}\n`;
+    r+=`應到：${T.t} (官${Ro.t}士${Rn.t}兵${Rs.t}訓${Rt.t})\n實到：${T.p} (官${Ro.p}士${Rn.p}兵${Rs.p}訓${Rt.p})\n事故：${T.e} (官${Ro.e}士${Rn.e}兵${Rs.e}訓${Rt.e})\n未到：${Abs}\n----------------\n`;
+    if(T.e>0){
+        for(let[k,arr]of Object.entries(mergedDt)){
+            const ns=arr.map(x=>x.split(/[（\(]/)[0]+(D.nt[x]?`[${D.nt[x].replace(/2[14]收|07收/g,'')}]`:'')).join(' ');
+            const l=arr.length, f=arr[0].split(/[（\(]/)[0];
+            r+=`${k}：${l}員 (${l>1?f+'等'+l+'員':ns})\n`;
+        }
+        r+=`\n明細：\n`;
+        for(let[k,arr]of Object.entries(mergedDt)) r+=`${k}: ${arr.map(x=>x.split(/[（\(]/)[0]).join(' ')}\n`;
+    } else r+="無事故人員\n";
+    reportStr=r;
 }
 
-const getRankCount = (list) => {
-    let o=0, n=0, s=0, t=0;
-    list.forEach(name => {
-        if(D.o.includes(name)) o++;
-        else if(D.n.includes(name)) n++;
-        else if(D.s.includes(name)) s++;
-        else if(D.t.includes(name)) t++;
-    });
-    return {o, n, s, t}; 
-};
+function copyReport(){ if(getAbsCount()>0)return alert("⚠️ 還有未點名人員！"); navigator.clipboard.writeText(reportStr).then(()=>showToast("✅ 值星回報已複製")); }
+function copyCSMReport(){ if(getAbsCount()>0)return alert("⚠️ 還有未點名人員！"); navigator.clipboard.writeText(reportStr).then(()=>showToast("✅ 營士督回報已複製")); }
 
-const formatRankSummary = (cnt) => {
-    let rankParts = [];
-    if (cnt.o > 0) rankParts.push(`${cnt.o}官`);
-    if (cnt.n > 0) rankParts.push(`${cnt.n}士`);
-    if (cnt.s > 0) rankParts.push(`${cnt.s}兵`);
-    if (cnt.t > 0) rankParts.push(`${cnt.t}訓`);
-    return rankParts.length > 0 ? rankParts.join('') : '0員';
-};
-
-function copyCSMReport(){
-    const abs = getAbsCount();
-    if(abs > 0) return alert(`⚠️ 還有 ${abs} 員未點名！\n請按「📢 查未到」按鈕修正。`);
-    
-    const R = calculateStats();
-    const tot = R.tot;
-    const now = new Date();
-    const u = D.u ? D.u : '未設定單位';
-    const getName = (raw) => raw.split(/[（\(]/)[0];
-    const allPersonnel = [...D.o,...D.n,...D.s,...D.t];
-
-    const returnLists = {r21: [], r24: [], r07: []};
-    const returningNames = [];
-    allPersonnel.forEach(name => {
-        if(D.st[name] && D.st[name] !== 'p' && D.nt[name]){
-            const note = D.nt[name].toLowerCase().replace(/\s/g, '');
-            if (note.includes('21收') && !returningNames.includes(name)) { returnLists.r21.push(name); returningNames.push(name); }
-            else if (note.includes('24收') && !returningNames.includes(name)) { returnLists.r24.push(name); returningNames.push(name); }
-            else if (note.includes('07收') && !returningNames.includes(name)) { returnLists.r07.push(name); returningNames.push(name); }
-        }
-    });
-
-    let report = `營士督好\n\n`;
-    report += `${u}回報（${(now.getMonth()+1)}/${now.getDate()}）收假\n`;
-    report += `應到：${R.o.t}官${R.n.t}士${R.s.t}兵${R.t.t}訓\n`; 
-    report += `實到：${R.o.p}官${R.n.p}士${R.s.p}兵${R.t.p}訓\n`;
-    const allPresent = allPersonnel.filter(n => D.st[n] === 'p' && !n.startsWith('-') && !n.startsWith('#'));
-    const presentNames = allPresent.map(getName);
-    report += `（${presentNames.length > 0 ? getName(presentNames[0]) : '無'}等${allPresent.length}員）\n\n`;
-
-    const lists = [
-        {time: '21收假', data: returnLists.r21},
-        {time: '24收假', data: returnLists.r24},
-        {time: '07收假', data: returnLists.r07}
-    ];
-    lists.forEach(item => {
-        const list = item.data;
-        const count = list.length;
-        if(count === 0){
-            report += `${item.time}：無\n`;
-        } else {
-            const cnt = getRankCount(list);
-            const rankSummary = formatRankSummary(cnt);
-            const summary = `${getName(list[0])}等${count}員（${rankSummary}）`;
-            report += `${item.time}：${summary}\n`;
-            report += `${list.map(getName).join('\n')}\n\n`;
-        }
-    });
-    report += '事故：\n';
-    
-    const totalAccidentCount = tot.e - returningNames.length;
-    if (totalAccidentCount === 0) {
-        report += '無事故人員\n';
-    } else {
-        for(let [reason, arr] of Object.entries(R.dt)){
-            const filteredArr = arr.filter(name => !returningNames.includes(name));
-            if(filteredArr.length > 0){
-                let cnt = getRankCount(filteredArr);
-                const rankSummary = formatRankSummary(cnt);
-                report += `${reason}：${rankSummary}\n`;
-                const namesWithNotes = filteredArr.map(nm => {
-                    let cleanName = getName(nm);
-                    const detailNote = (D.nt && D.nt[nm]) ? D.nt[nm].replace(/2[14]收|07收/g, '').replace(/收/g, '').trim() : '';
-                    return detailNote ? `${cleanName}[${detailNote}]` : cleanName;
-                });
-                report += `${namesWithNotes.join('\n')}\n\n`;
-            }
-        }
-    }
-    navigator.clipboard.writeText(report).then(()=>{alert("✅ 已複製營士督回報！");}).catch(e=>alert("複製失敗"));
+// History
+function getHis(){return JSON.parse(localStorage.getItem(K_HIS)||'{}')}
+function updateHisCount(){document.getElementById('history-count').innerText=Object.keys(getHis()).length}
+function saveToDate(){
+    const d=document.getElementById('history-date').value; if(!d)return alert("選日期");
+    const k=`${d}_${document.getElementById('history-period').value}`;
+    const h=getHis(); h[k]=D; localStorage.setItem(K_HIS,JSON.stringify(h));
+    updateHisCount(); showToast("✅ 已存檔");
 }
-
+function loadFromDate(){
+    const k=`${document.getElementById('history-date').value}_${document.getElementById('history-period').value}`;
+    const h=getHis(); if(h[k]){ D=h[k]; persist(); render(); togglePanel('history-panel'); showToast("✅ 讀取成功"); } else alert("查無紀錄");
+}
 function showHistoryList(){
     const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';
-    const k=Object.keys(h).sort().reverse();
-    if(k.length===0){c.innerHTML='<div style="padding:20px;color:#aaa">無紀錄</div>'}else{
-        const m={'am':'☀ 上午','pm':'⛅ 下午','night':'🌙 夜間'};
-        k.forEach(key=>{
-            const [d,p]=key.split('_'),pt=m[p]||p;
-            const dv=document.createElement('div');dv.className='his-item';dv.style.display='flex';dv.style.justifyContent='space-between';dv.style.padding='12px';dv.style.borderBottom='1px solid #eee';
-            dv.innerHTML=`<div style="text-align:left;cursor:pointer" onclick="loadHistoryKey('${key}','${d} ${pt}')"><div style="font-weight:bold">${d}</div><div style="opacity:0.7;font-size:0.9rem">${pt}</div></div><button style="background:#c0392b;color:white;border:none;padding:5px 10px;border-radius:6px" onclick="deleteHistoryKey('${key}')">刪除</button>`;
-            c.appendChild(dv)
-        })
-    };
-    document.getElementById('his-list-modal').classList.add('show')
+    Object.keys(h).sort().reverse().forEach(k=>{
+        const d=document.createElement('div'); d.style.cssText='padding:12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center';
+        d.innerHTML=`<span>${k}</span> <button style="border:none;background:#e74c3c;color:white;padding:5px 10px;border-radius:5px" onclick="delHis('${k}')">刪</button>`;
+        c.appendChild(d);
+    });
+    document.getElementById('his-list-modal').classList.add('show');
 }
+function delHis(k){if(confirm("刪除?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));showHistoryList();updateHisCount();}}
 function closeHisList(){document.getElementById('his-list-modal').classList.remove('show')}
-function loadHistoryKey(k,s){const h=getHis();if(!h[k])return alert("遺失");if(confirm(`還原 [${s}] 紀錄?`)){D=h[k];persist();render();fillSetup();alert("✅ 已讀取");closeHisList();toggleHistory()}}
-function deleteHistoryKey(k){if(confirm("確定刪除此紀錄?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));updateHisCount();showHistoryList()}}
+function clearHistory(){if(confirm("清空?")){localStorage.removeItem(K_HIS);updateHisCount();showToast("已清空")}}
 </script>
 </body>
 </html>
