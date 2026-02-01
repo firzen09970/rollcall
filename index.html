@@ -3,488 +3,331 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>部隊點名管理系統 v2.7</title>
+<title>部隊點名系統 v3.2</title>
 <style>
 :root{
-  --primary: #f5a962;
-  --bg: #f9f7f3;
+  --bg: #f4f7f6;
   --card: #ffffff;
-  --text: #3d3d3d;
-  --text-light: #7f7f7f;
-  --border: #ebe7e0;
-  --danger: #e74c3c;
-  --success: #27ae60;
-  --warning: #f39c12;
-  --info: #3498db;
-  --purple: #9b59b6;
+  --text: #333333;
+  --text-light: #888888;
+  --shadow: rgba(0,0,0,0.06);
+  --border: #eeeeee;
 }
 
 *{box-sizing:border-box}
 
 body{
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
   background:var(--bg);
   color:var(--text);
-  margin:0;
-  padding:0;
-  text-align:center;
-  user-select:none;
-  -webkit-tap-highlight-color:transparent;
-  padding-bottom:80px;
+  margin:0; padding:0;
+  text-align:center; user-select:none; -webkit-tap-highlight-color:transparent;
+  padding-bottom:100px;
 }
 
-/* ========== 頁面結構 ========== */
-.page-container{
-  max-width:800px;
-  margin:0 auto;
-  padding:15px;
-}
+.page-container{ max-width:800px; margin:0 auto; padding:15px; }
 
-/* ========== 頂部 Header (新版配置) ========== */
+/* ========== Header 區域 ========== */
 .header-section{
-  background:var(--card);
-  border-radius:16px;
-  padding:16px 20px;
-  margin-bottom:15px;
-  box-shadow:0 4px 12px rgba(0,0,0,0.03);
-  border:1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  background:var(--card); border-radius:20px; padding:16px 20px; margin-bottom:20px;
+  box-shadow:0 4px 20px var(--shadow); display: flex; flex-direction: column; gap: 12px;
 }
-
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.page-title{
-  font-size:1.3rem;
-  font-weight:800;
-  color:var(--text);
-  margin:0;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-
-.ver-tag {
-    font-size:0.7rem;
-    background:var(--primary);
-    color:white;
-    padding:2px 8px;
-    border-radius:10px;
-}
-
-/* Header 內嵌按鈕 */
-.header-actions {
-  display: flex;
-  gap: 8px;
-}
-
+.header-top { display: flex; justify-content: space-between; align-items: center; }
+.page-title{ font-size:1.3rem; font-weight:800; margin:0; display:flex; align-items:center; gap:8px; }
+.ver-tag { font-size:0.7rem; background:#34495e; color:white; padding:3px 8px; border-radius:12px; }
+.header-actions { display: flex; gap: 10px; }
 .header-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg);
-  color: var(--text);
-  font-size: 1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: 0.2s;
+  width: 38px; height: 38px; border-radius: 50%; border: none; background: #f0f2f5;
+  color: #555; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
 }
-.header-btn:active { transform: scale(0.9); background: var(--border); }
+.header-btn:active { transform: scale(0.9); background: #e0e0e0; }
 
-/* 搜尋框 */
-.search-input{
-  width:100%;
-  padding:10px 12px;
-  border:2px solid var(--border);
-  border-radius:10px;
-  background:var(--bg);
-  font-size:1rem;
-  text-align:center;
-  transition:0.2s;
-}
-.search-input:focus{ outline:none; border-color:var(--primary); background:#fff; }
-
-/* ========== 數據儀表板 ========== */
-.stats-dashboard {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    margin-bottom: 15px;
-}
-
-.stat-card {
-    background: var(--card);
-    padding: 10px 5px;
+/* 🔥 新增：時段資訊欄樣式 🔥 */
+.session-info-bar {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    border: 1px solid var(--border);
+    padding: 10px 15px;
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-}
-
-.stat-label { font-size: 0.75rem; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }
-.stat-value { font-size: 1.3rem; font-weight: 800; line-height: 1.1; }
-
-.val-total { color: var(--text); }
-.val-present { color: var(--success); }
-.val-excuse { color: var(--warning); }
-.val-absent { color: var(--danger); }
-
-/* ========== 階級統計與進度條 ========== */
-.rank-box {
-    background: var(--card);
-    border-radius: 12px;
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid var(--border);
-    font-size: 0.85rem;
-}
-.rank-table { width: 100%; border-collapse: collapse; }
-.rank-table th { color: var(--text-light); font-weight: 600; padding: 4px; }
-.rank-table td { font-weight: 700; padding: 6px 4px; border-top: 1px solid var(--border); }
-
-.progress-container { height: 8px; width: 100%; display: flex; border-radius: 4px; overflow: hidden; margin-top: 10px; }
-.pb-seg { height: 100%; }
-
-/* ========== 控制按鈕區 ========== */
-.control-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-bottom: 20px;
-}
-
-.action-btn {
-    padding: 12px;
-    border: none;
-    border-radius: 12px;
-    font-weight: 700;
     font-size: 0.95rem;
-    cursor: pointer;
-    color: white;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: 0.1s;
-}
-.action-btn:active { transform: scale(0.96); }
-
-/* ========== 點名列表 (Grid 修正) ========== */
-.roster-grid {
-    display: grid;
-    /* 加寬到 100px 以容納長名字 */
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 8px;
-    padding-bottom: 20px;
-}
-
-.roster-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    min-height: 80px;
-    padding: 6px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    position: relative;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-}
-.roster-card:active { transform: scale(0.95); }
-
-/* 階級條 */
-.rank-strip { position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 12px 12px 0 0; }
-.rs-off { background: var(--danger); }
-.rs-nco { background: var(--info); }
-.rs-sol { background: var(--success); }
-.rs-tra { background: var(--purple); }
-
-/* 名字樣式 (自動縮放邏輯) */
-.card-name {
-    font-size: 1rem;
     font-weight: 700;
-    color: var(--text);
-    z-index: 1;
-    margin-top: 4px;
-    text-align: center;
-    width: 100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    color: #475569;
 }
-/* 4-5字名字 */
-.card-name.long-text {
-    font-size: 0.85rem;
-    white-space: normal;
-    line-height: 1.2;
+.period-badge {
+    padding: 4px 12px;
+    border-radius: 8px;
+    color: white;
+    font-size: 0.9rem;
+    display: flex; align-items: center; gap: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
-/* 6字以上名字 */
-.card-name.super-long-text {
-    font-size: 0.75rem;
-    white-space: normal;
-    line-height: 1.1;
+/* 時段顏色 */
+.p-am { background: linear-gradient(135deg, #f6d365 0%, #fda085 100%); } /* 上午橘黃 */
+.p-pm { background: linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%); } /* 下午藍天 */
+.p-night { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); } /* 夜間紫 */
+
+.search-input{
+  width:100%; padding:12px; border:2px solid transparent; background:#f0f2f5;
+  border-radius:12px; font-size:1rem; text-align:center; color: var(--text);
 }
+.search-input:focus{ outline:none; background:#fff; border-color:#3498db; }
 
-.card-sub { font-size: 0.75rem; color: var(--text-light); }
+/* ========== 統計儀表板 ========== */
+.stats-dashboard { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.stat-card { background: var(--card); padding: 12px 5px; border-radius: 16px; box-shadow: 0 4px 15px var(--shadow); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.stat-label { font-size: 0.75rem; color: var(--text-light); margin-bottom: 4px; font-weight: 600; }
+.stat-value { font-size: 1.4rem; font-weight: 800; line-height: 1; }
 
-/* 狀態樣式 */
-.st-pre { background: #f0f2f5; opacity: 0.6; }
-.st-pre .card-name { text-decoration: line-through; color: var(--text-light); }
-.st-pre::after { content: '✓'; position: absolute; font-size: 2rem; color: var(--success); opacity: 0.3; }
-
-.st-exc { background: #fff8e1; border: 1px solid var(--warning); }
-.tag-exc { 
-    background: var(--warning); color: white; font-size: 0.7rem; 
-    padding: 2px 6px; border-radius: 4px; margin-top: 4px; 
-    max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+/* ========== 階級統計表 ========== */
+.rank-box {
+    background: var(--card); border-radius: 16px; padding: 0 0 15px 0;
+    margin-bottom: 20px; box-shadow: 0 4px 15px var(--shadow); overflow: hidden;
 }
+.progress-container {
+    height: 8px; width: 90%; display: flex; background: #f0f0f0; 
+    margin: 15px auto 10px auto; border-radius: 10px; overflow: hidden;
+}
+.pb-seg { height: 100%; transition: width 0.3s; }
+.rank-table { width: 90%; margin: 0 auto; border-collapse: collapse; }
+.rank-table th { color: #999; font-weight: 600; padding: 10px 5px; font-size: 0.9rem; border-bottom: 1px solid #f0f0f0; }
+.rank-table td { font-weight: 700; padding: 12px 5px; font-size: 1rem; border-bottom: 1px solid #f0f0f0; color: #444; }
+.rank-table tr:last-child td { border-bottom: none; }
 
+/* 圖示 */
+.icon-shape { display: inline-block; vertical-align: middle; margin-right: 8px; }
+.shape-off { width: 14px; height: 14px; background: #e74c3c; clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%); }
+.shape-nco { width: 10px; height: 10px; background: #3498db; transform: rotate(45deg); margin: 0 10px 0 4px; }
+.shape-sol { width: 12px; height: 12px; background: #7cb342; border-radius: 2px; }
+.shape-tra { width: 13px; height: 13px; background: #9b59b6; border-radius: 50%; }
+.txt-green { color: #4caf50; } .txt-orange { color: #ffb74d; } .txt-red { color: #e57373; }
+
+/* ========== 事故明細 ========== */
+.detail-board { background: #fffbf2; border: 1px solid #ffe0b2; border-radius: 16px; padding: 20px; margin-bottom: 20px; text-align: left; display: none; }
+.detail-title { font-size: 1.1rem; font-weight: 800; color: #d35400; margin-bottom: 12px; }
+.detail-item { font-size: 1rem; margin-bottom: 8px; color: #444; line-height: 1.5; font-weight: 500; }
+.detail-names { color: #666; font-weight: normal; margin-left: 4px; }
+
+/* ========== 按鈕與其他 ========== */
+.control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.action-btn { border: none; border-radius: 14px; padding: 14px; color: white; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; position: relative; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.08); font-size: 0.95rem; }
+.action-btn:active { transform: scale(0.96); }
+.btn-mode { grid-column: 1 / -1; background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%); }
+.btn-mode.active { background: linear-gradient(135deg, #f1c40f 0%, #f39c12 100%); }
+.btn-green { background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%); }
+.btn-red { background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); }
+.btn-blue { background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); }
+.btn-gray { background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%); }
+.report-group { display: flex; gap: 12px; margin-bottom: 25px; }
+.btn-purple { background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); flex: 1; }
+.btn-orange { background: linear-gradient(135deg, #f39c12 0%, #d35400 100%); flex: 1; }
+
+.roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; padding-bottom: 20px; }
+.roster-card { background: var(--card); border-radius: 12px; min-height: 85px; padding: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+.roster-card:active { transform: scale(0.96); }
+.rank-strip { position: absolute; top: 0; left: 0; right: 0; height: 4px; border-radius: 12px 12px 0 0; }
+.rs-off { background: #e74c3c; } .rs-nco { background: #3498db; } .rs-sol { background: #27ae60; } .rs-tra { background: #9b59b6; }
+.card-name { font-size: 1rem; font-weight: 700; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: center; margin-top: 4px; }
+.card-name.long-text { font-size: 0.85rem; white-space: normal; line-height: 1.2; }
+.st-pre { background: #f8f9fa; opacity: 0.6; } .st-pre .card-name { text-decoration: line-through; color: #aaa; }
+.st-pre::after { content: '✓'; position: absolute; font-size: 2rem; color: #27ae60; opacity: 0.3; }
+.st-exc { background: #fffbf2; border: 1px solid #f39c12; }
+.tag-exc { background: #f39c12; color: white; font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; margin-top: 4px; }
 .icon-lock { position: absolute; top: 5px; right: 5px; font-size: 0.8rem; }
-.time-stamp { position: absolute; bottom: 3px; right: 5px; font-size: 0.6rem; opacity: 0.7; }
+.time-stamp { position: absolute; bottom: 3px; right: 5px; font-size: 0.65rem; color:#999; }
+.sep-row { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin: 15px 0 5px 0; color: #95a5a6; font-weight: 600; font-size: 0.9rem; }
+.sep-line { flex: 1; height: 1px; background: #e0e0e0; }
 
-/* 分隔線 */
-.sep-row { grid-column: 1 / -1; display: flex; align-items: center; gap: 10px; margin: 15px 0 5px 0; color: var(--text-light); font-weight: 600; font-size: 0.9rem; }
-.sep-line { flex: 1; height: 1px; background: var(--border); }
-
-/* ========== Modal 彈窗 ========== */
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(3px); }
-.modal.show { display: flex; animation: fadeIn 0.2s; }
-.modal-box { background: var(--card); width: 90%; max-width: 360px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-
-/* 事故按鈕網格 */
-.modal-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
-.opt-btn { 
-    padding: 12px 0; border: none; border-radius: 8px; 
-    font-weight: 600; color: white; cursor: pointer; font-size: 0.95rem; 
-    transition: 0.1s;
-}
-.opt-btn:active { transform: scale(0.95); opacity: 0.9; }
-
-/* ========== 設定/歷史面板 ========== */
 .panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 100; opacity: 0; pointer-events: none; transition: 0.3s; }
 .panel-overlay.show { opacity: 1; pointer-events: auto; }
-.panel-content { 
-    position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); 
-    border-radius: 20px 20px 0 0; padding: 20px; max-height: 85vh; overflow-y: auto; 
-    transform: translateY(100%); transition: 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); 
-}
+.panel-content { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-radius: 20px 20px 0 0; padding: 25px 20px; max-height: 85vh; overflow-y: auto; transform: translateY(100%); transition: 0.3s; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); }
 .panel-overlay.show .panel-content { transform: translateY(0); }
-
 .input-group { margin-bottom: 15px; text-align: left; }
-.form-control { width: 100%; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-size: 1rem; }
-textarea.form-control { resize: vertical; }
-
-/* Toast */
-.toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: #333; color: white; padding: 10px 20px; border-radius: 30px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 300; }
+.form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 10px; background: #fff; font-size: 1rem; }
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 200; backdrop-filter: blur(4px); }
+.modal.show { display: flex; animation: fadeIn 0.2s; }
+.modal-box { background: #fff; width: 90%; max-width: 360px; border-radius: 20px; padding: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); }
+.modal-options { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
+.opt-btn { padding: 12px 0; border: none; border-radius: 10px; font-weight: 600; color: white; cursor: pointer; }
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translate(-50%, 20px); background: #333; color: white; padding: 10px 24px; border-radius: 30px; opacity: 0; transition: 0.3s; pointer-events: none; z-index: 300; }
 .toast.show { opacity: 1; transform: translate(-50%, 0); }
-
-/* 事故明細板 */
-.detail-board { background: #fff8f0; border: 1px solid #ffe0b2; border-radius: 12px; padding: 12px; margin-bottom: 15px; text-align: left; display: none; }
-.detail-item { font-size: 0.9rem; margin-bottom: 4px; color: var(--text); line-height: 1.4; }
-
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 </style>
 </head>
 <body>
 
 <div class="page-container">
-    
-    <!-- 標題與操作區 (修正版：按鈕內嵌，不擋畫面) -->
     <div class="header-section">
         <div class="header-top">
-            <h1 class="page-title">
-                📝 點名系統 <span class="ver-tag">v2.7</span>
-            </h1>
-            <!-- 按鈕區 -->
+            <h1 class="page-title">📝 點名系統 <span class="ver-tag">v3.2</span></h1>
             <div class="header-actions">
                 <button class="header-btn" onclick="togglePanel('setup-panel')">⚙️</button>
                 <button class="header-btn" onclick="togglePanel('history-panel')">📅</button>
                 <button class="header-btn" onclick="togglePanel('help-panel')">❔</button>
             </div>
         </div>
-        
+
+        <!-- 🔥 新增：日期與時段資訊欄 🔥 -->
+        <div class="session-info-bar">
+            <span id="current-date-display">載入中...</span>
+            <div id="current-period-badge" class="period-badge">--</div>
+        </div>
+
         <input type="text" id="search-input" class="search-input" placeholder="🔍 輸入姓名快速查找..." oninput="filterRoster()">
     </div>
 
     <!-- 儀表板 -->
     <div class="stats-dashboard">
-        <div class="stat-card">
-            <span class="stat-label">應到</span><span class="stat-value val-total" id="stat-total">0</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">已到</span><span class="stat-value val-present" id="stat-present">0</span>
-        </div>
-        <div class="stat-card">
-            <span class="stat-label">事故</span><span class="stat-value val-excuse" id="stat-excuse">0</span>
-        </div>
-        <div class="stat-card" style="background:#fff5f5;border-color:#ffccd5">
-            <span class="stat-label">未到</span><span class="stat-value val-absent" id="stat-absent">0</span>
-        </div>
+        <div class="stat-card"><span class="stat-label">應到</span><span class="stat-value" style="color:#333" id="stat-total">0</span></div>
+        <div class="stat-card"><span class="stat-label">實到</span><span class="stat-value txt-green" id="stat-present">0</span></div>
+        <div class="stat-card"><span class="stat-label">事故</span><span class="stat-value txt-orange" id="stat-excuse">0</span></div>
+        <div class="stat-card" style="background:#fff5f5;border:1px solid #ffccd5"><span class="stat-label">未到</span><span class="stat-value txt-red" id="stat-absent">0</span></div>
     </div>
 
-    <!-- 階級統計 -->
+    <!-- 階級統計表 -->
     <div class="rank-box">
         <div class="progress-container" id="p-bar"></div>
-        <table class="rank-table" style="margin-top:10px">
-            <thead><tr><th>階級</th><th>應到</th><th style="color:var(--success)">實到</th><th style="color:var(--warning)">事故</th><th style="color:var(--danger)">未到</th></tr></thead>
+        <table class="rank-table">
+            <thead>
+                <tr>
+                    <th style="text-align:left;padding-left:15px">階級</th>
+                    <th>應到</th>
+                    <th>實到</th>
+                    <th>事故</th>
+                    <th>未到</th>
+                </tr>
+            </thead>
             <tbody id="rank-stats-body"></tbody>
         </table>
     </div>
 
     <!-- 事故明細 -->
     <div id="detail-board" class="detail-board">
-        <strong style="color:#d35400">📌 事故明細：</strong>
-        <div id="detail-tags" style="margin-top:6px"></div>
+        <div class="detail-title">📌 事故明細：</div>
+        <div id="detail-tags"></div>
     </div>
 
-    <!-- 按鈕區 -->
+    <!-- 控制按鈕 -->
     <div class="control-grid">
-        <button class="action-btn" id="mode-btn" onclick="toggleMode()" style="background:var(--text);grid-column:1/-1">⚠️ 事故模式：關</button>
-        <button class="action-btn" style="background:var(--success)" onclick="markAllPresent()">⚡ 餘員全到</button>
-        <button class="action-btn" style="background:var(--danger)" onclick="showMissing()">📢 查未到</button>
-        <button class="action-btn" style="background:var(--info)" onclick="toggleSort()" id="sort-btn">🔃 排序：原序</button>
-        <button class="action-btn" style="background:var(--text-light)" onclick="resetAll()">🔄 重置狀態</button>
+        <button class="action-btn btn-mode" id="mode-btn" onclick="toggleMode()">⚠️ 事故模式：關</button>
+        <button class="action-btn btn-green" onclick="markAllPresent()">⚡ 餘員全到</button>
+        <button class="action-btn btn-red" onclick="showMissing()">📢 查未到</button>
+        <button class="action-btn btn-blue" onclick="toggleSort()" id="sort-btn">🔃 排序：原序</button>
+        <button class="action-btn btn-gray" onclick="resetAll()">🔄 重置狀態</button>
     </div>
 
-    <div style="display:flex;gap:10px;margin-bottom:20px">
-        <button class="action-btn" style="flex:1;background:var(--purple)" onclick="copyCSMReport()">📋 營士督回報</button>
-        <button class="action-btn" style="flex:1;background:var(--primary)" onclick="copyReport()">📋 值星回報</button>
+    <div class="report-group">
+        <button class="action-btn btn-purple" onclick="copyCSMReport()">📋 營士督回報</button>
+        <button class="action-btn btn-orange" onclick="copyReport()">📋 值星回報</button>
     </div>
 
-    <!-- 名單 -->
     <div id="roster" class="roster-grid"></div>
-
 </div>
 
-<!-- 設定面板 -->
+<!-- 彈窗們 -->
 <div id="setup-panel" class="panel-overlay">
     <div class="panel-content">
-        <h2 style="margin:0 0 20px 0">⚙️ 系統設定</h2>
-        <div class="input-group">
-            <label>單位名稱</label><input type="text" id="in-unit" class="form-control" placeholder="例如：步一連">
-        </div>
-        <div class="input-group">
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>🛑 軍官</strong><span style="color:var(--info);cursor:pointer" onclick="insertSep('in-off')">+分組</span></div>
-            <textarea id="in-off" class="form-control" style="height:60px"></textarea>
-        </div>
-        <div class="input-group">
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>🔷 士官</strong><span style="color:var(--info);cursor:pointer" onclick="insertSep('in-nco')">+分組</span></div>
-            <textarea id="in-nco" class="form-control" style="height:60px"></textarea>
-        </div>
-        <div class="input-group">
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>🟩 士兵</strong><span style="color:var(--info);cursor:pointer" onclick="insertSep('in-sol')">+分組</span></div>
-            <textarea id="in-sol" class="form-control" style="height:80px"></textarea>
-        </div>
-        <div class="input-group">
-            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><strong>🟣 訓員</strong><span style="color:var(--info);cursor:pointer" onclick="insertSep('in-tra')">+分組</span></div>
-            <textarea id="in-tra" class="form-control" style="height:60px"></textarea>
-        </div>
-        <div class="input-group">
-            <label>自訂事故 (逗號分隔)</label>
-            <input type="text" id="in-reasons" class="form-control">
-        </div>
-        <button class="action-btn" style="width:100%;background:var(--success);margin-bottom:10px" onclick="saveData()">✅ 儲存設定</button>
-        <div style="display:flex;gap:10px">
-            <button class="action-btn" style="flex:1;background:var(--text-light)" onclick="exportData()">📤 備份</button>
-            <button class="action-btn" style="flex:1;background:var(--text-light)" onclick="importData()">📥 讀取</button>
-        </div>
-        <button class="action-btn" style="width:100%;background:transparent;color:var(--text);margin-top:10px" onclick="togglePanel('setup-panel')">關閉</button>
+        <h2>⚙️ 系統設定</h2>
+        <div class="input-group"><label>單位名稱</label><input type="text" id="in-unit" class="form-control" placeholder="例如：步一連"></div>
+        <div class="input-group"><div style="display:flex;justify-content:space-between"><strong>🛑 軍官</strong><span style="color:#3498db" onclick="insertSep('in-off')">+分組</span></div><textarea id="in-off" class="form-control" style="height:60px"></textarea></div>
+        <div class="input-group"><div style="display:flex;justify-content:space-between"><strong>🔷 士官</strong><span style="color:#3498db" onclick="insertSep('in-nco')">+分組</span></div><textarea id="in-nco" class="form-control" style="height:60px"></textarea></div>
+        <div class="input-group"><div style="display:flex;justify-content:space-between"><strong>🟩 士兵</strong><span style="color:#3498db" onclick="insertSep('in-sol')">+分組</span></div><textarea id="in-sol" class="form-control" style="height:80px"></textarea></div>
+        <div class="input-group"><div style="display:flex;justify-content:space-between"><strong>🟣 訓員</strong><span style="color:#3498db" onclick="insertSep('in-tra')">+分組</span></div><textarea id="in-tra" class="form-control" style="height:60px"></textarea></div>
+        <div class="input-group"><label>自訂事故</label><input type="text" id="in-reasons" class="form-control" placeholder="逗號分隔"></div>
+        <button class="action-btn btn-green" style="width:100%;margin-bottom:12px" onclick="saveData()">✅ 儲存</button>
+        <div style="display:flex;gap:10px"><button class="action-btn btn-gray" style="flex:1" onclick="exportData()">📤 備份</button><button class="action-btn btn-gray" style="flex:1" onclick="importData()">📥 讀取</button></div>
+        <button class="action-btn" style="width:100%;background:transparent;color:#999;margin-top:10px;box-shadow:none" onclick="togglePanel('setup-panel')">關閉</button>
     </div>
 </div>
 
-<!-- 歷史面板 -->
 <div id="history-panel" class="panel-overlay">
     <div class="panel-content">
-        <h2 style="margin:0 0 15px 0">📅 歷史紀錄 (<span id="history-count">0</span>)</h2>
-        <div style="background:var(--bg);padding:15px;border-radius:10px;margin-bottom:15px">
+        <h2>📅 歷史紀錄 (<span id="history-count">0</span>)</h2>
+        <div style="background:white;padding:15px;border-radius:12px;margin-bottom:15px;border:1px solid #eee">
             <input type="date" id="history-date" class="form-control" style="margin-bottom:10px">
-            <select id="history-period" class="form-control" style="margin-bottom:10px">
-                <option value="am">☀️ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間</option>
-            </select>
-            <div style="display:flex;gap:10px">
-                <button class="action-btn" style="flex:1;background:var(--success)" onclick="saveToDate()">📥 存檔</button>
-                <button class="action-btn" style="flex:1;background:var(--primary)" onclick="loadFromDate()">📤 讀取</button>
-            </div>
+            <select id="history-period" class="form-control" style="margin-bottom:10px"><option value="am">☀️ 上午</option><option value="pm">⛅ 下午</option><option value="night">🌙 夜間</option></select>
+            <div style="display:flex;gap:10px"><button class="action-btn btn-green" style="flex:1" onclick="saveToDate()">📥 存檔</button><button class="action-btn btn-blue" style="flex:1" onclick="loadFromDate()">📤 讀取</button></div>
         </div>
-        <button class="action-btn" style="width:100%;background:var(--info);margin-bottom:10px" onclick="showHistoryList()">📜 所有紀錄清單</button>
-        <button class="action-btn" style="width:100%;background:var(--danger)" onclick="clearHistory()">🗑️ 清空歷史</button>
-        <button class="action-btn" style="width:100%;background:transparent;color:var(--text);margin-top:10px" onclick="togglePanel('history-panel')">關閉</button>
+        <button class="action-btn btn-gray" style="width:100%;margin-bottom:10px" onclick="showHistoryList()">📜 清單</button>
+        <button class="action-btn btn-red" style="width:100%" onclick="clearHistory()">🗑️ 清空</button>
+        <button class="action-btn" style="width:100%;background:transparent;color:#999;margin-top:10px;box-shadow:none" onclick="togglePanel('history-panel')">關閉</button>
     </div>
 </div>
 
-<!-- 說明面板 -->
 <div id="help-panel" class="panel-overlay">
     <div class="panel-content">
-        <h2>📖 使用說明</h2>
-        <div style="text-align:left;line-height:1.6">
-            <p><strong>1. 設定名單：</strong>右上角 ⚙️ 設定，貼上名字(空格分隔)。</p>
-            <p><strong>2. 點名：</strong>點卡片切換狀態。開啟「事故模式」可標記原因。</p>
-            <p><strong>3. 顏色說明：</strong>
-                <br>🟠 休假類 (休假, 外宿...)
-                <br>🟢 勤務類 (衛哨, 安官...)
-                <br>🔵 公務類 (公差, 受訓...)
-                <br>🔴 醫療類 (轉診, 住院...)
-            </p>
-            <p><strong>4. 回報：</strong>底部按鈕可一鍵複製。</p>
+        <h2>📖 說明</h2>
+        <div style="text-align:left;line-height:1.6;color:#555">
+            <p>1. 右上角⚙️設定名單。</p>
+            <p>2. 點卡片切換狀態。</p>
+            <p>3. 支援21/24收假自動分類。</p>
         </div>
-        <button class="action-btn" style="width:100%;background:var(--text-light);margin-top:20px" onclick="togglePanel('help-panel')">關閉</button>
+        <button class="action-btn btn-gray" style="width:100%;margin-top:20px" onclick="togglePanel('help-panel')">關閉</button>
     </div>
 </div>
 
-<!-- 點名彈窗 -->
 <div id="modal" class="modal">
     <div class="modal-box">
-        <h3 id="m-name" style="margin:0 0 15px 0;text-align:center;font-size:1.3rem"></h3>
-        <input type="text" id="note-input" class="form-control" placeholder="備註 (如: 21收, 發燒...)" style="margin-bottom:10px">
-        <div style="display:flex;gap:5px;margin-bottom:15px">
-            <input id="custom-r" type="text" class="form-control" placeholder="自訂原因">
-            <button onclick="subCus()" style="width:60px;border:none;background:var(--info);color:white;border-radius:8px">OK</button>
-        </div>
+        <h3 id="m-name" style="margin:0 0 15px 0;text-align:center"></h3>
+        <input type="text" id="note-input" class="form-control" placeholder="備註..." style="margin-bottom:10px">
+        <div style="display:flex;gap:8px;margin-bottom:15px"><input id="custom-r" type="text" class="form-control" placeholder="自訂"><button onclick="subCus()" style="width:60px;border:none;background:#3498db;color:white;border-radius:10px">OK</button></div>
         <div class="modal-options" id="opts-container"></div>
-        <label style="display:flex;align-items:center;gap:8px;justify-content:center;margin:15px 0;cursor:pointer">
-            <input type="checkbox" id="lock-status" style="transform:scale(1.3)">
-            <span>🔒 鎖定狀態 (重置時保留)</span>
-        </label>
-        <button class="action-btn" style="width:100%;background:#bdc3c7;color:#333" onclick="closeM()">取消</button>
+        <label style="display:flex;align-items:center;gap:8px;justify-content:center;margin:15px 0"><input type="checkbox" id="lock-status" style="transform:scale(1.3)"><span>🔒 鎖定</span></label>
+        <button class="action-btn btn-gray" style="width:100%" onclick="closeM()">取消</button>
     </div>
 </div>
 
-<!-- 歷史清單彈窗 -->
 <div id="his-list-modal" class="modal" style="z-index:250">
     <div class="modal-box" style="max-height:80vh;display:flex;flex-direction:column">
-        <h3 style="margin-top:0">📜 存檔紀錄</h3>
-        <div id="his-items-container" style="overflow-y:auto;flex:1;margin-bottom:15px;border:1px solid var(--border);border-radius:8px"></div>
-        <button class="action-btn" style="background:#bdc3c7;color:#333" onclick="closeHisList()">關閉</button>
+        <h3 style="margin-top:0">📜 清單</h3>
+        <div id="his-items-container" style="overflow-y:auto;flex:1;margin-bottom:15px;border:1px solid #eee;border-radius:10px"></div>
+        <button class="action-btn btn-gray" style="width:100%" onclick="closeHisList()">關閉</button>
     </div>
 </div>
-
-<!-- Toast -->
 <div id="toast" class="toast"></div>
 
 <script>
-const K_CUR='army_v2_cur',K_HIS='army_v2_his';
-let D={o:[],n:[],s:[],t:[],st:{},nt:{},lck:{},tm:{},u:'',rs:''},isM=false,isSorted=false,cur='',reportStr='';
+const K_CUR='army_v3_cur',K_HIS='army_v3_his';
+let D={o:[],n:[],s:[],t:[],st:{},nt:{},lck:{},tm:{},u:'',rs:''},isM=false,isSorted=false,cur='';
 const DEFAULT_REASONS = "休假,外宿,補休,衛哨,安官,戰情,公差,受訓,支援,轉診,住院,隔離";
 
 document.addEventListener('DOMContentLoaded',()=>{
     document.getElementById('history-date').valueAsDate=new Date();
-    load(); updateHisCount();
+    load(); updateHisCount(); updateDateTime();
 });
 
-// UI Helpers
+// 🔥 新增：日期與時段更新邏輯 🔥
+function updateDateTime() {
+    const now = new Date();
+    const days = ['日', '一', '二', '三', '四', '五', '六'];
+    
+    // 日期格式: 10/24 (週二)
+    const dateStr = `${now.getMonth()+1}/${now.getDate()} (週${days[now.getDay()]})`;
+    document.getElementById('current-date-display').innerText = dateStr;
+
+    // 時段判斷
+    const hour = now.getHours();
+    let periodText = '';
+    let periodClass = '';
+
+    if (hour < 12) {
+        periodText = '☀️ 上午';
+        periodClass = 'p-am';
+    } else if (hour < 18) {
+        periodText = '⛅ 下午';
+        periodClass = 'p-pm';
+    } else {
+        periodText = '🌙 夜間';
+        periodClass = 'p-night';
+    }
+
+    const badge = document.getElementById('current-period-badge');
+    badge.innerText = periodText;
+    // 移除舊的 class，加上新的
+    badge.className = `period-badge ${periodClass}`;
+}
+
 function showToast(msg) {
     const t = document.getElementById('toast');
     t.innerText = msg; t.classList.add('show');
@@ -499,31 +342,21 @@ function togglePanel(id) {
         if(id==='history-panel') updateHisCount();
     }
 }
-
-// Data Logic
 function insertSep(id){
-    const name = prompt("輸入分組名稱 (如: 一排):");
+    const name = prompt("輸入分組名稱:");
     if(name){
         const el = document.getElementById(id);
-        const val = el.value;
         const txt = ` ---${name}--- `;
-        el.value = val.slice(0, el.selectionStart) + txt + val.slice(el.selectionEnd);
+        el.value = el.value.slice(0, el.selectionStart) + txt + el.value.slice(el.selectionEnd);
         saveData();
     }
 }
-function exportData(){
-    const d=JSON.stringify({cur:JSON.parse(localStorage.getItem(K_CUR)||'{}'),his:JSON.parse(localStorage.getItem(K_HIS)||'{}')});
-    navigator.clipboard.writeText(d).then(()=>showToast("✅ 備份碼已複製")).catch(()=>prompt("複製:",d));
-}
-function importData(){
-    const s=prompt("貼上備份碼:");
-    if(s){try{const d=JSON.parse(s);localStorage.setItem(K_CUR,JSON.stringify(d.cur));localStorage.setItem(K_HIS,JSON.stringify(d.his));location.reload()}catch{alert("格式錯誤")}}
-}
+
 function saveData(){
     D.u=document.getElementById('in-unit').value.trim();
     D.rs=document.getElementById('in-reasons').value.trim();
     D.o=parse(document.getElementById('in-off').value);D.n=parse(document.getElementById('in-nco').value);D.s=parse(document.getElementById('in-sol').value);D.t=parse(document.getElementById('in-tra').value);
-    persist();render();togglePanel('setup-panel');showToast("✅ 設定已儲存");
+    persist();render();togglePanel('setup-panel');showToast("✅ 已儲存");
 }
 function persist(){localStorage.setItem(K_CUR,JSON.stringify(D))}
 function parse(t){return t?t.split(/[\s,、\n]+/).filter(x=>x.trim()):[]}
@@ -537,8 +370,7 @@ function fillSetup(){
     document.getElementById('in-off').value=D.o.join(' ');document.getElementById('in-nco').value=D.n.join(' ');document.getElementById('in-sol').value=D.s.join(' ');document.getElementById('in-tra').value=D.t.join(' ');
 }
 
-// Core Roster
-function toggleMode(){ isM=!isM; document.getElementById('mode-btn').innerText=isM?"⚠️ 事故模式：開":"⚠️ 事故模式：關"; document.getElementById('mode-btn').style.background=isM?"var(--warning)":"var(--text)"; }
+function toggleMode(){ isM=!isM; document.getElementById('mode-btn').innerText=isM?"⚠️ 事故模式：開":"⚠️ 事故模式：關"; document.getElementById('mode-btn').classList.toggle('active', isM); }
 function toggleSort(){ isSorted=!isSorted; document.getElementById('sort-btn').innerText=isSorted?"🔃 排序：未到優先":"🔃 排序：原序"; render(); }
 function filterRoster(){ const k=document.getElementById('search-input').value.toLowerCase(); document.querySelectorAll('.roster-card').forEach(c=>c.style.display=c.innerText.toLowerCase().includes(k)?'flex':'none'); }
 
@@ -546,22 +378,16 @@ function markAllPresent(){
     if(confirm("將所有未點名者設為「實到」？")){
         const t = new Date().toTimeString().slice(0,5);
         [...D.o,...D.n,...D.s,...D.t].forEach(n=>{ if(!D.st[n] && !n.startsWith('-')){ D.st[n]='p'; D.tm[n]=t; }});
-        persist();render();showToast("⚡ 已全設為實到");
+        persist();render();showToast("⚡ 全設實到");
     }
 }
 function resetAll(){
-    if(confirm("重置所有狀態？(鎖定者除外)")){
+    if(confirm("重置所有狀態？")){
         [...D.o,...D.n,...D.s,...D.t].forEach(n=>{ if(!D.lck||!D.lck[n]){ delete D.st[n]; delete D.nt[n]; delete D.tm[n]; }});
-        persist();render();showToast("🔄 重置完成");
+        persist();render();showToast("🔄 已重置");
     }
 }
-function getAbsCount(){ return [...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n]&&!n.startsWith('-')).length; }
-function showMissing(){
-    const m = [...D.o,...D.n,...D.s,...D.t].filter(n=>!D.st[n]&&!n.startsWith('-'));
-    if(m.length===0) showToast("👍 全員已到"); else alert(`未到 (${m.length}):\n${m.join('、')}`);
-}
 
-// Render
 function render(){
     const c=document.getElementById('roster'); c.innerHTML='';
     const groups = [{l:D.o,c:'rs-off'},{l:D.n,c:'rs-nco'},{l:D.s,c:'rs-sol'},{l:D.t,c:'rs-tra'}];
@@ -580,23 +406,20 @@ function render(){
         
         let sub='', name=n, m=n.match(/^(.*?)[（\(](.*)[）\)]$/);
         if(m){ name=m[1]; sub=m[2]; }
-
-        // 長名字自動縮小
         let nameClass = 'card-name';
-        if(name.length >= 6) nameClass += ' super-long-text';
-        else if(name.length >= 4) nameClass += ' long-text';
+        if(name.length >= 6) nameClass += ' super-long-text'; else if(name.length >= 4) nameClass += ' long-text';
 
         let h = `<div class="rank-strip ${cls}"></div><div class="${nameClass}">${name}</div>`;
         if(sub) h += `<div class="card-sub">${sub}</div>`;
         
         if(st && st!=='p') {
-             let bg = '#f39c12'; // Default Orange
+             let bg = '#f39c12';
              if(['轉診','住院','隔離'].some(k=>st.includes(k))) bg='#e74c3c';
              else if(['公差','受訓','支援'].some(k=>st.includes(k))) bg='#3498db';
              else if(['衛哨','安官','戰情'].some(k=>st.includes(k))) bg='#27ae60';
              h += `<div class="tag-exc" style="background:${bg}">${st}</div>`;
         }
-        if(D.nt && D.nt[n]) h += `<div class="card-sub" style="color:var(--primary)">📝${D.nt[n]}</div>`;
+        if(D.nt && D.nt[n]) h += `<div class="card-sub" style="color:#2980b9">📝${D.nt[n]}</div>`;
         if(D.lck && D.lck[n]) h += `<div class="icon-lock">🔒</div>`;
         if(D.tm && D.tm[n] && st==='p') h += `<div class="time-stamp">${D.tm[n]}</div>`;
 
@@ -604,10 +427,8 @@ function render(){
         card.onclick = () => cardClick(n, name);
         return card;
     };
-
     if(isSorted) items.forEach(i=>c.appendChild(mkCard(i.n,i.t)));
     else groups.forEach(g=>g.l.forEach(n=>c.appendChild(mkCard(n,g.c))));
-    
     updateStats(); filterRoster();
 }
 
@@ -618,8 +439,7 @@ function cardClick(n, name){
         document.getElementById('custom-r').value='';
         document.getElementById('note-input').value=D.nt[n]||'';
         document.getElementById('lock-status').checked=!!D.lck[n];
-        renderOpts();
-        document.getElementById('modal').classList.add('show');
+        renderOpts(); document.getElementById('modal').classList.add('show');
     } else {
         if(D.lck[n]) return showToast("🔒 此人員已鎖定");
         if(D.st[n]==='p') { delete D.st[n]; delete D.tm[n]; }
@@ -627,8 +447,6 @@ function cardClick(n, name){
         persist(); render();
     }
 }
-
-// 顏色分類邏輯
 function renderOpts(){
     const c=document.getElementById('opts-container'); c.innerHTML='';
     const rs=(D.rs||DEFAULT_REASONS).split(/[,，]/);
@@ -636,24 +454,19 @@ function renderOpts(){
         if(!r.trim())return;
         const b=document.createElement('button'); b.className='opt-btn'; b.innerText=r;
         let bg='#9b59b6';
-        if(['轉診','住院','隔離','發燒','病假'].some(k=>r.includes(k))) bg='#e74c3c';
-        else if(['公差','受訓','支援','出差'].some(k=>r.includes(k))) bg='#3498db';
-        else if(['衛哨','安官','戰情','值星'].some(k=>r.includes(k))) bg='#27ae60';
+        if(['轉診','住院','隔離','發燒'].some(k=>r.includes(k))) bg='#e74c3c';
+        else if(['公差','受訓','支援'].some(k=>r.includes(k))) bg='#3498db';
+        else if(['衛哨','安官','戰情'].some(k=>r.includes(k))) bg='#27ae60';
         else if(['休假','外宿','補休'].some(k=>r.includes(k))) bg='#f39c12';
-        
-        b.style.background=bg;
-        b.onclick=()=>setSt(r);
-        c.appendChild(b);
+        b.style.background=bg; b.onclick=()=>setSt(r); c.appendChild(b);
     });
     const clr=document.createElement('button'); clr.className='opt-btn'; clr.innerText='清除狀態';
     clr.style.background='#95a5a6'; clr.style.gridColumn='1/-1'; clr.onclick=()=>setSt(null);
     c.appendChild(clr);
 }
-
 function subCus(){ const v=document.getElementById('custom-r').value.trim(); if(v) setSt(v); }
 function setSt(v){
-    D.st[cur]=v;
-    const n=document.getElementById('note-input').value.trim();
+    D.st[cur]=v; const n=document.getElementById('note-input').value.trim();
     if(n)D.nt[cur]=n; else delete D.nt[cur];
     if(document.getElementById('lock-status').checked)D.lck[cur]=true; else delete D.lck[cur];
     if(v==='p'||!v) delete D.tm[cur];
@@ -661,8 +474,7 @@ function setSt(v){
 }
 function closeM(){ document.getElementById('modal').classList.remove('show'); }
 
-// Stats & Report
-function updateStats(){
+function calculateStats(){
     const calc=(l)=>l.filter(n=>!n.startsWith('-')&&!n.startsWith('#')).reduce((a,n)=>{
         a.t++; const s=D.st[n];
         if(s==='p')a.p++; else if(s){ a.e++; if(!a.dt[s])a.dt[s]=[]; a.dt[s].push(n); }
@@ -671,70 +483,119 @@ function updateStats(){
     const Ro=calc(D.o), Rn=calc(D.n), Rs=calc(D.s), Rt=calc(D.t);
     const T={t:Ro.t+Rn.t+Rs.t+Rt.t, p:Ro.p+Rn.p+Rs.p+Rt.p, e:Ro.e+Rn.e+Rs.e+Rt.e};
     const Abs=T.t-T.p-T.e;
-
-    document.getElementById('stat-total').innerText=T.t; document.getElementById('stat-present').innerText=T.p;
-    document.getElementById('stat-excuse').innerText=T.e; document.getElementById('stat-absent').innerText=Abs;
-
-    const row=(n,d,i)=>`<tr><td>${i} ${n}</td><td>${d.t}</td><td style="color:var(--success)">${d.p}</td><td style="color:var(--warning)">${d.e}</td><td style="color:var(--danger)">${d.t-d.p-d.e}</td></tr>`;
-    document.getElementById('rank-stats-body').innerHTML = row('軍官',Ro,'🛑')+row('士官',Rn,'🔷')+row('士兵',Rs,'🟩')+row('訓員',Rt,'🟣');
-    
-    if(T.t>0) document.getElementById('p-bar').innerHTML = `<div class="pb-seg" style="width:${(T.p/T.t)*100}%;background:var(--success)"></div><div class="pb-seg" style="width:${(T.e/T.t)*100}%;background:var(--warning)"></div><div class="pb-seg" style="width:${(Abs/T.t)*100}%;background:var(--danger)"></div>`;
-
-    // Detail & Report
-    const db=document.getElementById('detail-board'), dt=document.getElementById('detail-tags');
-    dt.innerHTML='';
     const mergedDt={};
     [Ro,Rn,Rs,Rt].forEach(r=>{ for(let[k,a]of Object.entries(r.dt)){ if(!mergedDt[k])mergedDt[k]=[]; mergedDt[k].push(...a); }});
+    return {Ro, Rn, Rs, Rt, T, Abs, mergedDt};
+}
+
+function updateStats(){
+    const S = calculateStats();
+    document.getElementById('stat-total').innerText=S.T.t; document.getElementById('stat-present').innerText=S.T.p;
+    document.getElementById('stat-excuse').innerText=S.T.e; document.getElementById('stat-absent').innerText=S.Abs;
     
-    if(T.e>0){
+    // 更新表格 (幾何圖形圖示)
+    const row = (name, d, iconClass) => `
+        <tr>
+            <td style="text-align:left;padding-left:15px">
+                <span class="icon-shape ${iconClass}"></span>${name}
+            </td>
+            <td>${d.t}</td>
+            <td class="txt-green">${d.p}</td>
+            <td class="txt-orange">${d.e}</td>
+            <td class="txt-red">${d.t-d.p-d.e}</td>
+        </tr>`;
+
+    document.getElementById('rank-stats-body').innerHTML = 
+        row('軍官', S.Ro, 'shape-off') + 
+        row('士官', S.Rn, 'shape-nco') + 
+        row('士兵', S.Rs, 'shape-sol') + 
+        row('訓員', S.Rt, 'shape-tra');
+    
+    if(S.T.t>0) document.getElementById('p-bar').innerHTML = `<div class="pb-seg" style="width:${(S.T.p/S.T.t)*100}%;background:#4caf50"></div><div class="pb-seg" style="width:${(S.T.e/S.T.t)*100}%;background:#ffb74d"></div><div class="pb-seg" style="width:${(S.Abs/S.T.t)*100}%;background:#e57373"></div>`;
+    
+    // 事故明細 (符合截圖格式)
+    const db=document.getElementById('detail-board'), dt=document.getElementById('detail-tags');
+    dt.innerHTML='';
+    if(S.T.e>0){
         db.style.display='block';
-        for(let[k,arr]of Object.entries(mergedDt)){
-            const ns=arr.map(x=>x.split(/[（\(]/)[0]+(D.nt[x]?`[${D.nt[x]}]`:'')).join(' ');
-            dt.innerHTML+=`<div class="detail-item"><strong>${k} (${arr.length}):</strong> ${ns}</div>`;
+        for(let[k,arr]of Object.entries(S.mergedDt)){
+            const ns = arr.map(x => x.split(/[（\(]/)[0] + (D.nt[x] ? `[${D.nt[x]}]` : '')).join(' ');
+            dt.innerHTML += `<div class="detail-item">${k} (${arr.length}): <span class="detail-names">${ns}</span></div>`;
         }
     } else db.style.display='none';
+}
 
-    // Gen Report String
+async function copyText(txt) {
+    try { await navigator.clipboard.writeText(txt); showToast("✅ 複製成功"); } 
+    catch {
+        const ta = document.createElement("textarea"); ta.value = txt; document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        showToast("✅ 複製成功 (兼容模式)");
+    }
+}
+
+function copyReport(){
+    const S = calculateStats();
+    if(S.Abs>0) return alert("⚠️ 還有未到人員！");
     let now=new Date();
     let r=`【部隊點名回報】\n單位：${D.u||''}\n時間：${now.getMonth()+1}/${now.getDate()} ${now.getHours().toString().padStart(2,'0')}${now.getMinutes().toString().padStart(2,'0')}\n`;
-    r+=`應到：${T.t} (官${Ro.t}士${Rn.t}兵${Rs.t}訓${Rt.t})\n實到：${T.p} (官${Ro.p}士${Rn.p}兵${Rs.p}訓${Rt.p})\n事故：${T.e} (官${Ro.e}士${Rn.e}兵${Rs.e}訓${Rt.e})\n未到：${Abs}\n----------------\n`;
-    if(T.e>0){
-        for(let[k,arr]of Object.entries(mergedDt)){
+    r+=`應到：${S.T.t} (官${S.Ro.t}士${S.Rn.t}兵${S.Rs.t}訓${S.Rt.t})\n實到：${S.T.p} (官${S.Ro.p}士${S.Rn.p}兵${S.Rs.p}訓${S.Rt.p})\n事故：${S.T.e} (官${S.Ro.e}士${S.Rn.e}兵${S.Rs.e}訓${S.Rt.e})\n未到：${S.Abs}\n----------------\n`;
+    if(S.T.e>0){
+        for(let[k,arr]of Object.entries(S.mergedDt)){
             const ns=arr.map(x=>x.split(/[（\(]/)[0]+(D.nt[x]?`[${D.nt[x].replace(/2[14]收|07收/g,'')}]`:'')).join(' ');
-            const l=arr.length, f=arr[0].split(/[（\(]/)[0];
-            r+=`${k}：${l}員 (${l>1?f+'等'+l+'員':ns})\n`;
+            r+=`${k}：${arr.length}員 (${ns})\n`;
         }
-        r+=`\n明細：\n`;
-        for(let[k,arr]of Object.entries(mergedDt)) r+=`${k}: ${arr.map(x=>x.split(/[（\(]/)[0]).join(' ')}\n`;
     } else r+="無事故人員\n";
-    reportStr=r;
+    copyText(r);
 }
 
-function copyReport(){ if(getAbsCount()>0)return alert("⚠️ 還有未點名人員！"); navigator.clipboard.writeText(reportStr).then(()=>showToast("✅ 值星回報已複製")); }
-function copyCSMReport(){ if(getAbsCount()>0)return alert("⚠️ 還有未點名人員！"); navigator.clipboard.writeText(reportStr).then(()=>showToast("✅ 營士督回報已複製")); }
+function copyCSMReport(){
+    const S = calculateStats();
+    if(S.Abs>0) return alert("⚠️ 還有未到人員！");
+    let now=new Date();
+    let r=`營士督好\n\n${D.u||''}回報（${now.getMonth()+1}/${now.getDate()}）收假\n`;
+    r+=`應到：${S.Ro.t}官${S.Rn.t}士${S.Rs.t}兵${S.Rt.t}訓\n`;
+    r+=`實到：${S.Ro.p}官${S.Rn.p}士${S.Rs.p}兵${S.Rt.p}訓\n`;
+    
+    const all = [...D.o,...D.n,...D.s,...D.t];
+    const r21=[], r24=[], r07=[];
+    all.forEach(n=>{
+        const note = (D.nt[n]||'').toLowerCase();
+        if(note.includes('21收')) r21.push(n);
+        else if(note.includes('24收')) r24.push(n);
+        else if(note.includes('07收')) r07.push(n);
+    });
+    
+    const fmtList = (list) => {
+        if(list.length===0) return "無";
+        const f = list[0].split(/[（\(]/)[0];
+        return `${f}等${list.length}員\n${list.map(x=>x.split(/[（\(]/)[0]).join('\n')}`;
+    }
+    
+    r+=`（${S.T.p>0 ? '人員到齊' : '無'}）\n\n`;
+    r+=`21收假：${fmtList(r21)}\n24收假：${fmtList(r24)}\n07收假：${fmtList(r07)}\n事故：\n`;
+    
+    const returners = [...r21, ...r24, ...r07];
+    let accCount = 0;
+    for(let[k,arr]of Object.entries(S.mergedDt)){
+        const realAcc = arr.filter(n => !returners.includes(n));
+        if(realAcc.length > 0){
+            accCount++;
+            const ns = realAcc.map(x=>x.split(/[（\(]/)[0]+(D.nt[x]?`[${D.nt[x].replace(/2[14]收|07收/g,'')}]`:'')).join('\n');
+            r+=`${k}：\n${ns}\n`;
+        }
+    }
+    if(accCount===0) r+="無事故人員\n";
+    copyText(r);
+}
 
-// History
+function exportData(){ const d=JSON.stringify({cur:JSON.parse(localStorage.getItem(K_CUR)||'{}'),his:JSON.parse(localStorage.getItem(K_HIS)||'{}')}); copyText(d); }
+function importData(){ const s=prompt("貼上備份碼:"); if(s){try{const d=JSON.parse(s);localStorage.setItem(K_CUR,JSON.stringify(d.cur));localStorage.setItem(K_HIS,JSON.stringify(d.his));location.reload()}catch{alert("格式錯誤")}} }
 function getHis(){return JSON.parse(localStorage.getItem(K_HIS)||'{}')}
 function updateHisCount(){document.getElementById('history-count').innerText=Object.keys(getHis()).length}
-function saveToDate(){
-    const d=document.getElementById('history-date').value; if(!d)return alert("選日期");
-    const k=`${d}_${document.getElementById('history-period').value}`;
-    const h=getHis(); h[k]=D; localStorage.setItem(K_HIS,JSON.stringify(h));
-    updateHisCount(); showToast("✅ 已存檔");
-}
-function loadFromDate(){
-    const k=`${document.getElementById('history-date').value}_${document.getElementById('history-period').value}`;
-    const h=getHis(); if(h[k]){ D=h[k]; persist(); render(); togglePanel('history-panel'); showToast("✅ 讀取成功"); } else alert("查無紀錄");
-}
-function showHistoryList(){
-    const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML='';
-    Object.keys(h).sort().reverse().forEach(k=>{
-        const d=document.createElement('div'); d.style.cssText='padding:12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center';
-        d.innerHTML=`<span>${k}</span> <button style="border:none;background:#e74c3c;color:white;padding:5px 10px;border-radius:5px" onclick="delHis('${k}')">刪</button>`;
-        c.appendChild(d);
-    });
-    document.getElementById('his-list-modal').classList.add('show');
-}
+function saveToDate(){ const d=document.getElementById('history-date').value; if(!d)return alert("選日期"); const k=`${d}_${document.getElementById('history-period').value}`; const h=getHis(); h[k]=D; localStorage.setItem(K_HIS,JSON.stringify(h)); updateHisCount(); showToast("✅ 已存檔"); }
+function loadFromDate(){ const k=`${document.getElementById('history-date').value}_${document.getElementById('history-period').value}`; const h=getHis(); if(h[k]){ D=h[k]; persist(); render(); togglePanel('history-panel'); showToast("✅ 讀取成功"); } else alert("查無紀錄"); }
+function showHistoryList(){ const h=getHis(),c=document.getElementById('his-items-container');c.innerHTML=''; Object.keys(h).sort().reverse().forEach(k=>{ const d=document.createElement('div'); d.style.cssText='padding:12px;border-bottom:1px solid #eee;display:flex;justify-content:space-between;align-items:center'; d.innerHTML=`<span>${k}</span> <button style="border:none;background:#e74c3c;color:white;padding:5px 10px;border-radius:5px;cursor:pointer" onclick="delHis('${k}')">刪</button>`; c.appendChild(d); }); document.getElementById('his-list-modal').classList.add('show'); }
 function delHis(k){if(confirm("刪除?")){const h=getHis();delete h[k];localStorage.setItem(K_HIS,JSON.stringify(h));showHistoryList();updateHisCount();}}
 function closeHisList(){document.getElementById('his-list-modal').classList.remove('show')}
 function clearHistory(){if(confirm("清空?")){localStorage.removeItem(K_HIS);updateHisCount();showToast("已清空")}}
