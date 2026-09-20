@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>部隊點名系統 v4.5（S24 Ultra／iPhone 自適應版）</title>
+<title>部隊點名系統 v4.6（七日狀態選單版）</title>
 <style>
 :root{
   --bg: #f5f7fa;
@@ -550,6 +550,60 @@ input, select, textarea{
   touch-action:manipulation;
 }
 
+
+/* v4.6 七日狀態選單 */
+.plan-status-modal-box{
+  width:min(92vw,390px);
+  max-height:min(88dvh,700px);
+}
+.plan-status-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;
+  max-height:min(52dvh,420px);
+  overflow-y:auto;
+  padding:2px;
+}
+.plan-status-option{
+  border:1px solid #e5e7eb;
+  background:#f9fafb;
+  color:#374151;
+  border-radius:12px;
+  min-height:48px;
+  padding:10px 8px;
+  font-weight:700;
+  font-size:.9rem;
+  cursor:pointer;
+  transition:.15s;
+  touch-action:manipulation;
+}
+.plan-status-option:active{transform:scale(.97)}
+.plan-status-option.selected{
+  border-color:#2563eb;
+  background:#eff6ff;
+  color:#1d4ed8;
+  box-shadow:0 0 0 2px rgba(37,99,235,.12);
+}
+.plan-status-option.status-on.selected{
+  border-color:#059669;
+  background:#ecfdf5;
+  color:#047857;
+}
+.plan-status-option.status-off.selected{
+  border-color:#7c3aed;
+  background:#f5f3ff;
+  color:#6d28d9;
+}
+.plan-status-option.status-clear.selected{
+  border-color:#6b7280;
+  background:#f3f4f6;
+  color:#374151;
+}
+@media(max-width:360px){
+  .plan-status-options{grid-template-columns:1fr 1fr;gap:7px}
+  .plan-status-option{font-size:.82rem;min-height:45px;padding:8px 5px}
+}
+
 </style>
 </head>
 <body>
@@ -1041,22 +1095,12 @@ function getPlanStatusClass(status){
     return 'none';
 }
 
-function nextPlanStatus(cur){
-    // 空白 → 實到 → 休假 → 第一個自訂事故原因 → 下一個事故原因 → ... → 空白
-    if(!cur) return 'on';
-    if(cur==='on') return 'off';
-    if(cur==='off') {
-        const reasons=getPlanReasons();
-        return reasons.length ? 'acc:'+reasons[0] : '';
-    }
-    if(String(cur).startsWith('acc:')){
-        const reasons=getPlanReasons();
-        const current=String(cur).slice(4);
-        const idx=reasons.indexOf(current);
-        if(idx>=0 && idx<reasons.length-1) return 'acc:'+reasons[idx+1];
-        return '';
-    }
-    return '';
+function nextPlanStatus(status) {
+    // v4.6 保留舊函式供舊資料/舊程式相容；現在七日狀態改由選單選取。
+    const reasons = getPlanReasons();
+    const seq = ['', 'on', 'off', ...reasons.map(r => 'acc:' + r)];
+    const i = seq.indexOf(status);
+    return seq[(i + 1) % seq.length];
 }
 function getRankGroups(){
     return [
@@ -1407,6 +1451,117 @@ function importData(){
         location.reload();
     }catch(err){ alert("備份碼無法讀取，請確認內容完整。"); }
 }
+
+/* =========================================================
+   v4.6 七日狀態選單
+   點擊格子 → 選擇狀態 → 確定
+   ========================================================= */
+let planModalTarget = null;
+let planModalSelected = '';
+
+function openPlanStatusModal(name, dateKey) {
+    planModalTarget = { name, dateKey };
+    planModalSelected = getPlanStatus(name, dateKey) || '';
+
+    const title = document.getElementById('plan-status-title');
+    const person = document.getElementById('plan-status-person');
+    const box = document.getElementById('plan-status-options');
+
+    if(!title || !person || !box) return;
+
+    title.innerText = '🗓️ 選擇七日狀態';
+    person.innerText = `${name}｜${planDateLabel(dateKey)}`;
+
+    const reasons = getPlanReasons();
+    const options = [
+        { value:'', label:'清除狀態', cls:'status-clear' },
+        { value:'on', label:'🟢 實到', cls:'status-on' },
+        { value:'off', label:'🟣 休假', cls:'status-off' },
+        ...reasons.map(r => ({
+            value:'acc:' + r,
+            label:'⚠️ ' + r,
+            cls:'status-acc'
+        }))
+    ];
+
+    box.innerHTML = options.map(o => `
+        <button type="button"
+                class="plan-status-option ${o.cls} ${planModalSelected===o.value?'selected':''}"
+                data-status="${escapeHtmlAttr(o.value)}"
+                onclick="selectPlanStatusOption(this)">
+            ${escapeHtml(o.label)}
+        </button>
+    `).join('');
+
+    document.getElementById('plan-status-modal').classList.add('show');
+    document.body.style.overflow = 'hidden';
+}
+
+function selectPlanStatusOption(btn) {
+    document.querySelectorAll('#plan-status-options .plan-status-option')
+      .forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    planModalSelected = btn.dataset.status || '';
+    if(navigator.vibrate) navigator.vibrate(8);
+}
+
+function confirmPlanStatus() {
+    if(!planModalTarget) return;
+
+    setPlanStatus(
+        planModalTarget.name,
+        planModalTarget.dateKey,
+        planModalSelected
+    );
+
+    closePlanStatusModal();
+    renderPlan();
+    saveData();
+    showToast(planModalSelected ? '✅ 狀態已設定' : '🧹 狀態已清除');
+}
+
+function closePlanStatusModal() {
+    const modal = document.getElementById('plan-status-modal');
+    if(modal) modal.classList.remove('show');
+    document.body.style.overflow = '';
+    planModalTarget = null;
+    planModalSelected = '';
+}
+
+/* HTML escape，避免自訂事故原因含特殊字元時破壞按鈕 */
+function escapeHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;')
+      .replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;')
+      .replace(/'/g,'&#039;');
+}
+function escapeHtmlAttr(str) {
+    return escapeHtml(str);
+}
+
+/* ESC 關閉 */
+document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') closePlanStatusModal();
+});
+
 </script>
+
+<!-- 七日狀態選擇 Modal -->
+<div id="plan-status-modal" class="modal-overlay" onclick="if(event.target===this)closePlanStatusModal()">
+  <div class="modal-box plan-status-modal-box" role="dialog" aria-modal="true" aria-labelledby="plan-status-title">
+    <div id="plan-status-title" class="section-title" style="margin-bottom:4px">🗓️ 選擇七日狀態</div>
+    <div id="plan-status-person" style="font-size:.9rem;color:#6b7280;text-align:left;margin-bottom:12px"></div>
+
+    <div id="plan-status-options" class="plan-status-options"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px">
+      <button class="btn btn-blue" onclick="closePlanStatusModal()">取消</button>
+      <button class="btn btn-green" onclick="confirmPlanStatus()">✅ 確定</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
