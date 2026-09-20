@@ -38,9 +38,6 @@ body{
 .btn-org { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
 .btn-dark { background: #374151; color: white; }
 
-/* 事故模式開啟時的按鈕狀態 */
-.btn-org.active { background: #ea580c; color: white; box-shadow: 0 4px 10px rgba(234, 88, 12, 0.3); border-color: #ea580c; }
-
 /* 底部導覽列 */
 .bottom-nav {
     position: fixed; bottom: 0; left: 0; right: 0; height: calc(var(--nav-height) + var(--safe-area-bottom));
@@ -64,10 +61,12 @@ body{
 
 /* 點名頁 */
 .sticky-top-bar { position: sticky; top: 0; z-index: 90; background: var(--bg); margin: -15px -15px 10px -15px; padding: 15px 15px 5px 15px; backdrop-filter: blur(8px); border-bottom: 1px solid rgba(0,0,0,0.05); }
-.mini-stats { display: flex; justify-content: space-between; align-items: center; background: #1f2937; color: white; padding: 10px 16px; border-radius: 12px; margin-bottom: 10px; font-size: 0.95rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.mini-stats { display: grid; grid-template-columns:repeat(3,1fr); align-items: center; background: #1f2937; color: white; padding: 10px 8px; border-radius: 12px; margin-bottom: 10px; font-size: 0.82rem; font-weight: 600; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.mini-stat{padding:0 7px;text-align:center;border-right:1px solid rgba(255,255,255,.18)}.mini-stat:last-child{border:0}.mini-stat b{display:block;font-size:1.18rem;line-height:1.2}.mini-stat.present b{color:#6ee7b7}.mini-stat.special b{color:#93c5fd}.mini-stat.pending b{color:#fcd34d}
 
 /* 控制按鈕區 */
-.control-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.control-row { display:flex; gap:8px; margin-bottom:10px; }
+.control-row .search-input{margin:0;flex:1}.quick-present{width:auto!important;white-space:nowrap;padding:10px 13px!important}
 
 .filter-tabs { display: flex; gap: 8px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px; -webkit-overflow-scrolling: touch; }
 .ft-btn { white-space: nowrap; padding: 8px 16px; border-radius: 20px; background: #e5e7eb; color: #4b5563; font-size: 0.9rem; font-weight: 600; border: none; }
@@ -75,20 +74,17 @@ body{
 
 .search-input { width: 100%; padding: 10px 12px; border: none; background: white; border-radius: 12px; font-size: 1rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); margin-bottom: 10px; }
 
-.roster-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-.r-card { background: white; border-radius: 12px; padding: 10px 4px; min-height: 75px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 1px 2px rgba(0,0,0,0.05); position: relative; cursor: pointer; border: 2px solid transparent; transition: 0.1s; user-select: none; }
-.r-card:active { transform: scale(0.96); background: #f9fafb; }
-.rc-name { font-size: 1.05rem; font-weight: 700; color: #111827; margin-bottom: 2px; text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.rc-name.long { font-size: 0.85rem; white-space: normal; line-height: 1.2; overflow: visible; }
-.rc-sub { font-size: 0.75rem; color: #9ca3af; }
-.rc-badge { position: absolute; top: -6px; right: -6px; padding: 2px 6px; border-radius: 8px; font-size: 0.7rem; color: white; font-weight: bold; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.rc-lock { position: absolute; top: 4px; left: 4px; font-size: 0.7rem; opacity: 0.5; }
+.roster-grid { display:flex;flex-direction:column;gap:7px; }
+.r-card { background:white;border-radius:11px;padding:7px 8px 7px 12px;min-height:58px;display:flex;align-items:center;gap:9px;box-shadow:0 1px 2px rgba(0,0,0,.05);cursor:pointer;border:1px solid #d1d5db;transition:.1s;user-select:none;text-align:left; }
+.r-card:active { transform:scale(.985); }.r-card.st-u{border-left:5px solid #94a3b8;background:#fff}.r-card.st-u .rc-name{color:#374151}
+.rc-person{min-width:0;flex:1}.rc-rank{font-size:.72rem;color:#64748b;margin-bottom:1px}.rc-name{font-size:1rem;font-weight:750;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rc-sub{font-size:.72rem;color:#6b7280;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.status-btn{flex:0 0 auto;border:0;border-radius:9px;padding:8px 10px;font-weight:700;font-size:.8rem;cursor:pointer;min-width:77px}.status-p{background:#dcfce7;color:#15803d}.status-e{background:#dbeafe;color:#1d4ed8}.status-u{background:#e5e7eb;color:#475569}.rc-lock{font-size:.72rem;opacity:.65}
 
 /* 狀態顏色 */
-.st-p { border-color: #10b981; background: #ecfdf5; } .st-p .rc-name { color: #059669; }
-.st-e { border-color: #f59e0b; background: #fffbeb; }
+.st-p { border-color:#86efac; background:#f0fdf4; } .st-p .rc-name { color:#15803d; }
+.st-e { border-color:#bfdbfe; background:#eff6ff; }
 .bg-red { background: #ef4444; } .bg-blue { background: #3b82f6; } .bg-org { background: #f59e0b; } .bg-green { background: #10b981; }
-.sep-row { grid-column: 1 / -1; font-size: 0.85rem; color: #9ca3af; margin: 15px 0 5px 0; display: flex; align-items: center; gap: 10px; font-weight:bold; }
+.sep-row { font-size:.82rem;color:#64748b;margin:12px 2px 1px;display:flex;align-items:center;gap:10px;font-weight:bold; }
 .sep-line { flex: 1; height: 1px; background: #e5e7eb; }
 
 /* 設定頁優化 */
@@ -133,7 +129,7 @@ button{touch-action:manipulation}
 .search-input:focus,.form-control:focus,.setup-textarea:focus{
   outline:3px solid rgba(37,99,235,.14);border-color:#93c5fd;
 }
-.r-card{min-height:82px}
+.r-card{min-height:58px}
 .r-card:focus-visible{outline:3px solid #93c5fd;outline-offset:2px}
 .r-card.is-search-hidden{display:none}
 .roster-empty{
@@ -155,7 +151,6 @@ button{touch-action:manipulation}
   margin-top:18px;padding-top:15px;border-top:1px solid #f3f4f6
 }
 @media(max-width:380px){
-  .roster-grid{grid-template-columns:repeat(2,1fr)}
   .opt-grid{grid-template-columns:1fr}
   .time-big{font-size:1.6rem}
 }
@@ -212,20 +207,16 @@ button{touch-action:manipulation}
 <div id="view-roster" class="page-view">
     <div class="sticky-top-bar">
         <div class="mini-stats">
-            <span id="mini-status-text">點名中...</span>
-            <span>實到 <span id="r-pres" style="color:#34d399;font-size:1.1rem">0</span> / <span id="r-tot">0</span></span>
+            <div class="mini-stat present">實到<b id="r-pres">0</b></div>
+            <div class="mini-stat special">請假／勤務<b id="r-excused">0</b></div>
+            <div class="mini-stat pending">待點名<b id="r-pending">0</b></div>
         </div>
         
-        <input type="text" id="search-input" class="search-input" placeholder="🔍 搜尋..." oninput="renderRoster()">
-
         <div class="control-row">
-            <button id="mode-btn" class="btn btn-org" onclick="toggleMode()">⚠️ 一般模式</button>
-            <button class="btn btn-green" onclick="markSmart()">⚡ 餘員全到</button>
+            <input type="text" id="search-input" class="search-input" placeholder="🔍 搜尋姓名" oninput="renderRoster()">
+            <button class="btn btn-green quick-present" onclick="markSmart()">⚡ 餘員全到</button>
         </div>
         <div class="progress-wrap">
-            <div style="display:flex;justify-content:space-between;font-size:.75rem;color:#6b7280;margin-bottom:5px">
-                <span>點名進度</span><span id="r-progress-text">0%</span>
-            </div>
             <div class="progress-track"><div id="r-progress-bar" class="progress-bar" style="width:0%"></div></div>
         </div>
 
@@ -236,8 +227,8 @@ button{touch-action:manipulation}
             <button class="ft-btn" onclick="setFilter('sol', this)">士兵</button>
             <button class="ft-btn" onclick="setFilter('tra', this)">訓員</button>
         </div>
-        <div style="font-size:0.75rem; color:#6b7280; text-align:center; padding-bottom:5px">
-            提示：點擊變實到，開啟事故模式(或長按)可選事故
+        <div style="font-size:.75rem; color:#6b7280; text-align:center; padding-bottom:5px">
+            點擊列內空白處切換實到；點選右側狀態按鈕可選請假或勤務。
         </div>
     </div>
 
@@ -328,7 +319,7 @@ button{touch-action:manipulation}
 <script>
 const K_DATA = 'army_v3_data', K_HIS = 'army_v3_his';
 let D = { u:'', o:[], n:[], s:[], t:[], rs:'', st:{}, nt:{}, lck:{}, tm:{} };
-let curFilter='all', curUser='', isAccMode=false, longPressTimer, longPressed=false;
+let curFilter='all', curUser='';
 
 document.addEventListener('DOMContentLoaded', () => {
     loadData(); updateTime(); setInterval(updateTime, 60000);
@@ -359,88 +350,55 @@ function parseList(str) { return str ? str.split(/[\s,、\n]+/).filter(x=>x.trim
 /* 點名邏輯 */
 function setFilter(type, el) { curFilter=type; document.querySelectorAll('.ft-btn').forEach(b=>b.classList.remove('active')); el.classList.add('active'); renderRoster(); }
 
-function toggleMode() {
-    isAccMode = !isAccMode;
-    const btn = document.getElementById('mode-btn');
-    if(isAccMode) { btn.innerText = "⚠️ 事故模式 (開啟)"; btn.classList.add('active'); showToast("點擊卡片將開啟事故選單"); }
-    else { btn.innerText = "⚠️ 一般模式"; btn.classList.remove('active'); showToast("點擊卡片標記實到"); }
-}
-
 function renderRoster() {
     const grid = document.getElementById('roster-grid'); grid.innerHTML = '';
     const search = document.getElementById('search-input').value.toLowerCase();
     let lists = [];
-    if(curFilter==='all') lists=[{k:'o',d:D.o},{k:'n',d:D.n},{k:'s',d:D.s},{k:'t',d:D.t}];
-    else if(curFilter==='off') lists=[{k:'o',d:D.o}]; else if(curFilter==='nco') lists=[{k:'n',d:D.n}];
-    else if(curFilter==='sol') lists=[{k:'s',d:D.s}]; else if(curFilter==='tra') lists=[{k:'t',d:D.t}];
+    if(curFilter==='all') lists=[{k:'o',label:'軍官',d:D.o},{k:'n',label:'士官',d:D.n},{k:'s',label:'士兵',d:D.s},{k:'t',label:'訓員',d:D.t}];
+    else if(curFilter==='off') lists=[{k:'o',label:'軍官',d:D.o}]; else if(curFilter==='nco') lists=[{k:'n',label:'士官',d:D.n}];
+    else if(curFilter==='sol') lists=[{k:'s',label:'士兵',d:D.s}]; else if(curFilter==='tra') lists=[{k:'t',label:'訓員',d:D.t}];
 
-    let totalC=0, presC=0;
     lists.forEach(group => {
         group.d.forEach(name => {
             if(name.startsWith('-') || name.startsWith('#')) {
                 if(!search) {
                     const sep = document.createElement('div'); sep.className='sep-row';
-                    sep.innerHTML = `<div class="sep-line"></div>${name.replace(/[-#]/g,'').trim()}<div class="sep-line"></div>`;
+                    const left=document.createElement('div'),right=document.createElement('div');left.className=right.className='sep-line';
+                    sep.append(left,document.createTextNode(name.replace(/[-#]/g,'').trim()),right);
                     grid.appendChild(sep);
                 }
                 return;
             }
             if(search && !name.toLowerCase().includes(search)) return;
-            totalC++; const st = D.st[name]; if(st==='p') presC++;
-
-            const card = document.createElement('div');
-            let cls = 'r-card', badgeHtml = '';
-            if(st==='p') cls += ' st-p';
-            else if(st) {
-                cls += ' st-e';
-                let color = 'bg-org';
-                if(['轉診','住院','隔離','發燒'].some(k=>st.includes(k))) color='bg-red';
-                else if(['衛哨','安官','戰情'].some(k=>st.includes(k))) color='bg-green';
-                else if(['公差','受訓','支援'].some(k=>st.includes(k))) color='bg-blue';
-                badgeHtml = `<div class="rc-badge ${color}">${st}</div>`;
-            }
-            let nameHtml = `<div class="rc-name ${name.length>3?'long':''}">${name}</div>`;
-            if(D.nt[name]) nameHtml += `<div class="rc-sub">📝${D.nt[name]}</div>`;
-            if(D.lck[name]) badgeHtml += `<div class="rc-lock">🔒</div>`;
-
-            card.className = cls;
-            card.innerHTML = badgeHtml + nameHtml;
-            
-            // 點擊事件
-            card.onclick = () => handleCardClick(name);
-            // 長按事件 (手機專用)
-            card.addEventListener('touchstart', () => { longPressTimer = setTimeout(() => openModal(name), 600); }, {passive:true});
-            card.addEventListener('touchend', () => { clearTimeout(longPressTimer); }, {passive:true});
-            
+            const st=D.st[name],card=document.createElement('div');
+            card.className='r-card '+(st==='p'?'st-p':st?'st-e':'st-u');
+            const person=document.createElement('div');person.className='rc-person';
+            const rank=document.createElement('div');rank.className='rc-rank';rank.textContent=group.label+(D.lck[name]?'　🔒 已鎖定':'');
+            const nameEl=document.createElement('div');nameEl.className='rc-name';nameEl.textContent=name;person.append(rank,nameEl);
+            if(D.nt[name]){const note=document.createElement('div');note.className='rc-sub';note.textContent='📝 '+D.nt[name];person.appendChild(note);}
+            const status=document.createElement('button');status.className='status-btn '+(st==='p'?'status-p':st?'status-e':'status-u');status.textContent=st==='p'?'實到 ▾':st?`${st} ▾`:'＋ 選狀態';
+            status.onclick=e=>{e.stopPropagation();openModal(name);};card.append(person,status);card.onclick=()=>handleCardClick(name);
             grid.appendChild(card);
         });
     });
-    // 點名頁顯示的是目前篩選/搜尋結果，避免搜尋後統計數字誤導
     const allPeople = [...D.o,...D.n,...D.s,...D.t].filter(n=>!n.startsWith('-')&&!n.startsWith('#'));
     const allTotal = allPeople.length;
     const allPres = allPeople.filter(n=>D.st[n]==='p').length;
     const allExcused = allPeople.filter(n=>D.st[n] && D.st[n]!=='p').length;
     const allAbsent = allTotal - allPres - allExcused;
     const progress = allTotal ? Math.round((allPres + allExcused) / allTotal * 100) : 0;
-    document.getElementById('r-pres').innerText = presC;
-    document.getElementById('r-tot').innerText = totalC;
-    document.getElementById('r-progress-text').innerText = `${progress}%`;
+    document.getElementById('r-pres').innerText = allPres;
+    document.getElementById('r-excused').innerText = allExcused;
+    document.getElementById('r-pending').innerText = allAbsent;
     document.getElementById('r-progress-bar').style.width = `${progress}%`;
-    document.getElementById('mini-status-text').innerText = allAbsent===0 ? "✅ 全員已處理" : `⚠️ 還有 ${allAbsent} 人未處理`;
 }
 
 function handleCardClick(name) {
     if(navigator.vibrate) navigator.vibrate(10);
-    // 1. 鎖定時 -> 開視窗
-    // 2. 事故模式開啟 -> 開視窗
-    // 3. 已經有事故(且不是實到) -> 開視窗 (防止誤觸就把事故洗掉)
-    if(D.lck[name] || isAccMode || (D.st[name] && D.st[name] !== 'p')) {
-        openModal(name);
-    } else {
-        // 一般模式：切換 實到/重置
-        if(D.st[name] === 'p') delete D.st[name]; else D.st[name] = 'p';
-        saveData(); renderRoster();
-    }
+    if(D.lck[name]) { openModal(name); return; }
+    if(D.st[name] === 'p') { delete D.st[name]; delete D.nt[name]; }
+    else { D.st[name]='p'; delete D.nt[name]; }
+    saveData(); renderRoster(); renderDashboard();
 }
 function markSmart() {
     let count=0; [...D.o,...D.n,...D.s,...D.t].forEach(n=>{ if(!n.startsWith('-')&&!n.startsWith('#')&&!D.st[n]){D.st[n]='p'; count++;}});
@@ -479,7 +437,7 @@ function setSt(status) {
     const note = document.getElementById('m-note').value.trim();
     if(status === null) { delete D.st[curUser]; delete D.nt[curUser]; delete D.lck[curUser]; }
     else { D.st[curUser]=status; if(note) D.nt[curUser]=note; else delete D.nt[curUser]; if(document.getElementById('m-lock').checked) D.lck[curUser]=true; else delete D.lck[curUser]; }
-    saveData(); closeModal(); renderRoster();
+    saveData(); closeModal(); renderRoster(); renderDashboard();
 }
 
 /* 設定與其他 */
