@@ -34,6 +34,7 @@ body{
 .btn:active { transform: scale(0.97); filter: brightness(0.95); }
 .btn-blue { background: #eff6ff; color: #2563eb; border: 1px solid #dbeafe; }
 .btn-green { background: #ecfdf5; color: #059669; border: 1px solid #d1fae5; }
+.btn-green-solid{background:#059669;color:#fff;border:1px solid #059669;box-shadow:0 4px 10px rgba(5,150,105,.22)}.btn-green-solid:active{box-shadow:0 1px 3px rgba(5,150,105,.2)}
 .btn-red { background: #fef2f2; color: #dc2626; border: 1px solid #fee2e2; }
 .btn-org { background: #fff7ed; color: #ea580c; border: 1px solid #ffedd5; }
 .btn-dark { background: #374151; color: white; }
@@ -50,14 +51,16 @@ body{
 .nav-item.active .nav-icon { transform: translateY(-2px); }
 
 /* 總覽頁 */
-.hero-header { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; border-radius: 20px; padding: 20px; text-align: left; margin-bottom: 15px; box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4); }
-.time-big { font-size: 1.8rem; font-weight: 800; letter-spacing: 1px; }
+.hero-header { background:linear-gradient(135deg,#3b82f6 0%,#2563eb 100%);color:#fff;border-radius:15px;padding:12px 15px;text-align:left;margin-bottom:10px;box-shadow:0 6px 16px -7px rgba(37,99,235,.65);display:flex;align-items:center;gap:12px }
+.time-big { font-size:1.35rem; font-weight:800;letter-spacing:.5px;white-space:nowrap }
+.hero-header #dash-date{font-size:.72rem!important;margin:0!important;white-space:nowrap}.hero-header #dash-unit{margin:0!important;font-size:.8rem!important;opacity:.9!important;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
 .stats-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
 .stat-box { background: white; padding: 15px; border-radius: 16px; text-align: center; border: 1px solid #f3f4f6; }
 .sb-val { font-size: 1.8rem; font-weight: 800; line-height: 1; }
 .rank-table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
-.rank-table th { text-align: left; color: #9ca3af; padding: 8px 4px; font-weight: 500; font-size: 0.85rem; }
+.rank-table th { text-align:left;color:#64748b;padding:9px 4px;font-weight:700;font-size:.78rem;background:#f8fafc;border-bottom:1px solid #e5e7eb; }
 .rank-table td { padding: 12px 4px; font-weight: 600; border-bottom: 1px solid #f3f4f6; }
+.dashboard-tabs{display:flex;background:#e5e7eb;border-radius:11px;padding:3px;margin:0 0 10px}.dashboard-tab{flex:1;border:0;border-radius:8px;padding:9px 6px;background:transparent;color:#64748b;font-weight:700;cursor:pointer}.dashboard-tab.active{background:#fff;color:#2563eb;box-shadow:0 1px 3px rgba(0,0,0,.08)}.dashboard-panel{display:none}.dashboard-panel.active{display:block}.rank-progress{height:4px;background:#d1fae5;border-radius:99px;overflow:hidden;margin-top:4px}.rank-progress>i{display:block;height:100%;background:#10b981;border-radius:99px}.zero{color:#cbd5e1;font-weight:500}.report-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;background:#fff;border-radius:15px;padding:10px;box-shadow:0 1px 3px rgba(0,0,0,.05)}
 
 /* 點名頁 */
 .sticky-top-bar { position: sticky; top: 0; z-index: 90; background: var(--bg); margin: -15px -15px 10px -15px; padding: 15px 15px 5px 15px; backdrop-filter: blur(8px); border-bottom: 1px solid rgba(0,0,0,0.05); }
@@ -181,26 +184,29 @@ button{touch-action:manipulation}
         </div>
     </div>
 
-    <button class="btn btn-green" style="margin-bottom:15px" onclick="markSmart()">⚡ 餘員全到 (快速)</button>
+    <button class="btn btn-green-solid" style="margin-bottom:12px" onclick="markSmart()">⚡ 餘員全到</button>
 
-    <div class="card-box">
+    <div class="dashboard-tabs">
+        <button class="dashboard-tab active" onclick="switchDashboardPanel('rank',this)">階級統計</button>
+        <button class="dashboard-tab" onclick="switchDashboardPanel('detail',this)">點名／事故明細</button>
+    </div>
+    <div id="dash-panel-rank" class="dashboard-panel active"><div class="card-box">
         <div class="section-title">📊 階級統計</div>
         <table class="rank-table">
             <thead><tr><th>階級</th><th>應到</th><th>實到</th><th>事故</th><th>未到</th></tr></thead>
             <tbody id="rank-tbody"></tbody>
         </table>
-    </div>
+    </div></div>
 
-    <div class="card-box" id="detail-box" style="display:none">
+    <div id="dash-panel-detail" class="dashboard-panel"><div class="card-box" id="detail-box">
         <div class="section-title">📌 點名／事故明細</div>
         <div id="detail-content" style="text-align:left; font-size:0.95rem; line-height:1.6; color:#4b5563;"></div>
-    </div>
+    </div></div>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px">
+    <div class="report-actions">
         <button class="btn btn-blue" onclick="copyReport(false)">📋 值星回報</button>
         <button class="btn btn-blue" onclick="copyReport(true)">📋 營士督回報</button>
     </div>
-    <button class="btn btn-red" style="margin-top:15px" onclick="resetAll()">🔄 全部重置 (新的一天)</button>
 </div>
 
 <!-- 2. 點名頁 -->
@@ -288,7 +294,7 @@ button{touch-action:manipulation}
             <button style="background:none;border:none;color:#6b7280;text-decoration:underline" onclick="importData()">還原備份</button>
         </div>
         <div class="danger-zone">
-            <button class="btn btn-red" onclick="resetAll()">🗑️ 清除今日點名狀態</button>
+            <button class="btn btn-red" onclick="resetAll()">🔄 重置今日點名狀態</button>
         </div>
     </div>
 </div>
@@ -338,6 +344,11 @@ function switchTab(id, el) {
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     if(el) el.classList.add('active');
     if(id==='home') renderDashboard(); if(id==='roster') renderRoster(); if(id==='history') renderHisList(); if(id==='setup') fillSetup();
+}
+function switchDashboardPanel(id, el){
+    document.querySelectorAll('.dashboard-panel').forEach(panel=>panel.classList.remove('active'));
+    document.getElementById('dash-panel-'+id).classList.add('active');
+    document.querySelectorAll('.dashboard-tab').forEach(tab=>tab.classList.remove('active')); el.classList.add('active');
 }
 function loadData() {
     const raw = localStorage.getItem(K_DATA);
@@ -523,7 +534,9 @@ function renderDashboard() {
     
     const mkRow=(n,arr)=>{
         const v=arr.filter(x=>!x.startsWith('-')&&!x.startsWith('#')), t=v.length; let p=0,e=0;
-        v.forEach(x=>{if(D.st[x]==='p')p++;else if(D.st[x])e++;}); return `<tr><td>${n}</td><td>${t}</td><td style="color:#059669">${p}</td><td style="color:#f59e0b">${e}</td><td style="color:#dc2626">${t-p-e}</td></tr>`;
+        v.forEach(x=>{if(D.st[x]==='p')p++;else if(D.st[x])e++;});
+        const value=(number,color)=>number?`<span style="color:${color}">${number}</span>`:'<span class="zero">－</span>';
+        return `<tr><td>${n}</td><td>${value(t,'#334155')}</td><td>${value(p,'#059669')}<div class="rank-progress"><i style="width:${t?Math.round(p/t*100):0}%"></i></div></td><td>${value(e,'#2563eb')}</td><td>${value(t-p-e,'#ea580c')}</td></tr>`;
     };
     document.getElementById('rank-tbody').innerHTML = mkRow('軍官',D.o)+mkRow('士官',D.n)+mkRow('士兵',D.s)+mkRow('訓員',D.t);
     
@@ -547,12 +560,13 @@ function renderDashboard() {
     const activeAccidents=accidentTypes.filter(status=>ranks.some(rank=>countBy(rank,status)>0));
     if(!activeAccidents.length) h+='<div style="color:#9ca3af;padding:8px 0">目前無事故人員</div>';
     activeAccidents.forEach(status=>{
-        h+=`<div style="margin:8px 0;padding:9px 10px;background:#eff6ff;border-radius:9px;border-left:4px solid #3b82f6"><strong>${escapeHtml(status)}</strong>`;
+        const total=ranks.reduce((sum,rank)=>sum+countBy(rank,status),0);
+        h+=`<details style="margin:8px 0;background:#eff6ff;border-radius:9px;border-left:4px solid #3b82f6"><summary style="display:flex;justify-content:space-between;align-items:center;padding:9px 10px;cursor:pointer;font-weight:700;list-style:none"><span>${escapeHtml(status)}</span><span style="color:#2563eb">${total} 人　⌄</span></summary><div style="padding:0 10px 10px">`;
         ranks.forEach(rank=>{
             const names=rank.people.filter(name=>D.st[name]===status); if(!names.length)return;
             h+=`<div style="margin-top:4px"><strong>${rank.label}（${names.length}）</strong>：${names.map(name=>escapeHtml(name)+(D.nt[name]?`（${escapeHtml(D.nt[name])}）`:'')).join('、')}</div>`;
         });
-        h+='</div>';
+        h+='</div></details>';
     });
     dc.innerHTML=h;
 }
@@ -582,7 +596,11 @@ function copyReport(isCSM) {
     const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast("📋 複製成功");
 }
 
-function resetAll(){if(confirm("重置所有狀態?")){D.st={};D.nt={};D.lck={};D.tm={};saveData();renderDashboard();showToast("🔄 已重置");}}
+function resetAll(){
+    if(!confirm('確定要重置今日所有點名狀態嗎？此動作無法復原。')) return;
+    if(prompt('為避免誤觸，請輸入「重置」以確認。')!=='重置') { showToast('已取消重置'); return; }
+    D.st={};D.nt={};D.lck={};D.tm={};saveData();renderDashboard();renderRoster();showToast('🔄 已重置');
+}
 function showToast(m){const t=document.getElementById('toast');t.innerText=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000);}
 function getHis(){return JSON.parse(localStorage.getItem(K_HIS)||'{}')}
 function saveHis(){const d=document.getElementById('his-date').value,p=document.getElementById('his-period').value;if(!d)return alert("選日期");const h=getHis();h[`${d}_${p}`]=JSON.parse(JSON.stringify(D));localStorage.setItem(K_HIS,JSON.stringify(h));showToast("✅ 已存檔");renderHisList();}
