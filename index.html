@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
-<title>部隊點名系統 v4.6（七日狀態選單版）</title>
+<title>部隊點名系統 v4.7（安全／彈庫自動排班版）</title>
 <style>
 :root{
   --bg: #f5f7fa;
@@ -604,6 +604,68 @@ input, select, textarea{
   .plan-status-option{font-size:.82rem;min-height:45px;padding:8px 5px}
 }
 
+
+/* v4.7 安全／彈庫自動排班 */
+.duty-control-grid,.duty-btn-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:9px;
+  margin-bottom:9px;
+}
+.duty-label{
+  display:block;text-align:left;font-size:.78rem;font-weight:700;color:#6b7280;margin-bottom:5px;
+}
+.duty-planner-box{
+  width:min(94vw,430px);
+  max-height:min(88dvh,720px);
+  overflow:auto;
+}
+.duty-exclude-actions{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:9px;
+}
+.duty-exclude-actions .btn{font-size:.8rem;padding:9px}
+.duty-exclude-list{
+  max-height:45dvh;
+  overflow:auto;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  background:#f9fafb;
+}
+.duty-person-option{
+  display:grid;
+  grid-template-columns:28px minmax(0,1fr) auto;
+  align-items:center;
+  gap:6px;
+  padding:10px 9px;
+  border-bottom:1px solid #e5e7eb;
+  text-align:left;
+  cursor:pointer;
+}
+.duty-person-option:last-child{border-bottom:0}
+.duty-person-option input{width:18px;height:18px}
+.duty-person-name{font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.duty-person-state{font-size:.72rem;color:#6b7280}
+.duty-result{
+  margin-top:10px;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:10px;
+  text-align:left;
+  background:#fafafa;
+}
+.duty-result-title{font-weight:800;margin-bottom:7px}
+.duty-result-row{
+  display:grid;grid-template-columns:1fr 1.5fr;gap:8px;padding:7px 0;border-bottom:1px solid #eee;
+}
+.duty-result-slots{margin-top:8px}
+.duty-slot-row{
+  display:flex;justify-content:space-between;gap:8px;padding:5px 0;font-size:.82rem;
+}
+@media(max-width:360px){
+  .duty-control-grid,.duty-btn-grid{grid-template-columns:1fr}
+  .duty-result-row{grid-template-columns:1fr}
+}
+
 </style>
 </head>
 <body>
@@ -732,7 +794,34 @@ input, select, textarea{
         </div>
     </div>
 
+    
     <div class="card-box">
+        <div class="section-title">🛡️ 安全／彈庫自動排班</div>
+        <div style="text-align:left;font-size:.82rem;color:#6b7280;line-height:1.55;margin-bottom:10px">
+            系統會讀取當天七日狀態，只從「實到」人員中排班。每班以 <b>2 小時</b>計算，並盡量維持同一人兩班之間至少 <b>6 小時</b>。
+            你也可以先勾選「不用站哨」的人員排除。
+        </div>
+        <div class="duty-control-grid">
+            <div>
+                <label class="duty-label">日期</label>
+                <input type="date" id="duty-date" class="form-control" onchange="syncDutyDate()">
+            </div>
+            <div>
+                <label class="duty-label">排班類型</label>
+                <select id="duty-type" class="form-control">
+                    <option value="safety">🔴 安全</option>
+                    <option value="ammo">🔺 彈庫</option>
+                </select>
+            </div>
+        </div>
+        <div class="duty-btn-grid">
+            <button class="btn btn-red" onclick="openDutyPlanner(document.getElementById('duty-type').value,document.getElementById('duty-date').value)">⚙️ 選人／排除</button>
+            <button class="btn btn-green" onclick="quickAutoDuty()">⚡ 直接自動排</button>
+        </div>
+        <div id="duty-result" class="duty-result" style="display:none"></div>
+    </div>
+
+<div class="card-box">
         <div class="section-title">👥 人員七日狀態</div>
         <input type="text" id="plan-search" class="search-input" placeholder="🔍 搜尋人員..." oninput="renderPlan()">
         <div class="plan-scroll">
@@ -1131,11 +1220,11 @@ function renderPlan(){
             const people=g.data.filter(n=>!n.startsWith('-')&&!n.startsWith('#'));
             const q={name:g.name,total:people.length,on:0,off:0,none:0,reasons:{}};
             people.forEach(n=>{
-                const s=getPlanStatus(n,key);
-                if(s==='on') q.on++;
-                else if(s==='off') q.off++;
+                const st=getPlanStatus(n,key);
+                if(st==='on') q.on++;
+                else if(st==='off') q.off++;
                 else {
-                    const reason=getPlanReason(s);
+                    const reason=getPlanReason(st);
                     if(reason) q.reasons[reason]=(q.reasons[reason]||0)+1;
                     else q.none++;
                 }
@@ -1166,40 +1255,232 @@ function renderPlan(){
     }).join('');
 
     const search=(document.getElementById('plan-search').value||'').trim().toLowerCase();
-    const body=document.getElementById('plan-body');body.innerHTML='';
+    const body=document.getElementById('plan-body'); body.innerHTML='';
     const people=planPeople().filter(n=>!search||n.toLowerCase().includes(search));
     if(!people.length){body.innerHTML='<div class="roster-empty">找不到符合的人員</div>';return;}
 
     people.forEach(name=>{
-        const row=document.createElement('div');row.className='plan-row';
+        const row=document.createElement('div'); row.className='plan-row';
         let cells=`<div class="plan-name" title="${escapeHtml(name)}">${escapeHtml(name)}</div>`;
         dates.forEach(d=>{
-            const key=planDateKey(d),s=getPlanStatus(name,key);
-            const label=getPlanStatusLabel(s);
-            cells+=`<div class="plan-cell ${getPlanStatusClass(s)}" data-name="${escapeHtml(name)}" data-key="${key}" title="點擊切換狀態">${escapeHtml(label)}</div>`;
+            const key=planDateKey(d), st=getPlanStatus(name,key);
+            cells+=`<div class="plan-cell ${getPlanStatusClass(st)}" data-name="${escapeHtml(name)}" data-key="${key}" title="點擊選擇狀態">${escapeHtml(getPlanStatusLabel(st))}</div>`;
         });
         row.innerHTML=cells;
         row.querySelectorAll('.plan-cell').forEach(cell=>{
-            cell.onclick=()=>{
-                const name=cell.dataset.name,key=cell.dataset.key,current=getPlanStatus(name,key);
-                if(current==='off'){
-                    const reasons=getPlanReasons();
-                    if(!reasons.length){
-                        showToast('請先到「系統設定」設定事故原因');
-                        return;
-                    }
-                }
-                const next=nextPlanStatus(current);
-                setPlanStatus(name,key,next);
-                renderPlan();
-            };
+            cell.onclick=()=>openPlanStatusModal(cell.dataset.name,cell.dataset.key);
         });
         body.appendChild(row);
     });
 }
-function escapeHtml(v){
-    return String(v).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+
+/* ===== 七日值勤自動排班 ===== */
+const DUTY_CONFIG = {
+    safety: {
+        name:'安全',
+        icon:'🔴',
+        windows:[
+            ['22:00','24:00'],['00:00','02:00'],['02:00','04:00'],['04:00','06:00'],
+            ['06:00','08:00'],['08:00','12:00'],['12:00','14:00'],['14:00','18:00'],['18:00','22:00']
+        ]
+    },
+    ammo: {
+        name:'彈庫',
+        icon:'🔺',
+        windows:[
+            ['22:00','24:00'],['00:00','02:00'],['02:00','04:00'],['04:00','06:00'],
+            ['06:00','08:00'],['08:00','10:00'],['10:00','12:00'],['12:00','14:00'],
+            ['14:00','16:00'],['16:00','18:00'],['18:00','20:00'],['20:00','22:00']
+        ]
+    }
+};
+let dutyModalType='safety';
+let dutyModalDate='';
+let dutyExcluded=new Set();
+let dutyGenerated={};
+
+function getDutyPeople(){
+    return planPeople().filter(n=>{
+        if(dutyExcluded.has(n)) return false;
+        if(!dutyModalDate) return true;
+        const st=getPlanStatus(n,dutyModalDate);
+        return st==='on';
+    });
 }
+function getAllPlanPeople(){
+    return planPeople();
+}
+function timeToMinutes(t){
+    const [h,m]=t.split(':').map(Number);
+    return h*60+m;
+}
+function normalizeEnd(start,end){
+    let s=timeToMinutes(start), e=timeToMinutes(end);
+    if(e<=s) e+=1440;
+    return [s,e];
+}
+function makeDutySlots(type){
+    const cfg=DUTY_CONFIG[type];
+    const out=[];
+    cfg.windows.forEach(w=>{
+        let [s,e]=normalizeEnd(w[0],w[1]);
+        // 以 2 小時為一站；4 小時窗口會拆成兩個 2 小時站。
+        while(s+120<=e){
+            const a=((s%1440)+1440)%1440, b=((s+120)%1440+1440)%1440;
+            out.push({
+                start:s,end:s+120,
+                label:`${fmtDutyTime(a)}-${fmtDutyTime(b)}`
+            });
+            s+=120;
+        }
+    });
+    return out;
+}
+function fmtDutyTime(min){
+    min=((min%1440)+1440)%1440;
+    return String(Math.floor(min/60)).padStart(2,'0')+String(min%60).padStart(2,'0');
+}
+function dutyMinutesGap(a,b){
+    // 計算兩個 2 小時勤務的起始時間圓環距離
+    let x=Math.abs(a-b)%1440;
+    return Math.min(x,1440-x);
+}
+function getDutyExcludedKey(type,date){
+    return `${type}|${date}`;
+}
+function openDutyPlanner(type,date){
+    dutyModalType=type;
+    dutyModalDate=date || planDateKey(getPlanStart());
+    dutyExcluded=new Set((D.dutyExcluded&&D.dutyExcluded[getDutyExcludedKey(type,dutyModalDate)])||[]);
+    renderDutyPlanner();
+    const m=document.getElementById('duty-planner-modal');
+    if(m){m.classList.add('show');document.body.style.overflow='hidden';}
+}
+function closeDutyPlanner(){
+    const m=document.getElementById('duty-planner-modal');
+    if(m)m.classList.remove('show');
+    document.body.style.overflow='';
+}
+function renderDutyPlanner(){
+    const cfg=DUTY_CONFIG[dutyModalType];
+    const title=document.getElementById('duty-planner-title');
+    const sub=document.getElementById('duty-planner-sub');
+    const list=document.getElementById('duty-exclude-list');
+    if(!title||!sub||!list)return;
+    title.innerText=`${cfg.icon} ${cfg.name}自動排班`;
+    sub.innerText=`${dutyModalDate}｜先排除不用站哨的人員，再按「自動排班」`;
+    list.innerHTML=getAllPlanPeople().map(n=>{
+        const checked=dutyExcluded.has(n)?'checked':'';
+        const st=getPlanStatus(n,dutyModalDate);
+        const label=st==='on'?'實到':getPlanStatusLabel(st);
+        return `<label class="duty-person-option">
+            <input type="checkbox" ${checked} onchange="toggleDutyExclude('${escapeJs(n)}',this.checked)">
+            <span class="duty-person-name">${escapeHtml(n)}</span>
+            <span class="duty-person-state">${escapeHtml(label)}</span>
+        </label>`;
+    }).join('');
+}
+function escapeJs(v){
+    return String(v).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+}
+function toggleDutyExclude(name,checked){
+    if(checked)dutyExcluded.add(name);else dutyExcluded.delete(name);
+}
+function selectAllDutyExclude(flag){
+    dutyExcluded=new Set(flag?getAllPlanPeople():[]);
+    renderDutyPlanner();
+}
+function saveDutyExclude(){
+    if(!D.dutyExcluded)D.dutyExcluded={};
+    D.dutyExcluded[getDutyExcludedKey(dutyModalType,dutyModalDate)]=[...dutyExcluded];
+    saveData();
+    showToast('✅ 已記住不用站哨人員');
+}
+function autoAssignDuty(){
+    saveDutyExclude();
+    const slots=makeDutySlots(dutyModalType);
+    const candidates=getDutyPeople();
+    if(!candidates.length){
+        alert('這一天沒有符合「實到」且未排除的人員。');
+        return;
+    }
+
+    // 依七日狀態先排實到者；每人每日至少間隔 6 小時。
+    // 以公平輪替為主：先看當天已排次數，再看距離上次勤務時間。
+    const assigned={};
+    const lastStart={};
+    const rows=[];
+
+    slots.forEach(slot=>{
+        const eligible=candidates.filter(name=>{
+            if(assigned[name] && assigned[name].some(x=>dutyMinutesGap(x.start,slot.start)<360)) return false;
+            return true;
+        }).sort((a,b)=>{
+            const ca=(assigned[a]||[]).length, cb=(assigned[b]||[]).length;
+            if(ca!==cb)return ca-cb;
+            const la=lastStart[a],lb=lastStart[b];
+            if(la==null && lb!=null)return -1;
+            if(la!=null && lb==null)return 1;
+            if(la==null&&lb==null)return a.localeCompare(b,'zh-Hant');
+            return dutyMinutesGap(la,slot.start)-dutyMinutesGap(lb,slot.start);
+        });
+
+        const chosen=eligible[0];
+        if(chosen){
+            if(!assigned[chosen])assigned[chosen]=[];
+            assigned[chosen].push(slot);
+            lastStart[chosen]=slot.start;
+            rows.push({...slot,name:chosen});
+        }else{
+            rows.push({...slot,name:'⚠️ 無可排人員'});
+        }
+    });
+
+    dutyGenerated={
+        type:dutyModalType,date:dutyModalDate,
+        slots:rows,
+        excluded:[...dutyExcluded]
+    };
+    renderDutyResult();
+}
+function renderDutyResult(){
+    const box=document.getElementById('duty-result');
+    if(!box)return;
+    const cfg=DUTY_CONFIG[dutyModalType];
+    const by={};
+    dutyGenerated.slots.forEach(x=>{
+        if(!by[x.name])by[x.name]=[];
+        by[x.name].push(x.label);
+    });
+    box.innerHTML=`
+      <div class="duty-result-title">${cfg.icon} ${cfg.name}排班結果</div>
+      <div class="duty-result-list">
+        ${Object.entries(by).map(([n,times])=>`
+          <div class="duty-result-row">
+            <b>${escapeHtml(n)}</b>
+            <span>${times.map(escapeHtml).join('、')}</span>
+          </div>`).join('')}
+      </div>
+      <div class="duty-result-slots">
+        ${dutyGenerated.slots.map(x=>`
+          <div class="duty-slot-row">
+            <span>${escapeHtml(x.label)}</span>
+            <b>${escapeHtml(x.name)}</b>
+          </div>`).join('')}
+      </div>
+      <button class="btn btn-blue" onclick="copyDutyResult()" style="margin-top:10px">📋 複製${cfg.name}班表</button>
+    `;
+}
+function copyDutyResult(){
+    if(!dutyGenerated.slots?.length)return;
+    const cfg=DUTY_CONFIG[dutyGenerated.type];
+    let txt=`${dutyGenerated.date} ${cfg.name}排班\n`;
+    dutyGenerated.slots.forEach(x=>txt+=`${x.label}${x.name}\n`);
+    const ta=document.createElement('textarea');
+    ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();
+    showToast('📋 已複製班表');
+}
+
 function getPlanDailyStats(){
     const start=getPlanStart(),dates=[],groups=getRankGroups();
     for(let i=0;i<7;i++){
@@ -1444,7 +1725,7 @@ function importData(){
         if(!confirm('還原備份會覆蓋目前資料，確定嗎？')) return;
         D={
             u:d.cur.u||'', o:d.cur.o||[], n:d.cur.n||[], s:d.cur.s||[], t:d.cur.t||[],
-            rs:d.cur.rs||'', st:d.cur.st||{}, nt:d.cur.nt||{}, lck:d.cur.lck||{}, tm:d.cur.tm||{}, plan7:d.cur.plan7||{}
+            rs:d.cur.rs||'', st:d.cur.st||{}, nt:d.cur.nt||{}, lck:d.cur.lck||{}, tm:d.cur.tm||{}, plan7:d.cur.plan7||{}, dutyExcluded:d.cur.dutyExcluded||{}
         };
         localStorage.setItem(K_DATA,JSON.stringify(D));
         localStorage.setItem(K_HIS,JSON.stringify(d.his&&typeof d.his==='object'?d.his:{}));
@@ -1546,7 +1827,47 @@ document.addEventListener('keydown', e => {
     if(e.key === 'Escape') closePlanStatusModal();
 });
 
+
+function initDutyDate(){
+    const p=document.getElementById('plan-start');
+    const d=document.getElementById('duty-date');
+    if(!p||!d)return;
+    d.value=p.value || planDateKey(new Date());
+}
+function syncDutyDate(){
+    const d=document.getElementById('duty-date');
+    if(d){
+        const p=document.getElementById('plan-start');
+        if(p && d.value)p.value=d.value;
+        renderPlan();
+    }
+}
+function quickAutoDuty(){
+    const type=document.getElementById('duty-type')?.value||'safety';
+    const date=document.getElementById('duty-date')?.value||planDateKey(getPlanStart());
+    openDutyPlanner(type,date);
+}
+
 </script>
+
+
+<!-- 安全／彈庫自動排班 Modal -->
+<div id="duty-planner-modal" class="modal-overlay" onclick="if(event.target===this)closeDutyPlanner()">
+  <div class="modal-box duty-planner-box">
+    <div id="duty-planner-title" class="section-title">🛡️ 自動排班</div>
+    <div id="duty-planner-sub" style="font-size:.82rem;color:#6b7280;text-align:left;margin-bottom:10px"></div>
+    <div class="duty-exclude-actions">
+      <button type="button" class="btn btn-blue" onclick="selectAllDutyExclude(false)">全部可站</button>
+      <button type="button" class="btn btn-dark" onclick="selectAllDutyExclude(true)">全部不用站</button>
+    </div>
+    <div id="duty-exclude-list" class="duty-exclude-list"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px">
+      <button class="btn btn-blue" onclick="saveDutyExclude()">💾 儲存排除</button>
+      <button class="btn btn-green" onclick="autoAssignDuty();closeDutyPlanner()">⚡ 自動排班</button>
+    </div>
+    <button class="btn btn-red" style="margin-top:8px" onclick="closeDutyPlanner()">取消</button>
+  </div>
+</div>
 
 <!-- 七日狀態選擇 Modal -->
 <div id="plan-status-modal" class="modal-overlay" onclick="if(event.target===this)closePlanStatusModal()">
