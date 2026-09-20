@@ -192,7 +192,7 @@ button{touch-action:manipulation}
     </div>
 
     <div class="card-box" id="detail-box" style="display:none">
-        <div class="section-title">📌 事故明細</div>
+        <div class="section-title">📌 點名／事故明細</div>
         <div id="detail-content" style="text-align:left; font-size:0.95rem; line-height:1.6; color:#4b5563;"></div>
     </div>
 
@@ -528,24 +528,33 @@ function renderDashboard() {
     document.getElementById('rank-tbody').innerHTML = mkRow('軍官',D.o)+mkRow('士官',D.n)+mkRow('士兵',D.s)+mkRow('訓員',D.t);
     
     const db=document.getElementById('detail-box'), dc=document.getElementById('detail-content');
-    if(stats.e>0){
-        db.style.display='block';
-        const escapeHtml=value=>String(value).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[c]));
-        const ranks=[['軍官',D.o],['士官',D.n],['士兵',D.s],['訓員',D.t]];
-        let h='';
-        ranks.forEach(([rank,list])=>{
-            const byReason={};
-            list.filter(n=>!n.startsWith('-')&&!n.startsWith('#')).forEach(name=>{
-                const reason=D.st[name]; if(!reason||reason==='p') return;
-                if(!byReason[reason]) byReason[reason]=[]; byReason[reason].push(name);
-            });
-            const count=Object.values(byReason).reduce((sum,names)=>sum+names.length,0);
-            h+=`<div style="margin:10px 0;padding:9px 10px;background:${count?'#fff7ed':'#f9fafb'};border-radius:9px;border-left:4px solid ${count?'#f59e0b':'#d1d5db'}"><strong>${rank}（${count}員）</strong>`;
-            h+=count ? Object.entries(byReason).map(([reason,names])=>`<div style="margin-top:4px">${escapeHtml(reason)}（${names.length}）：${names.map(name=>escapeHtml(name)+(D.nt[name]?`（${escapeHtml(D.nt[name])}）`:'')).join('、')}</div>`).join('') : '<div style="margin-top:4px;color:#9ca3af">無事故人員</div>';
-            h+='</div>';
+    db.style.display='block';
+    const escapeHtml=value=>String(value).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[c]));
+    const ranks=[['軍官',D.o],['士官',D.n],['士兵',D.s],['訓員',D.t]].map(([label,list])=>({label,people:list.filter(n=>!n.startsWith('-')&&!n.startsWith('#'))}));
+    const observed=[...new Set(ranks.flatMap(rank=>rank.people.map(name=>D.st[name]).filter(status=>status&&status!=='p')))];
+    const configured=(D.rs||'').split(/[,，]/).map(status=>status.trim()).filter(Boolean);
+    const accidentTypes=[...new Set([...configured,...observed])];
+    const countBy=(rank,status)=>status==='應到'?rank.people.length:rank.people.filter(name=>status==='實到'?D.st[name]==='p':D.st[name]===status).length;
+    const summaryRows=['應到','實到',...accidentTypes];
+    let h='<div style="overflow-x:auto;margin-bottom:16px"><table style="width:100%;min-width:420px;border-collapse:collapse;font-size:.82rem"><thead><tr style="color:#64748b"><th style="text-align:left;padding:7px 4px">狀態</th>'+ranks.map(rank=>`<th style="text-align:center;padding:7px 4px">${rank.label}</th>`).join('')+'</tr></thead><tbody>';
+    summaryRows.forEach((status,index)=>{
+        const isAttendance=index<2;
+        h+=`<tr style="border-top:1px solid #e5e7eb;background:${isAttendance?'#f8fafc':'white'}"><td style="padding:8px 4px;font-weight:700">${escapeHtml(status)}</td>`;
+        h+=ranks.map(rank=>`<td style="padding:8px 4px;text-align:center">${rank.label}（<strong>${countBy(rank,status)}</strong>）</td>`).join('');
+        h+='</tr>';
+    });
+    h+='</tbody></table></div><div style="font-weight:800;color:#374151;margin:0 0 7px">各事故的級職姓名</div>';
+    const activeAccidents=accidentTypes.filter(status=>ranks.some(rank=>countBy(rank,status)>0));
+    if(!activeAccidents.length) h+='<div style="color:#9ca3af;padding:8px 0">目前無事故人員</div>';
+    activeAccidents.forEach(status=>{
+        h+=`<div style="margin:8px 0;padding:9px 10px;background:#eff6ff;border-radius:9px;border-left:4px solid #3b82f6"><strong>${escapeHtml(status)}</strong>`;
+        ranks.forEach(rank=>{
+            const names=rank.people.filter(name=>D.st[name]===status); if(!names.length)return;
+            h+=`<div style="margin-top:4px"><strong>${rank.label}（${names.length}）</strong>：${names.map(name=>escapeHtml(name)+(D.nt[name]?`（${escapeHtml(D.nt[name])}）`:'')).join('、')}</div>`;
         });
-        dc.innerHTML=h;
-    } else db.style.display='none';
+        h+='</div>';
+    });
+    dc.innerHTML=h;
 }
 
 function copyReport(isCSM) {
