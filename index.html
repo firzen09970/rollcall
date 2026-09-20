@@ -535,12 +535,12 @@ function renderDashboard() {
     const configured=(D.rs||'').split(/[,，]/).map(status=>status.trim()).filter(Boolean);
     const accidentTypes=[...new Set([...configured,...observed])];
     const countBy=(rank,status)=>status==='應到'?rank.people.length:rank.people.filter(name=>status==='實到'?D.st[name]==='p':D.st[name]===status).length;
-    const summaryRows=['應到','實到',...accidentTypes];
+    const summaryRows=['應到','實到',...accidentTypes].filter(status=>ranks.some(rank=>countBy(rank,status)>0));
     let h='<div style="overflow-x:auto;margin-bottom:16px"><table style="width:100%;min-width:420px;border-collapse:collapse;font-size:.82rem"><thead><tr style="color:#64748b"><th style="text-align:left;padding:7px 4px">狀態</th>'+ranks.map(rank=>`<th style="text-align:center;padding:7px 4px">${rank.label}</th>`).join('')+'</tr></thead><tbody>';
     summaryRows.forEach((status,index)=>{
         const isAttendance=index<2;
         h+=`<tr style="border-top:1px solid #e5e7eb;background:${isAttendance?'#f8fafc':'white'}"><td style="padding:8px 4px;font-weight:700">${escapeHtml(status)}</td>`;
-        h+=ranks.map(rank=>`<td style="padding:8px 4px;text-align:center">${rank.label}（<strong>${countBy(rank,status)}</strong>）</td>`).join('');
+        h+=ranks.map(rank=>`<td style="padding:8px 4px;text-align:center"><strong>${countBy(rank,status)}</strong></td>`).join('');
         h+='</tr>';
     });
     h+='</tbody></table></div><div style="font-weight:800;color:#374151;margin:0 0 7px">各事故的級職姓名</div>';
