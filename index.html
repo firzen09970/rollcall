@@ -160,6 +160,8 @@ button{touch-action:manipulation}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}
 }
+/* 手機版系統設定 */
+#view-setup{padding-bottom:110px}.settings-card,.danger-card{background:#fff;border:1px solid #e5e7eb;border-radius:16px;padding:16px;margin-bottom:14px;text-align:left}.unit-card label{display:block;font-size:.86rem;font-weight:750;color:#374151;margin-bottom:8px}.unit-card .form-control{height:48px;border-radius:13px}.settings-heading h2{font-size:1rem;margin:0;color:#111827}.settings-heading p,.settings-help,.danger-card p{font-size:.8rem;line-height:1.45;color:#6b7280;margin:5px 0 14px}.setup-tabs{display:flex;flex-wrap:nowrap;background:transparent;padding:2px;gap:8px;margin:0 -2px 16px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;scroll-snap-type:x proximity}.setup-tabs::-webkit-scrollbar{display:none}.st-tab{flex:0 0 auto;white-space:nowrap;background:#eef2f7;color:#64748b;border-radius:999px;padding:0 16px;font-size:.86rem;min-height:40px;height:40px;line-height:40px;scroll-snap-align:start}.st-tab.active{background:#2563eb;color:#fff;box-shadow:none}.people-manager{background:transparent;border:0;padding:0}.people-tip{display:none}.manager-primary{width:100%;min-height:46px;background:#2563eb;color:#fff;border:0;border-radius:12px;font-weight:750;font-size:.95rem;cursor:pointer;margin-bottom:12px}.group-card{border:1px solid #e5e7eb;border-radius:14px;overflow:visible;margin:10px 0;background:#fff}.group-head{display:flex;align-items:center;gap:8px;padding:11px 12px;min-height:52px;cursor:pointer}.group-title{font-size:.94rem;font-weight:750;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.group-badge{font-size:.72rem;padding:4px 8px;border-radius:999px;background:#eff6ff;color:#2563eb;font-weight:700;white-space:nowrap}.group-chevron{color:#64748b;font-size:1.1rem}.group-menu-wrap,.person-menu-wrap{position:relative}.dots-btn{width:36px;height:36px;border:0;background:transparent;color:#64748b;font-size:1.25rem;cursor:pointer;border-radius:9px}.dots-btn:active{background:#f1f5f9}.pop-menu{position:absolute;right:0;top:38px;z-index:50;width:132px;background:#fff;border:1px solid #e5e7eb;border-radius:12px;box-shadow:0 8px 20px rgba(15,23,42,.15);padding:4px;display:none}.pop-menu.show{display:block}.pop-menu button{width:100%;text-align:left;background:transparent;border:0;border-radius:8px;padding:10px;font-size:.82rem;color:#374151;cursor:pointer}.pop-menu .menu-danger{color:#dc2626}.person-row{display:flex;align-items:center;gap:6px;min-height:48px;padding:6px 8px 6px 14px;border-top:1px solid #f1f5f9}.person-name{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.93rem;color:#111827}.group-add{margin:6px 10px 10px;width:calc(100% - 20px);min-height:40px;border:0;border-radius:10px;background:#f8fafc;color:#2563eb;font-weight:700;cursor:pointer}.empty-group{padding:0 14px 14px;color:#94a3b8;font-size:.82rem}.new-group-btn{width:100%;min-height:46px;border:1px dashed #93c5fd;background:#eff6ff;color:#2563eb;border-radius:12px;font-weight:750;cursor:pointer;margin-top:4px}.batch-box{background:#f8fafc;border-radius:12px;padding:10px;margin-top:12px}.backup-card{display:grid;grid-template-columns:1fr 1fr;gap:10px}.backup-btn,.danger-outline{min-height:44px;border:1px solid #dbeafe;background:#eff6ff;color:#2563eb;border-radius:12px;font-weight:700;cursor:pointer}.danger-card{border-color:#fee2e2}.danger-card strong{color:#991b1b}.danger-card p{margin-bottom:12px}.danger-outline{width:100%;border-color:#fecaca;background:#fff;color:#dc2626}.setup-save-dock{position:fixed;z-index:900;left:50%;bottom:calc(var(--nav-height) + var(--safe-area-bottom) + 8px);transform:translateX(-50%);width:min(calc(100% - 30px),570px);background:rgba(255,255,255,.97);border:1px solid #e5e7eb;box-shadow:0 6px 20px rgba(15,23,42,.12);border-radius:14px;padding:8px;display:flex;align-items:center;gap:9px}.setup-save-dock span{flex:1;font-size:.78rem;color:#64748b;padding-left:4px}.setup-save-dock .btn{width:auto;min-width:130px;padding:11px}.setup-modal .modal-box{text-align:left}.setup-modal label{display:block;font-size:.84rem;font-weight:700;margin:12px 0 6px;color:#374151}.setup-modal select{height:46px}.setup-modal-actions{display:flex;gap:9px;margin-top:18px}.setup-modal-actions .btn{flex:1}.setup-modal-actions .btn:first-child{background:#f1f5f9;color:#475569}
 
 </style>
 </head>
@@ -266,6 +268,31 @@ button{touch-action:manipulation}
 <!-- 4. 設定頁 -->
 <div id="view-setup" class="page-view">
     <div class="section-title">⚙️ 系統設定</div>
+    <section class="settings-card unit-card">
+        <label>單位名稱</label>
+        <input type="text" id="in-unit" class="form-control" placeholder="例如：步一連" oninput="setSetupDirty(true)">
+    </section>
+    <section class="settings-card people-settings">
+        <div class="settings-heading"><div><h2>人員管理</h2><p>選擇類別後管理名單與分組</p></div></div>
+        <div class="setup-tabs">
+            <button class="st-tab active" onclick="switchSetupTab('off', this)">軍官</button>
+            <button class="st-tab" onclick="switchSetupTab('nco', this)">士官</button>
+            <button class="st-tab" onclick="switchSetupTab('sol', this)">士兵</button>
+            <button class="st-tab" onclick="switchSetupTab('tra', this)">訓員</button>
+            <button class="st-tab" onclick="switchSetupTab('rs', this)">事故原因</button>
+        </div>
+        <div id="edit-off" class="setup-editor active"><div id="people-off"></div></div>
+        <div id="edit-nco" class="setup-editor"><div id="people-nco"></div></div>
+        <div id="edit-sol" class="setup-editor"><div id="people-sol"></div></div>
+        <div id="edit-tra" class="setup-editor"><div id="people-tra"></div></div>
+        <div id="edit-rs" class="setup-editor"><p class="settings-help">以逗號分隔事故原因，會顯示於點名時的狀態選單。</p><textarea id="in-rs" class="setup-textarea" style="height:120px" oninput="setSetupDirty(true)"></textarea></div>
+    </section>
+    <section class="settings-card backup-card">
+        <button class="backup-btn" onclick="exportData()">⬇ 匯出備份</button><button class="backup-btn" onclick="importData()">⬆ 還原備份</button>
+    </section>
+    <section class="danger-card"><div><strong>⚠️ 危險操作</strong><p>將清除今天的點名狀態，不會刪除人員名單。</p></div><button class="danger-outline" onclick="resetAll()">重置今日點名狀態</button></section>
+    <div class="setup-save-dock"><span id="setup-save-hint">✓ 已儲存</span><button id="setup-save-btn" class="btn btn-green-solid" onclick="saveSetup()">✓ 儲存設定</button></div>
+    <!--
     <div class="card-box">
         <div style="margin-bottom:15px; text-align:left">
             <label style="display:block;margin-bottom:6px;font-weight:600">單位名稱</label>
@@ -296,7 +323,7 @@ button{touch-action:manipulation}
         <div class="danger-zone">
             <button class="btn btn-red" onclick="resetAll()">🔄 重置今日點名狀態</button>
         </div>
-    </div>
+    </div>-->
 </div>
 
 <div class="bottom-nav">
@@ -321,6 +348,15 @@ button{touch-action:manipulation}
     </div>
 </div>
 <div id="toast" class="toast"></div>
+<div id="setup-modal" class="modal-overlay setup-modal">
+    <div class="modal-box">
+        <h3 id="setup-modal-title" style="margin:0;color:#111827">新增人員</h3>
+        <label for="setup-person-name">姓名</label><input id="setup-person-name" class="form-control" placeholder="請輸入姓名">
+        <div id="setup-person-fields"><label for="setup-person-rank">人員類別</label><select id="setup-person-rank" class="form-control"></select><label for="setup-person-group">加入分組</label><select id="setup-person-group" class="form-control"></select></div>
+        <div id="setup-group-fields" style="display:none"><label for="setup-group-name">分組名稱</label><input id="setup-group-name" class="form-control" placeholder="請輸入分組名稱"></div>
+        <div class="setup-modal-actions"><button class="btn" onclick="closeSetupModal()">取消</button><button id="setup-modal-confirm" class="btn btn-green-solid">確認新增</button></div>
+    </div>
+</div>
 
 <script>
 const K_DATA = 'army_v3_data', K_HIS = 'army_v3_his';
@@ -468,57 +504,45 @@ function positionAfterGroup(type, groupIndex){
     if(groupIndex===-1){const first=list.findIndex(isGroup);return first<0?list.length:first;}
     let end=list.length; for(let i=groupIndex+1;i<list.length;i++){if(isGroup(list[i])){end=i;break;}} return end;
 }
+function groupForPerson(type,index){let marker=-1;for(let i=0;i<index;i++)if(isGroup(rosterDrafts[type][i]))marker=i;return marker;}
+let collapsedGroups={}, openMenu='';
+function setSetupDirty(dirty){const hint=document.getElementById('setup-save-hint'),btn=document.getElementById('setup-save-btn');if(!hint||!btn)return;hint.textContent=dirty?'尚有未儲存變更':'✓ 已儲存';hint.style.color=dirty?'#b45309':'#6b7280';btn.textContent=dirty?'✓ 儲存設定':'✓ 已儲存';}
+function closeMenus(){openMenu='';document.querySelectorAll('.pop-menu').forEach(menu=>menu.classList.remove('show'));}
 function renderPeopleManager(type){
-    const host=document.getElementById('people-'+type); if(!host)return;
-    const cfg=rankConfig[type], list=rosterDrafts[type]; host.innerHTML='';
-    const box=document.createElement('div'); box.className='people-manager';
-    const tip=document.createElement('p');tip.className='people-tip';tip.textContent=`${cfg.label}名單：可直接逐筆修改姓名、刪除人員或建立分組。所有變更會在按下「儲存設定」後正式套用。`;box.appendChild(tip);
-    const add=document.createElement('div');add.className='people-add';
-    const input=document.createElement('input');input.className='form-control';input.placeholder='輸入姓名後按「新增」';input.id='new-person-'+type;
-    const button=document.createElement('button');button.className='pm-primary';button.textContent='＋ 新增';button.onclick=()=>addPerson(type);add.append(input,button);box.appendChild(add);
-    const groupButton=document.createElement('button');groupButton.className='pm-small';groupButton.textContent='＋ 建立分組';groupButton.onclick=()=>addGroup(type);box.appendChild(groupButton);
-    let current={title:'未分組',marker:-1,people:[]}, sections=[];
-    list.forEach((item,index)=>{if(isGroup(item)){sections.push(current);current={title:groupName(item),marker:index,people:[]};}else current.people.push({name:item,index});}); sections.push(current);
-    sections.forEach(section=>{
-        const bar=document.createElement('div');bar.className='pm-groupbar';
-        const title=document.createElement('input');title.className='pm-group-title';title.value=section.title;title.disabled=section.marker===-1;title.title=section.marker===-1?'未分組人員會排在所有分組之前':'可直接修改分組標題';
-        if(section.marker!==-1) title.onchange=()=>{const value=title.value.trim();if(!value){title.value=section.title;return;} rosterDrafts[type][section.marker]=groupMarker(value);renderPeopleManager(type);};
-        const actions=document.createElement('div');actions.className='pm-group-actions';
-        const plus=document.createElement('button');plus.className='pm-small';plus.textContent='＋ 人員';plus.onclick=()=>{const el=document.getElementById('new-person-'+type);el.focus();el.dataset.group=section.marker;};actions.appendChild(plus);
-        if(section.marker!==-1){const del=document.createElement('button');del.className='pm-small pm-danger';del.textContent='移除分組';del.onclick=()=>{if(confirm(`移除「${section.title}」分組標題？人員會保留。`)){rosterDrafts[type].splice(section.marker,1);renderPeopleManager(type);}};actions.appendChild(del);}
-        bar.append(title,actions);box.appendChild(bar);
-        if(!section.people.length){const empty=document.createElement('div');empty.className='pm-empty';empty.textContent='尚無人員';box.appendChild(empty);}
-        section.people.forEach(person=>{
-            const row=document.createElement('div');row.className='pm-person';
-            const name=document.createElement('input');name.value=person.name;name.setAttribute('aria-label','姓名');name.onchange=()=>{const value=cleanName(name.value);if(!value){name.value=person.name;return;}rosterDrafts[type][person.index]=value;};
-            const remove=document.createElement('button');remove.className='pm-small pm-danger';remove.textContent='刪除';remove.onclick=()=>{rosterDrafts[type].splice(person.index,1);renderPeopleManager(type);};row.append(name,remove);box.appendChild(row);
-        });
-    });
-    const batch=document.createElement('details');batch.className='batch-box';
-    const summary=document.createElement('summary');summary.textContent='批次貼上多位姓名';batch.appendChild(summary);
-    const desc=document.createElement('p');desc.textContent='每行一位姓名最清楚；也支援以空白、逗號或頓號分隔。貼上後選擇要加入的位置，再按加入名單。';batch.appendChild(desc);
-    const area=document.createElement('textarea');area.className='setup-textarea';area.style.height='100px';area.id='batch-'+type;area.placeholder='例如：\n王小明\n李大華\n陳小華';batch.appendChild(area);
-    const actions=document.createElement('div');actions.className='batch-actions';const select=document.createElement('select');select.id='batch-group-'+type;getGroups(type).forEach(g=>{const o=document.createElement('option');o.value=g.index;o.textContent='加入：'+g.name;select.appendChild(o);});const paste=document.createElement('button');paste.className='pm-primary';paste.textContent='加入名單';paste.onclick=()=>batchAdd(type);actions.append(select,paste);batch.appendChild(actions);box.appendChild(batch);host.appendChild(box);
+ const host=document.getElementById('people-'+type);if(!host)return;host.innerHTML='';const box=document.createElement('div');box.className='people-manager';
+ const add=document.createElement('button');add.className='manager-primary';add.textContent='＋ 新增人員';add.onclick=()=>openPersonModal(type);box.appendChild(add);
+ let current={title:'未分組',marker:-1,people:[]},sections=[];rosterDrafts[type].forEach((item,index)=>{if(isGroup(item)){sections.push(current);current={title:groupName(item),marker:index,people:[]};}else current.people.push({name:item,index});});sections.push(current);
+ sections.forEach(section=>{const key=type+'-'+section.marker,collapsed=!!collapsedGroups[key],card=document.createElement('div');card.className='group-card';const head=document.createElement('div');head.className='group-head';head.onclick=e=>{if(e.target.closest('button'))return;collapsedGroups[key]=!collapsed;renderPeopleManager(type);};const title=document.createElement('div');title.className='group-title';title.textContent=section.title;const badge=document.createElement('span');badge.className='group-badge';badge.textContent=section.people.length+' 人';const chevron=document.createElement('span');chevron.className='group-chevron';chevron.textContent=collapsed?'›':'⌄';head.append(title,badge,chevron);
+ const wrap=document.createElement('div');wrap.className='group-menu-wrap';const dots=document.createElement('button');dots.className='dots-btn';dots.textContent='⋮';dots.onclick=()=>toggleMenu(key);const menu=makeMenu(key,[['重新命名',()=>renameGroup(type,section)],section.marker!==-1?['移除分組',()=>removeGroup(type,section),'menu-danger']:null].filter(Boolean));wrap.append(dots,menu);head.appendChild(wrap);card.appendChild(head);
+ if(!collapsed){if(!section.people.length){const empty=document.createElement('div');empty.className='empty-group';empty.textContent='尚無人員';card.appendChild(empty);}section.people.forEach(person=>{const row=document.createElement('div');row.className='person-row';const label=document.createElement('div');label.className='person-name';label.textContent=person.name;const mw=document.createElement('div');mw.className='person-menu-wrap';const pd=document.createElement('button');pd.className='dots-btn';pd.textContent='⋮';pd.onclick=()=>toggleMenu(type+'-person-'+person.index);mw.append(pd,makeMenu(type+'-person-'+person.index,[['編輯',()=>openPersonModal(type,person.index)],['移動分組',()=>openMoveModal(type,person.index)],['刪除',()=>deletePerson(type,person),'menu-danger']]));row.append(label,mw);card.appendChild(row);});const ga=document.createElement('button');ga.className='group-add';ga.textContent='＋ 新增人員';ga.onclick=()=>openPersonModal(type,null,section.marker);card.appendChild(ga);}box.appendChild(card);});
+ const group=document.createElement('button');group.className='new-group-btn';group.textContent='＋ 建立新分組';group.onclick=()=>openGroupModal(type);box.appendChild(group);
+ const batch=document.createElement('details');batch.className='batch-box';const summary=document.createElement('summary');summary.textContent='批次貼上多位姓名';batch.appendChild(summary);const area=document.createElement('textarea');area.id='batch-'+type;area.className='setup-textarea';area.style.height='88px';area.placeholder='每行一位姓名，或以空白、逗號分隔';batch.appendChild(area);const actions=document.createElement('div');actions.className='batch-actions';const select=document.createElement('select');select.id='batch-group-'+type;getGroups(type).forEach(g=>select.appendChild(new Option('加入：'+g.name,g.index)));const paste=document.createElement('button');paste.className='pm-primary';paste.textContent='加入名單';paste.onclick=()=>batchAdd(type);actions.append(select,paste);batch.appendChild(actions);box.appendChild(batch);host.appendChild(box);
 }
-function addPerson(type){
-    const el=document.getElementById('new-person-'+type),name=cleanName(el.value);if(!name){el.focus();return;}
-    const group=el.dataset.group===undefined||el.dataset.group===''?-1:Number(el.dataset.group);rosterDrafts[type].splice(positionAfterGroup(type,group),0,name);el.value='';delete el.dataset.group;renderPeopleManager(type);
-}
-function addGroup(type){const name=prompt('分組名稱（例如：一排）');if(!name||!name.trim())return;rosterDrafts[type].push(groupMarker(name));renderPeopleManager(type);}
-function batchAdd(type){const text=document.getElementById('batch-'+type).value,names=parseList(text).map(cleanName).filter(Boolean);if(!names.length){showToast('請先貼上姓名');return;}const group=Number(document.getElementById('batch-group-'+type).value);rosterDrafts[type].splice(positionAfterGroup(type,group),0,...names);renderPeopleManager(type);showToast(`已加入 ${names.length} 位人員`);}
+function makeMenu(key,items){const menu=document.createElement('div');menu.className='pop-menu';menu.dataset.key=key;items.forEach(([text,fn,cls])=>{const b=document.createElement('button');b.textContent=text;if(cls)b.className=cls;b.onclick=()=>{closeMenus();fn();};menu.appendChild(b);});return menu;}
+function toggleMenu(key){const menu=document.querySelector(`.pop-menu[data-key="${key}"]`);if(!menu)return;const show=!menu.classList.contains('show');closeMenus();if(show)menu.classList.add('show');}
+function openPersonModal(type,index=null,group=-1){if(index!==null)group=groupForPerson(type,index);const m=document.getElementById('setup-modal'),name=document.getElementById('setup-person-name'),rank=document.getElementById('setup-person-rank'),gs=document.getElementById('setup-person-group');document.getElementById('setup-modal-title').textContent=index===null?'新增人員':'編輯人員';document.getElementById('setup-person-fields').style.display='block';document.getElementById('setup-group-fields').style.display='none';name.value=index===null?'':rosterDrafts[type][index];rank.innerHTML='';Object.entries(rankConfig).forEach(([id,c])=>{const o=new Option(c.label,id);o.selected=id===type;rank.appendChild(o);});const fill=()=>{gs.innerHTML='';getGroups(rank.value).forEach(g=>gs.appendChild(new Option(g.name,g.index)));if(rank.value===type)gs.value=String(group);};rank.onchange=fill;fill();document.getElementById('setup-modal-confirm').textContent=index===null?'確認新增':'儲存變更';document.getElementById('setup-modal-confirm').onclick=()=>{const value=cleanName(name.value);if(!value){name.focus();return;}const target=rank.value;let targetGroup=Number(gs.value);if(index!==null){rosterDrafts[type].splice(index,1);if(target===type&&targetGroup>index)targetGroup--;}rosterDrafts[target].splice(positionAfterGroup(target,targetGroup),0,value);setSetupDirty(true);closeSetupModal();Object.keys(rankConfig).forEach(renderPeopleManager);};m.classList.add('show');setTimeout(()=>name.focus(),50);}
+function openMoveModal(type,index){openPersonModal(type,index);document.getElementById('setup-modal-title').textContent='移動分組';}
+function openGroupModal(type){const m=document.getElementById('setup-modal'),name=document.getElementById('setup-group-name');document.getElementById('setup-modal-title').textContent='建立新分組';document.getElementById('setup-person-fields').style.display='none';document.getElementById('setup-group-fields').style.display='block';name.value='';document.getElementById('setup-modal-confirm').textContent='建立';document.getElementById('setup-modal-confirm').onclick=()=>{const value=name.value.trim();if(!value){name.focus();return;}rosterDrafts[type].push(groupMarker(value));setSetupDirty(true);closeSetupModal();renderPeopleManager(type);};m.classList.add('show');setTimeout(()=>name.focus(),50);}
+function closeSetupModal(){document.getElementById('setup-modal').classList.remove('show');}
+document.getElementById('setup-modal').addEventListener('click',event=>{if(event.target.id==='setup-modal')closeSetupModal();});
+function renameGroup(type,section){if(section.marker===-1)return;const value=prompt('分組名稱',section.title);if(!value||!value.trim())return;rosterDrafts[type][section.marker]=groupMarker(value);setSetupDirty(true);renderPeopleManager(type);}
+function removeGroup(type,section){if(confirm(`移除「${section.title}」分組標題？人員會保留。`)){rosterDrafts[type].splice(section.marker,1);setSetupDirty(true);renderPeopleManager(type);}}
+function deletePerson(type,person){if(confirm(`確定刪除「${person.name}」嗎？`)){rosterDrafts[type].splice(person.index,1);setSetupDirty(true);renderPeopleManager(type);}}
+function batchAdd(type){const area=document.getElementById('batch-'+type),names=parseList(area.value).map(cleanName).filter(Boolean);if(!names.length){area.focus();return;}const group=Number(document.getElementById('batch-group-'+type).value);rosterDrafts[type].splice(positionAfterGroup(type,group),0,...names);setSetupDirty(true);renderPeopleManager(type);showToast(`已加入 ${names.length} 位人員`);}
 function fillSetup() {
     document.getElementById('in-unit').value = D.u || '';
     rosterDrafts={off:[...(D.o||[])],nco:[...(D.n||[])],sol:[...(D.s||[])],tra:[...(D.t||[])]};
     Object.keys(rankConfig).forEach(renderPeopleManager);
     document.getElementById('in-rs').value = D.rs || "休假,外宿,補休,衛哨,安官,戰情,公差,受訓,支援,轉診,住院,隔離,洽公";
     document.getElementById('dash-unit').innerText = D.u || '未設定單位';
+    setSetupDirty(false);
 }
 function saveSetup() {
     D.u = document.getElementById('in-unit').value.trim();
     D.o = rosterDrafts.off.filter(x=>isGroup(x)||cleanName(x)).map(x=>isGroup(x)?x:cleanName(x)); D.n = rosterDrafts.nco.filter(x=>isGroup(x)||cleanName(x)).map(x=>isGroup(x)?x:cleanName(x));
     D.s = rosterDrafts.sol.filter(x=>isGroup(x)||cleanName(x)).map(x=>isGroup(x)?x:cleanName(x)); D.t = rosterDrafts.tra.filter(x=>isGroup(x)||cleanName(x)).map(x=>isGroup(x)?x:cleanName(x));
     D.rs = document.getElementById('in-rs').value.trim();
-    saveData(); showToast("✅ 設定已儲存"); renderDashboard(); fillSetup();
+    saveData(); showToast("✅ 設定已儲存"); renderDashboard(); fillSetup(); setSetupDirty(false);
 }
 function switchSetupTab(targetId, el) {
     document.querySelectorAll('.setup-editor').forEach(e => e.classList.remove('active'));
