@@ -558,8 +558,8 @@ function switchSetupTab(targetId, el) {
 }
 
 function renderDashboard() {
-    let stats = {t:0,p:0,e:0,detail:{}}, all=[...D.o,...D.n,...D.s,...D.t].filter(n=>!n.startsWith('-')&&!n.startsWith('#'));
-    all.forEach(n=>{ stats.t++; const s=D.st[n]; if(s==='p') stats.p++; else if(s){ stats.e++; if(!stats.detail[s]) stats.detail[s]=[]; stats.detail[s].push(n); }});
+    let stats = {t:0,p:0,e:0}, all=[...D.o,...D.n,...D.s,...D.t].filter(n=>!n.startsWith('-')&&!n.startsWith('#'));
+    all.forEach(n=>{ stats.t++; const s=D.st[n]; if(s==='p') stats.p++; else if(s) stats.e++; });
     const abs = stats.t - stats.p - stats.e;
     document.getElementById('d-pres').innerText = stats.p; document.getElementById('d-abs').innerText = abs;
     
@@ -570,7 +570,24 @@ function renderDashboard() {
     document.getElementById('rank-tbody').innerHTML = mkRow('軍官',D.o)+mkRow('士官',D.n)+mkRow('士兵',D.s)+mkRow('訓員',D.t);
     
     const db=document.getElementById('detail-box'), dc=document.getElementById('detail-content');
-    if(stats.e>0){ db.style.display='block'; let h=''; for(let[r,l]of Object.entries(stats.detail)) h+=`<div><strong>${r}</strong> (${l.length}): ${l.map(x=>x+(D.nt[x]?`(${D.nt[x]})`:'')).join('、')}</div>`; dc.innerHTML=h; } else db.style.display='none';
+    if(stats.e>0){
+        db.style.display='block';
+        const escapeHtml=value=>String(value).replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[c]));
+        const ranks=[['軍官',D.o],['士官',D.n],['士兵',D.s],['訓員',D.t]];
+        let h='';
+        ranks.forEach(([rank,list])=>{
+            const byReason={};
+            list.filter(n=>!n.startsWith('-')&&!n.startsWith('#')).forEach(name=>{
+                const reason=D.st[name]; if(!reason||reason==='p') return;
+                if(!byReason[reason]) byReason[reason]=[]; byReason[reason].push(name);
+            });
+            const count=Object.values(byReason).reduce((sum,names)=>sum+names.length,0);
+            h+=`<div style="margin:10px 0;padding:9px 10px;background:${count?'#fff7ed':'#f9fafb'};border-radius:9px;border-left:4px solid ${count?'#f59e0b':'#d1d5db'}"><strong>${rank}（${count}員）</strong>`;
+            h+=count ? Object.entries(byReason).map(([reason,names])=>`<div style="margin-top:4px">${escapeHtml(reason)}（${names.length}）：${names.map(name=>escapeHtml(name)+(D.nt[name]?`（${escapeHtml(D.nt[name])}）`:'')).join('、')}</div>`).join('') : '<div style="margin-top:4px;color:#9ca3af">無事故人員</div>';
+            h+='</div>';
+        });
+        dc.innerHTML=h;
+    } else db.style.display='none';
 }
 
 function copyReport(isCSM) {
