@@ -613,9 +613,58 @@ function copyReport(isCSM) {
         for(let[k,l]of Object.entries(om)) txt+=`${k}：${l.map(x=>x+(D.nt[x]?`(${D.nt[x]})`:'')).join('、')}\n`;
         if(e===0) txt+="無事故人員\n";
     } else {
-        txt=`【${D.u}點名回報】\n時間：${time}\n應到：${t}員\n實到：${p}員\n事故：${e}員\n--------------\n`;
-        if(e>0) for(let[k,l]of Object.entries(details)) txt+=`${k} (${l.length})：${l.map(x=>x+(D.nt[x]?`[${D.nt[x]}]`:'')).join('、')}\n`;
-        else txt+="無事故人員\n";
+        const rankGroups = [
+            { key: 'o', label: '官', names: D.o || [] },
+            { key: 'n', label: '士', names: D.n || [] },
+            { key: 's', label: '兵', names: D.s || [] },
+            { key: 't', label: '訓員', names: D.t || [] }
+        ];
+
+        const peopleOf = arr => arr.filter(n => !n.startsWith('-') && !n.startsWith('#'));
+        const getCounts = status => {
+            const counts = { o: 0, n: 0, s: 0, t: 0 };
+            rankGroups.forEach(r => {
+                counts[r.key] = peopleOf(r.names).filter(n =>
+                    status === 'p' ? D.st[n] === 'p' : D.st[n] === status
+                ).length;
+            });
+            return counts;
+        };
+        const formatCounts = counts => `${counts.o}官${counts.n}士${counts.s}兵${counts.t}訓員`;
+
+        const accidentStatuses = [];
+        const configuredStatuses = (D.rs || '').split(/[,，]/).map(x => x.trim()).filter(Boolean);
+        configuredStatuses.forEach(status => {
+            if (details[status] && details[status].length) accidentStatuses.push(status);
+        });
+        Object.keys(details).forEach(status => {
+            if (!accidentStatuses.includes(status) && details[status].length) accidentStatuses.push(status);
+        });
+
+        txt = `${D.u || '未設定單位'}\n`;
+        txt += `應到：${formatCounts({
+            o: peopleOf(D.o || []).length,
+            n: peopleOf(D.n || []).length,
+            s: peopleOf(D.s || []).length,
+            t: peopleOf(D.t || []).length
+        })}\n`;
+        txt += `實到：${formatCounts(getCounts('p'))}\n`;
+        txt += `事故\n`;
+
+        if (accidentStatuses.length) {
+            accidentStatuses.forEach(status => {
+                const names = details[status] || [];
+                const counts = getCounts(status);
+                const parts = [];
+                if (counts.o) parts.push(`${counts.o}官`);
+                if (counts.n) parts.push(`${counts.n}士`);
+                if (counts.s) parts.push(`${counts.s}兵`);
+                if (counts.t) parts.push(`${counts.t}訓員`);
+                txt += `${status}：${parts.join('')}（${names.map(x => D.nt[x] ? `${D.nt[x]}${x}` : x).join('、')}等${names.length}員）\n`;
+            });
+        } else {
+            txt += `無\n`;
+        }
     }
     const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast("📋 複製成功");
 }
