@@ -649,7 +649,13 @@ function copyReport(isCSM) {
             t: peopleOf(D.t || []).length
         })}\n`;
         txt += `實到：${formatCounts(getCounts('p'))}\n`;
-        txt += `事故\n`;
+
+        // 事故總計
+        const accidentCounts = { o: 0, n: 0, s: 0, t: 0 };
+        rankGroups.forEach(r => {
+            accidentCounts[r.key] = peopleOf(r.names).filter(n => D.st[n] && D.st[n] !== 'p').length;
+        });
+        txt += `事故：${formatCounts(accidentCounts)}\n`;
 
         if (accidentStatuses.length) {
             accidentStatuses.forEach(status => {
@@ -660,10 +666,24 @@ function copyReport(isCSM) {
                 if (counts.n) parts.push(`${counts.n}士`);
                 if (counts.s) parts.push(`${counts.s}兵`);
                 if (counts.t) parts.push(`${counts.t}訓員`);
-                txt += `${status}：${parts.join('')}（${names.map(x => D.nt[x] ? `${D.nt[x]}${x}` : x).join('、')}等${names.length}員）\n`;
+
+                // 每項事故只列第一位人員，其餘以「等X員」表示
+                // 優先找軍官，再找士官、士兵、訓員
+                const rankOrder = [D.o || [], D.n || [], D.s || [], D.t || []];
+                let firstName = '';
+                for (const rankList of rankOrder) {
+                    firstName = names.find(name => rankList.includes(name));
+                    if (firstName) break;
+                }
+
+                const firstDisplay = firstName
+                    ? ((D.nt[firstName] || '').trim() ? `${D.nt[firstName]}${firstName}` : firstName)
+                    : '';
+
+                txt += `${status}：${parts.join('')}（${firstDisplay}等${names.length}員）\n`;
             });
         } else {
-            txt += `無\n`;
+            txt += `無事故人員\n`;
         }
     }
     const ta=document.createElement("textarea"); ta.value=txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); showToast("📋 複製成功");
